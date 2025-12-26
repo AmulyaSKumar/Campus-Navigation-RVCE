@@ -1,0 +1,564 @@
+[{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c9b"
+  },
+  "name": "ISE dept",
+  "coordinates": [
+    12.923383,
+    77.501071
+  ],
+  "image_url": "/location_images/isedpt.png",
+  "search_count": 3
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c90"
+  },
+  "name": "Bank",
+  "coordinates": [
+    12.92487,
+    77.49936
+  ],
+  "image_url": "/location_images/KotakBank.png",
+  "search_count": 11
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c91"
+  },
+  "name": "Post Office",
+  "coordinates": [
+    12.92487,
+    77.49936
+  ],
+  "image_url": "/location_images/PostOffice.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c92"
+  },
+  "name": "Computer science laboratories complex",
+  "coordinates": [
+    12.924498,
+    77.49917
+  ],
+  "image_url": "/location_images/cslabcomplex.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c93"
+  },
+  "name": "Civil Dept",
+  "coordinates": [
+    12.924254,
+    77.499391
+  ],
+  "image_url": "/location_images/Civildpt.png",
+  "search_count": 1
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c94"
+  },
+  "name": "Civil seminar Hall",
+  "coordinates": [
+    12.924254,
+    77.499391
+  ],
+  "image_url": "/location_images/civilseminar.png",
+  "search_count": 1
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c95"
+  },
+  "name": "Centre for connected autonomous vehicle",
+  "coordinates": [
+    12.924405,
+    77.499894
+  ],
+  "image_url": "/location_images/autonomousvehicle.png",
+  "search_count": 4
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c96"
+  },
+  "name": "CS dept",
+  "coordinates": [
+    12.924607,
+    77.500312
+  ],
+  "image_url": "/location_images/Csedpt.png",
+  "search_count": 2
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c97"
+  },
+  "name": "EEE dept",
+  "coordinates": [
+    12.924201,
+    77.500067
+  ],
+  "image_url": "/location_images/eeedpt.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c98"
+  },
+  "name": "Mini Canteen",
+  "coordinates": [
+    12.923671,
+    77.500525
+  ],
+  "image_url": "/location_images/MiniCanteen.png",
+  "search_count": 13
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c99"
+  },
+  "name": "Krishna boys hostel",
+  "coordinates": [
+    12.923966,
+    77.50046
+  ],
+  "image_url": "/location_images/krishna.png",
+  "search_count": 4
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c9a"
+  },
+  "name": "ISE seminar hall",
+  "coordinates": [
+    12.923383,
+    77.501071
+  ],
+  "image_url": "/location_images/iseseminarhall.png",
+  "search_count": 12
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c9c"
+  },
+  "name": "Aerospace dept",
+  "coordinates": [
+    12.923383,
+    77.501071
+  ],
+  "image_url": "/location_images/Aerospacedpt.png",
+  "search_count": 1
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c9d"
+  },
+  "name": "Old Library",
+  "coordinates": [
+    12.923557,
+    77.500865
+  ],
+  "image_url": "/location_images/Oldlib.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c9e"
+  },
+  "name": "New Library",
+  "coordinates": [
+    12.922846,
+    77.5005
+  ],
+  "image_url": "/location_images/Newlib.png",
+  "search_count": 8
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438c9f"
+  },
+  "name": "Chemical Dept",
+  "coordinates": [
+    12.923331,
+    77.500104
+  ],
+  "image_url": "/location_images/Chemicaldpt.png",
+  "search_count": 3
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca0"
+  },
+  "name": "Chemistry dept",
+  "coordinates": [
+    12.923331,
+    77.500104
+  ],
+  "image_url": "/location_images/Chemistrydpt.png",
+  "search_count": 2
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca1"
+  },
+  "name": "Physics dept",
+  "coordinates": [
+    12.923331,
+    77.500104
+  ],
+  "image_url": "/location_images/Physicsdept.png",
+  "search_count": 1
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca2"
+  },
+  "name": "Telecom Dept",
+  "coordinates": [
+    12.923564,
+    77.500194
+  ],
+  "image_url": "/location_images/Telecom.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca3"
+  },
+  "name": "Main Canteen",
+  "coordinates": [
+    12.922408,
+    77.499503
+  ],
+  "image_url": "/location_images/Main_Canteen.png",
+  "search_count": 9
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca5"
+  },
+  "name": "BT dept",
+  "coordinates": [
+    12.922576,
+    77.498741
+  ],
+  "image_url": "/location_images/bt.png",
+  "search_count": 5
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca6"
+  },
+  "name": "MCA dept",
+  "coordinates": [
+    12.922393,
+    77.498644
+  ],
+  "image_url": "/location_images/aimlmca.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca7"
+  },
+  "name": "Founders Memorial",
+  "coordinates": [
+    12.922562,
+    77.498244
+  ],
+  "image_url": "/location_images/founder.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca8"
+  },
+  "name": "Mechanical dept",
+  "coordinates": [
+    12.923138,
+    77.498268
+  ],
+  "image_url": "/location_images/Mech.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca4"
+  },
+  "name": "DTH",
+  "coordinates": [
+    12.923451,
+    77.498027
+  ],
+  "image_url": "/location_images/dth.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438ca9"
+  },
+  "name": "Chimera Workshop",
+  "coordinates": [
+    12.923306,
+    77.498122
+  ],
+  "image_url": "/location_images/chimeragaruda.png",
+  "search_count": 1
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb1"
+  },
+  "name": "Mechanical PG",
+  "coordinates": [
+    12.923592,
+    77.498236
+  ],
+  "image_url": "/location_images/mechpg.png",
+  "search_count": 1
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb2"
+  },
+  "name": "Admin Block",
+  "coordinates": [
+    12.924013,
+    77.498512
+  ],
+  "image_url": "/location_images/adminblock.png",
+  "search_count": 2
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb3"
+  },
+  "name": "ECE Department",
+  "coordinates": [
+    12.923723,
+    77.499892
+  ],
+  "image_url": "/location_images/ecedpt.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb4"
+  },
+  "name": "Civil dept library",
+  "coordinates": [
+    12.924254,
+    77.499391
+  ],
+  "image_url": "/location_images/civilib.png",
+  "search_count": 2
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb5"
+  },
+  "name": "Astra Robotics Workshop",
+  "coordinates": [
+    12.923306,
+    77.498122
+  ],
+  "image_url": "/location_images/astra.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb6"
+  },
+  "name": "Garuda Workshop",
+  "coordinates": [
+    12.923306,
+    77.498124
+  ],
+  "image_url": "/location_images/chimeragaruda.png",
+  "search_count": 6
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb7"
+  },
+  "name": "DJ Hostel",
+  "coordinates": [
+    12.922869,
+    77.503113
+  ],
+  "image_url": "/location_images/dj.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb8"
+  },
+  "name": "Chamundi Hostel",
+  "coordinates": [
+    12.922427,
+    77.502165
+  ],
+  "image_url": "/location_images/chamundi.png",
+  "search_count": 7
+},
+{
+  "_id": {
+    "$oid": "67a10d5f293ddaa7c4438cb9"
+  },
+  "name": "cauvery Hostel",
+  "coordinates": [
+    12.923892,
+    77.501031
+  ],
+  "image_url": "/location_images/cauvery.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2ef7977c86f54a3930a09"
+  },
+  "name": "IEM Auditorium",
+  "coordinates": [
+    12.923036,
+    77.498497
+  ],
+  "image_url": "/location_images/auditorium.png",
+  "search_count": 6
+},
+{
+  "_id": {
+    "$oid": "67a2ef7977c86f54a3930a0a"
+  },
+  "name": "Mess",
+  "coordinates": [
+    12.923892,
+    77.501031
+  ],
+  "image_url": "/location_images/cauvery.png",
+  "search_count": 1
+},
+{
+  "_id": {
+    "$oid": "67a2ef7977c86f54a3930a0b"
+  },
+  "name": "COE Visual Computing",
+  "coordinates": [
+    12.922865,
+    77.500871
+  ],
+  "image_url": "/location_images/CoeVC.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2ef7977c86f54a3930a0c"
+  },
+  "name": "MM Foods",
+  "coordinates": [
+    12.923446,
+    77.49986
+  ],
+  "image_url": "/location_images/mmfoods.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2ef7977c86f54a3930a0d"
+  },
+  "name": "Women in Cloud",
+  "coordinates": [
+    12.923383,
+    77.501071
+  ],
+  "image_url": "/location_images/wic.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2f32c77c86f54a3930a0e"
+  },
+  "name": "Ganesha Temple",
+  "coordinates": [
+    12.92462,
+    77.500885
+  ],
+  "image_url": "/location_images/ganesha.png",
+  "search_count": 2
+},
+{
+  "_id": {
+    "$oid": "67a2f32c77c86f54a3930a0f"
+  },
+  "name": "MCA Seminar Hall",
+  "coordinates": [
+    12.922393,
+    77.498644
+  ],
+  "image_url": "/location_images/mcahall.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2f32c77c86f54a3930a10"
+  },
+  "name": "Telecom Seminar Hall",
+  "coordinates": [
+    12.923564,
+    77.500194
+  ],
+  "image_url": "/location_images/ethall.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2f32c77c86f54a3930a11"
+  },
+  "name": "BT Seminar Hall",
+  "coordinates": [
+    12.922393,
+    77.498644
+  ],
+  "image_url": "/location_images/bthall.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2f32c77c86f54a3930a12"
+  },
+  "name": "Chemical Seminar Hall",
+  "coordinates": [
+    12.923331,
+    77.500104
+  ],
+  "image_url": "/location_images/chemhall.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2f32c77c86f54a3930a13"
+  },
+  "name": "AIML Dept",
+  "coordinates": [
+    12.922393,
+    77.498644
+  ],
+  "image_url": "/location_images/aimlmca.png",
+  "search_count": 0
+},
+{
+  "_id": {
+    "$oid": "67a2f32c77c86f54a3930a14"
+  },
+  "name": "Healthcare",
+  "coordinates": [
+    12.924481,
+    77.500723
+  ],
+  "image_url": "/location_images/healthcare.png",
+  "search_count": 1
+}]
