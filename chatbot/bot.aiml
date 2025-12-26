@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="1.0.1">
+    <category>
+        <pattern>HELLO</pattern>
+        <template>Hello! How can I assist you with campus navigation today?</template>
+    </category>
+    
+    <category>
+        <pattern>HI</pattern>
+        <template><srai>HELLO</srai></template>
+    </category>
+    
+    <category>
+        <pattern>WHAT IS YOUR NAME</pattern>
+        <template>I'm your Campus Navigator Assistant! I can help you find locations around campus.</template>
+    </category>
+    
+    <category>
+        <pattern>WHICH BANK IS IN COLLEGE</pattern>
+        <template>The campus has a Kotak Bank branch located near the Main gate.</template>
+    </category>
+    
+    <category>
+        <pattern>WHAT ARE THE WORKING HOURS OF THE POST OFFICE</pattern>
+        <template>The post office operates from 9:00 AM to 5:00 PM.</template>
+    </category>
+    
+    <category>
+        <pattern>WHERE IS THE CIVIL SEMINAR HALL</pattern>
+        <template>The Civil Seminar Hall is located on the third floor of the Civil Department.</template>
+    </category>
+    
+    <category>
+        <pattern>HOW MANY HOSTELS ARE THERE FOR BOYS</pattern>
+        <template>There are three hostels available for boys.</template>
+    </category>
+    
+    <category>
+        <pattern>HOW MANY HOSTELS ARE THERE FOR GIRLS</pattern>
+        <template>There are two hostels within the campus and one located outside the campus for girls.</template>
+    </category>
+    
+    <category>
+        <pattern>WHAT FOOD OPTIONS ARE AVAILABLE IN THE MINI CANTEEN</pattern>
+        <template>The mini canteen offers a variety of vegetarian and eggetarian snacks along with beverages.</template>
+    </category>
+    
+    <category>
+        <pattern>WHERE IS THE WIC COE</pattern>
+        <template>The WIC COE is located on the first floor of the ISE Department.</template>
+    </category>
+    
+    <category>
+        <pattern>WHERE IS THE ISE SEMINAR HALL</pattern>
+        <template>The ISE Seminar Hall is located on the second floor of the ISE Department building.</template>
+    </category>
+    
+    <category>
+        <pattern>HOW TO REACH THE ISE SEMINAR HALL</pattern>
+        <template>To reach the ISE Seminar Hall, go to the ISE Department building and take the stairs or elevator to the second floor.</template>
+    </category>
+    
+    <category>
+        <pattern>WHERE IS THE LIBRARY</pattern>
+        <template>The library is located in the central academic block, near the main entrance.</template>
+    </category>
+    
+    <category>
+        <pattern>WHEN DOES THE LIBRARY OPEN</pattern>
+        <template>The library opens at 8:30 AM and closes at 5:00 PM on weekdays.</template>
+    </category>
+    
+    <category>
+        <pattern>WHERE IS THE CANTEEN</pattern>
+        <template>The canteen is located near the student activity center.</template>
+    </category>
+    
+    <category>
+        <pattern>WHAT IS AVAILABLE IN THE CANTEEN</pattern>
+        <template>The canteen offers a variety of snacks, beverages, and meals, including vegetarian and non-vegetarian options.</template>
+    </category>
+    
+    <category>
+        <pattern>WHERE IS THE SPORTS COMPLEX</pattern>
+        <template>The sports complex is situated near the hostel area, next to the football ground.</template>
+    </category>
+    
+    <category>
+        <pattern>WHAT FACILITIES ARE AVAILABLE IN THE SPORTS COMPLEX</pattern>
+        <template>The sports complex includes facilities for basketball, badminton, table tennis, and a fully equipped gym.</template>
+    </category>
+    
+    <category>
+        <pattern>WHERE IS THE ADMINISTRATIVE OFFICE</pattern>
+        <template>The administrative office is located on the ground floor of the main academic building.</template>
+    </category>
+    
+    <category>
+        <pattern>*</pattern>
+        <template>If you need assistance with finding locations on campus, feel free to use our Campus Navigator system.</template>
+    </category>
+</aiml>

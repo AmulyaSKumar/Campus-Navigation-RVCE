@@ -1,0 +1,18 @@
+export const places = [
+  { name: "Bank", coordinates: [12.924870, 77.499360] },
+  { name: "Post Office", coordinates: [12.924870, 77.499360] },
+  { name: "Computer science laboratories complex", coordinates: [12.924498, 77.499170] },
+  { name: "Civil Dept", coordinates: [12.924254, 77.499391] },
+  { name: "Civil seminar Hall", coordinates: [12.924254, 77.499391] },
+  { name: "Centre for connected autonomous vehicle", coordinates: [12.924405, 77.499894] },
+  { name: "CS dept", coordinates: [12.924607, 77.500312] },
+  { name: "CS seminar hall", coordinates: [12.924607, 77.500312] },
+  { name: "EEE dept", coordinates: [12.924201, 77.500067] },
+  { name: "EEE seminar hall", coordinates: [12.924201, 77.500067] },
+  { name: "Mini Canteen", coordinates: [12.923671, 77.500525] },
+  { name: "Krishna boys hostel", coordinates: [12.923966, 77.500460] },
+  { name: "ISE dept", coordinates: [12.923383, 77.501071] },
+  { name: "ISE seminar hall", coordinates: [12.923383, 77.501071] },
+  { name: "WiC COE", coordinates: [12.923383, 77.501071] },
+  { name: "Aerospace dept", coordinates: [12.923383, 77.501071] },
+];

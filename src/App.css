@@ -1,0 +1,78 @@
+/* App.css - Original code preserved */
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 200px;
+  height: auto;
+}
+
+/* New Media Queries for App.css */
+@media screen and (max-width: 1024px) {
+  .logo {
+    width: 150px;
+  }
+  
+  .App-header {
+    font-size: calc(8px + 2vmin);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .logo {
+    width: 120px;
+    top: 15px;
+    left: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .logo {
+    width: 100px;
+    top: 10px;
+    left: 10px;
+  }
+  
+  .App-header {
+    font-size: calc(6px + 2vmin);
+  }
+}

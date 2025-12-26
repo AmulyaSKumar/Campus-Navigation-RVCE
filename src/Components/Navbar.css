@@ -1,0 +1,248 @@
+/* Navbar Container */
+.navbar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #ffffff;
+}
+
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 3rem;
+    background: #ffffff;
+    color: #111827;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(17, 24, 39, 0.06);
+    max-width: 620px;
+    text-align: center;
+    position: relative;
+    border: 1px solid #f3f4f6;
+    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.enable-location-btn {
+    margin-top: 12px;
+    padding: 10px 22px;
+    background: transparent;
+    color: #1f2d3d;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.enable-location-btn:hover {
+    background: #f8fafc;
+    transform: translateY(-1px);
+}
+
+/* Logo */
+.logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 60px;
+    height: auto;
+}
+
+/* Title */
+.navbar h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1f2d3d;
+    letter-spacing: -0.4px;
+}
+
+.navbar .subtitle {
+    font-size: 0.95rem;
+    color: #536174;
+    margin-bottom: 18px;
+}
+
+/* Description */
+.navbar p {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    color: #555;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* Search Bar */
+.search-bar {
+    width: 100%;
+    max-width: 450px;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    background-color: #fafafa;
+}
+
+.search-bar input:focus {
+    border: 2px solid #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    outline: none;
+    background-color: #fff;
+}
+
+/* Top Places Section */
+.top-places {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Top Place Buttons */
+.top-place-button {
+    background: #f3f4f6;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: none;
+    color: #111827;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    min-width: fit-content;
+}
+
+.top-place-button:hover {
+    background: #e9eefc;
+    transform: translateY(-1px);
+}
+
+.top-place-button:active {
+    transform: translateY(0);
+}
+
+/* Open Map Button */
+.open-map-button {
+    margin-top: 18px;
+    padding: 11px 26px;
+    background: #2563eb; /* simple blue */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 8px;
+    transition: all 0.18s ease;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.18);
+}
+
+.open-map-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+}
+
+.open-map-button:active {
+    transform: translateY(0);
+}
+
+/* Chatbot Button */
+.chatbot-button {
+    margin-top: 12px;
+    padding: 10px 22px;
+    background: transparent;
+    color: #1f2d3d;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.chatbot-button:hover {
+    background: #f8fafc;
+    transform: translateY(-1px);
+}
+
+.chatbot-button:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+    }
+
+    .search-bar {
+        max-width: 100%;
+    }
+
+    .top-places {
+        max-width: 100%;
+        gap: 5px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .navbar {
+        padding: 1.25rem 2rem;
+        max-width: 90%;
+    }
+    
+    .navbar h1 {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+    }
+
+    .search-bar {
+        max-width: 100%;
+    }
+
+    .top-places {
+        max-width: 100%;
+        gap: 5px;
+    }
+    
+    .navbar h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .navbar {
+        padding: 0.75rem;
+        max-width: 95%;
+    }
+    
+    .navbar h1 {
+        font-size: 1.25rem;
+    }
+    
+    .top-place-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
