@@ -287,7 +287,7 @@ const ARScene = ({ selectedLocation, onClose }) => {
    */
   const fetchAllLocations = async () => {
     try {
-      const response = await fetch("http://localhost:5001/api/locations");
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/locations`);
       if (response.ok) {
         const data = await response.json();
         setAllLocations(data);

@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv*/
+env/
+ENV/
+.env
+*.db
+*.sqlite
+.DS_Store
+.vscode/
+*.log
+campus_navigator.*.json

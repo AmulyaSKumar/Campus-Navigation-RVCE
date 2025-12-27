@@ -187,7 +187,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
       setIsSearchLoading(true);
       try {
         const response = await axios.get(
-          `https://localhost:5001/api/search?q=${encodeURIComponent(query.trim())}`
+          `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/search?q=${encodeURIComponent(query.trim())}`
         );
 
         if (Array.isArray(response.data)) {

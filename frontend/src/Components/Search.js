@@ -30,7 +30,10 @@ const Search = ({ onPlaceSelected, updateTopPlaces }) => {
     debounceTimer.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5001';
+        const API_BASE = process.env.REACT_APP_API_BASE ||
+          (['localhost', '127.0.0.1'].includes(window.location.hostname)
+            ? 'http://127.0.0.1:5001'
+            : '');
         const response = await axios.get(
           `${API_BASE}/api/search?q=${encodeURIComponent(value.trim())}`
         );
@@ -68,7 +71,10 @@ const Search = ({ onPlaceSelected, updateTopPlaces }) => {
     setSuggestions([]);
 
     try {
-      const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5001';
+      const API_BASE = process.env.REACT_APP_API_BASE ||
+        (['localhost', '127.0.0.1'].includes(window.location.hostname)
+          ? 'http://127.0.0.1:5001'
+          : '');
       await axios.post(`${API_BASE}/api/search`, {
         placeName: location.name,
       });

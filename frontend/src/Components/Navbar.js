@@ -13,7 +13,11 @@ const Navbar = ({ onPlaceSelected }) => {
   const fetchTopPlaces = async () => {
     setIsLoading(true);
     try {
-      const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5001';
+      const API_BASE = process.env.REACT_APP_API_BASE ||
+        (['localhost', '127.0.0.1'].includes(window.location.hostname)
+          ? 'http://127.0.0.1:5001'
+          : '');
+      console.log("API base for top places:", API_BASE || "(empty)");
       const response = await axios.get(`${API_BASE}/api/top-places`);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setTopPlaces(response.data);
@@ -21,7 +25,9 @@ const Navbar = ({ onPlaceSelected }) => {
         console.warn("No places returned from API:", response.data);
       }
     } catch (error) {
-      console.error("Error fetching top places:", error);
+      const status = error.response?.status;
+      const url = error.config?.url;
+      console.error("Error fetching top places:", status, error.message, url);
     } finally {
       setIsLoading(false);
     }
@@ -40,7 +46,10 @@ const Navbar = ({ onPlaceSelected }) => {
 
   const handleTopPlaceClick = async (place) => {
     try {
-      const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5001';
+      const API_BASE = process.env.REACT_APP_API_BASE ||
+        (['localhost', '127.0.0.1'].includes(window.location.hostname)
+          ? 'http://127.0.0.1:5001'
+          : '');
       await axios.post(`${API_BASE}/api/search`, {
         placeName: place.name,
       });
