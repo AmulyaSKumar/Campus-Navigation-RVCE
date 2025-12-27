@@ -70,10 +70,7 @@ Write-Host "`n===================================" -ForegroundColor Cyan
 Write-Host "✅ Setup Complete!" -ForegroundColor Green
 Write-Host "===================================" -ForegroundColor Cyan
 Write-Host "`nNext steps:" -ForegroundColor Cyan
-Write-Host "1. Configure backend\.env with your MongoDB URI"
-Write-Host "2. Configure frontend\.env with your API keys"
-Write-Host "3. Start MongoDB (if using local instance)"
-Write-Host "4. Run: cd backend; python setup_mongodb.py"
-Write-Host "5. Run: cd backend; python main.py"
-Write-Host "6. In new terminal: cd frontend; npm start"
+Write-Host "1. Configure frontend\.env with your API keys"
+Write-Host "2. Run: cd backend; python main.py"
+Write-Host "3. In new terminal: cd frontend; npm start"
 Write-Host ""
