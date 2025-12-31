@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{{{ PRODUCT_NAME }}}</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1A1E24;
+            touch-action: none;
+        }
+        
+        #unity-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #unity-canvas {
+            width: 100%;
+            height: 100%;
+            background: #1A1E24;
+        }
+        
+        #unity-loading-bar {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        
+        #unity-logo {
+            width: 154px;
+            height: 130px;
+            background: url('TemplateData/unity-logo-dark.png') no-repeat center;
+        }
+        
+        #unity-progress-bar-empty {
+            width: 141px;
+            height: 18px;
+            margin: 10px auto;
+            background: url('TemplateData/progress-bar-empty-dark.png') no-repeat center;
+        }
+        
+        #unity-progress-bar-full {
+            width: 0%;
+            height: 18px;
+            margin-top: 10px;
+            background: url('TemplateData/progress-bar-full-dark.png') no-repeat center;
+        }
+        
+        #unity-warning {
+            position: absolute;
+            left: 50%;
+            top: 5%;
+            transform: translateX(-50%);
+            background: rgba(200, 80, 80, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: none;
+            z-index: 1000;
+        }
+        
+        #camera-permission-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        #camera-permission-overlay.hidden {
+            display: none;
+        }
+        
+        #camera-permission-overlay h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        #camera-permission-overlay p {
+            font-size: 16px;
+            color: #AAA;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        #camera-permission-overlay button {
+            background: linear-gradient(135deg, #60C8E8, #4EA8C8);
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(96, 200, 232, 0.4);
+        }
+        
+        #camera-permission-overlay button:active {
+            transform: scale(0.98);
+        }
+        
+        #camera-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        
+        @media (max-width: 768px) {
+            #unity-logo { width: 100px; height: 85px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Camera Permission Overlay -->
+    <div id="camera-permission-overlay">
+        <h2>📍 AR Navigation</h2>
+        <p>This app requires access to your camera and location for AR navigation.</p>
+        <button id="start-ar-btn">Enable AR Navigation</button>
+    </div>
+    
+    <!-- Camera Video Feed (behind Unity canvas) -->
+    <video id="camera-video" autoplay playsinline muted></video>
+    
+    <!-- Unity Container -->
+    <div id="unity-container">
+        <canvas id="unity-canvas" tabindex="-1"></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
+        </div>
+        <div id="unity-warning"></div>
+    </div>
+    
+    <script>
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var loadingBar = document.querySelector("#unity-loading-bar");
+        var progressBarFull = document.querySelector("#unity-progress-bar-full");
+        var warningBanner = document.querySelector("#unity-warning");
+        var permissionOverlay = document.querySelector("#camera-permission-overlay");
+        var startBtn = document.querySelector("#start-ar-btn");
+        var cameraVideo = document.querySelector("#camera-video");
+        
+        // Unity Instance
+        var unityInstance = null;
+        
+        // Show warning banner
+        function unityShowBanner(msg, type) {
+            function updateBannerVisibility() {
+                warningBanner.style.display = warningBanner.innerHTML ? 'block' : 'none';
+            }
+            var div = document.createElement('div');
+            div.innerHTML = msg;
+            warningBanner.appendChild(div);
+            if (type == 'error') div.style.background = 'red';
+            else if (type == 'warning') div.style.background = 'yellow';
+            setTimeout(function() {
+                warningBanner.removeChild(div);
+                updateBannerVisibility();
+            }, 5000);
+            updateBannerVisibility();
+        }
+        
+        // Request permissions and start camera
+        async function requestPermissions() {
+            try {
+                // Request camera
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' },
+                    audio: false
+                });
+                cameraVideo.srcObject = stream;
+                
+                // Request location
+                if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => console.log('Location granted'),
+                        (err) => console.warn('Location denied:', err.message),
+                        { enableHighAccuracy: true }
+                    );
+                }
+                
+                // Request orientation (iOS 13+)
+                if (typeof DeviceOrientationEvent !== 'undefined' && 
+                    typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    try {
+                        const permission = await DeviceOrientationEvent.requestPermission();
+                        console.log('Orientation permission:', permission);
+                    } catch (e) {
+                        console.warn('Orientation permission error:', e);
+                    }
+                }
+                
+                // Hide overlay, start Unity
+                permissionOverlay.classList.add('hidden');
+                startUnity();
+                
+            } catch (err) {
+                console.error('Permission error:', err);
+                alert('Camera access is required for AR navigation. Please enable camera permissions and reload.');
+            }
+        }
+        
+        // Start Unity WebGL
+        function startUnity() {
+            loadingBar.style.display = "block";
+            
+            var buildUrl = "Build";
+            var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+            var config = {
+                dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+                frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_THREADS
+                workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+#endif
+#if USE_WASM
+                codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+#endif
+#if MEMORY_FILENAME
+                memoryUrl: buildUrl + "/{{{ MEMORY_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+                symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+#endif
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "{{{ COMPANY_NAME }}}",
+                productName: "{{{ PRODUCT_NAME }}}",
+                productVersion: "{{{ PRODUCT_VERSION }}}",
+                showBanner: unityShowBanner,
+            };
+            
+            var script = document.createElement("script");
+            script.src = loaderUrl;
+            script.onload = () => {
+                createUnityInstance(canvas, config, (progress) => {
+                    progressBarFull.style.width = 100 * progress + "%";
+                }).then((instance) => {
+                    unityInstance = instance;
+                    loadingBar.style.display = "none";
+                }).catch((message) => {
+                    alert(message);
+                });
+            };
+            document.body.appendChild(script);
+        }
+        
+        // Start button click
+        startBtn.addEventListener('click', requestPermissions);
+        
+        // Handle visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Pause camera when hidden
+                if (cameraVideo.srcObject) {
+                    cameraVideo.srcObject.getTracks().forEach(track => track.enabled = false);
+                }
+            } else {
+                // Resume camera when visible
+                if (cameraVideo.srcObject) {
+                    cameraVideo.srcObject.getTracks().forEach(track => track.enabled = true);
+                }
+            }
+        });
+        
+        // Prevent default touch behaviors
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>

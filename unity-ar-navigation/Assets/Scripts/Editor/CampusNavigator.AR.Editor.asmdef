@@ -1,0 +1,19 @@
+{
+    "name": "CampusNavigator.AR.Editor",
+    "rootNamespace": "CampusNavigator.AR.Editor",
+    "references": [
+        "CampusNavigator.AR",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

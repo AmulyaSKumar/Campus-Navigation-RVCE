@@ -49,7 +49,6 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
   const [isCalibrating, setIsCalibrating] = useState(false);
   const [directionFaded, setDirectionFaded] = useState(false);
   const [lastDirection, setLastDirection] = useState(null);
-  
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
