@@ -2,8 +2,6 @@
 
 An intelligent campus navigation system that helps students, visitors, and staff find buildings, departments, and popular spots on campus quickly and easily.
 
-![Status](https://img.shields.io/badge/Status-Active-success) ![React](https://img.shields.io/badge/Frontend-React-blue) ![Flask](https://img.shields.io/badge/Backend-Flask-green) ![Python](https://img.shields.io/badge/Python-3.11-yellow)
-
 ---
 
 ##  Table of Contents
@@ -281,6 +279,7 @@ return aiml_response(user_query)
 |  Accessibility | Screen reader support |
 
 ---
+
 
 
 
