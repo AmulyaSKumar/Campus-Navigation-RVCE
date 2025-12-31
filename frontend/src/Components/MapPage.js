@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import ARScene from "./ARScene";
+import { API_ENDPOINTS } from "../config/apiConfig";
 import "./MapPage.css";
 
 // ============ FAKE LOCATION FOR DEMO ============
@@ -240,7 +241,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
       setIsSearchLoading(true);
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/search?q=${encodeURIComponent(query.trim())}`
+          API_ENDPOINTS.search.autocomplete(query.trim())
         );
 
         if (Array.isArray(response.data)) {

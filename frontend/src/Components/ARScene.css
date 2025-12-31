@@ -1,4 +1,4 @@
-/* AR Scene Container */
+/* AR Scene Container - Google Maps Live View Style */
 .ar-scene-container {
   position: fixed;
   top: 0;
@@ -8,8 +8,7 @@
   background: #000;
   z-index: 9999;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
+  font-family: 'Google Sans', 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Video Feed */
@@ -20,7 +19,23 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); /* Mirror for selfie camera */
+}
+
+/* Gradient Background Fallback */
+.ar-bg-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, 
+    #1a237e 0%, 
+    #283593 25%,
+    #303f9f 50%,
+    #3f51b5 75%,
+    #5c6bc0 100%
+  );
+  z-index: -1;
 }
 
 /* AR Canvas (Drawing layer) */
@@ -31,149 +46,236 @@
   width: 100%;
   height: 100%;
   z-index: 10;
+  pointer-events: none;
 }
 
-/* Status Bar */
-.ar-status-bar {
+/* Top Status Bar */
+.ar-top-bar {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 60px;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.8),
-    rgba(0, 0, 0, 0.4)
-  );
-  backdrop-filter: blur(8px);
+  padding: 0 16px;
+  padding-top: env(safe-area-inset-top, 0);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
   z-index: 20;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.status-info {
+.status-pill {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
 }
 
 .status-dot {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #FFA500;
-  animation: pulse-status 2s ease-in-out infinite;
 }
 
 .status-dot.tracking {
-  background: #4CAF50;
+  background: #00E676;
+  box-shadow: 0 0 10px #00E676;
 }
 
 .status-dot.error {
   background: #FF5252;
 }
 
-@keyframes pulse-status {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 currentColor;
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.status-text {
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
 .close-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  font-size: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
 }
 
 .close-btn:active {
   transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Destination Card */
-.destination-card {
+/* Navigation Instruction Card - Google Maps Style */
+.nav-instruction-card {
   position: absolute;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(76, 175, 80, 0.4);
+  top: 80px;
+  left: 16px;
+  right: 16px;
+  background: #4285F4;
   border-radius: 16px;
-  padding: 20px 32px;
-  color: white;
-  text-align: center;
-  min-width: 280px;
-  max-width: 90%;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   z-index: 20;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-  animation: slideUpIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.3s ease-out;
 }
 
-@keyframes slideUpIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.destination-card h3 {
-  margin: 0 0 12px 0;
-  font-size: 22px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #4CAF50, #66BB6A);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.nav-icon-box {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.distance {
-  margin: 0 0 8px 0;
-  font-size: 28px;
+.nav-arrow {
+  font-size: 32px;
+  color: white;
   font-weight: bold;
-  color: #4CAF50;
-  text-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
-.instruction {
-  margin: 0;
+.nav-arrow.right {
+  transform: scaleX(1);
+}
+
+.nav-arrow.left {
+  transform: scaleX(-1);
+}
+
+.nav-text-box {
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.nav-action {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.nav-dest {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+  
+
+/* Bottom Info Panel */
+.bottom-info-panel {
+  position: absolute;
+  bottom: 80px;
+  left: 16px;
+  right: 16px;
+  background: rgba(32, 33, 36, 0.95);
+  border-radius: 20px;
+  padding: 16px;
+  z-index: 20;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+}
+
+.stat-value.primary {
+  color: #4285F4;
+}
+
+.stat-value.secondary {
+  color: #00E676;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dest-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.dest-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dest-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.dest-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.dest-coords {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
 }
 
 /* Arrival Overlay */
@@ -183,252 +285,204 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .arrival-modal {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border-radius: 24px;
-  padding: 48px 40px;
+  padding: 40px 32px;
   text-align: center;
   color: white;
-  box-shadow: 0 24px 64px rgba(76, 175, 80, 0.4);
-  animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-width: 90%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes bounceIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.arrival-emoji {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .arrival-modal h2 {
-  margin: 0 0 16px 0;
-  font-size: 36px;
-  font-weight: 800;
-  line-height: 1;
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00E676, #4285F4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .arrival-modal p {
-  margin: 0 0 28px 0;
-  font-size: 20px;
-  opacity: 0.95;
+  margin: 0 0 24px 0;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.arrival-modal button {
-  background: white;
-  color: #4CAF50;
+.arrival-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-bottom: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.arrival-btn {
+  background: linear-gradient(135deg, #4285F4, #1976D2);
+  color: white;
   border: none;
   padding: 14px 40px;
   border-radius: 28px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.4);
 }
 
-.arrival-modal button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-}
-
-.arrival-modal button:active {
-  transform: translateY(0);
-}
-
-/* AR Controls */
-.ar-controls {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 20;
-}
-
-.control-btn {
-  background: rgba(76, 175, 80, 0.2);
-  border: 1px solid rgba(76, 175, 80, 0.5);
-  color: #4CAF50;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
-}
-
-.control-btn:hover {
-  background: rgba(76, 175, 80, 0.35);
-  border-color: rgba(76, 175, 80, 0.8);
-  color: #66BB6A;
-  transform: scale(1.1);
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.25);
-}
-
-.control-btn:active {
+.arrival-btn:active {
   transform: scale(0.95);
 }
 
-/* Responsive Design */
+/* Bottom Control Bar */
+.control-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 20;
+}
+
+.ctrl-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 16px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+}
+
+.ctrl-btn span {
+  font-size: 20px;
+}
+
+.ctrl-btn small {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.ctrl-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.ctrl-btn.exit {
+  background: linear-gradient(135deg, rgba(255, 82, 82, 0.8), rgba(211, 47, 47, 0.8));
+}
+
+/* Responsive */
 @media (max-width: 480px) {
-  .ar-status-bar {
-    height: 50px;
-    padding: 0 15px;
+  .nav-instruction-card {
+    top: 70px;
+    padding: 12px 16px;
+    gap: 12px;
   }
 
-  .status-text {
-    font-size: 12px;
+  .nav-icon-box {
+    width: 48px;
+    height: 48px;
   }
 
-  .close-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
+  .nav-arrow {
+    font-size: 28px;
   }
 
-  .destination-card {
-    bottom: 80px;
-    padding: 16px 24px;
-    min-width: 250px;
-  }
-
-  .destination-card h3 {
+  .nav-action {
     font-size: 18px;
-    margin-bottom: 8px;
   }
 
-  .distance {
+  .bottom-info-panel {
+    bottom: 72px;
+    padding: 12px;
+  }
+
+  .stat-value {
     font-size: 24px;
   }
 
-  .instruction {
-    font-size: 12px;
+  .control-bar {
+    height: 64px;
   }
 
-  .arrival-modal {
-    padding: 32px 28px;
-  }
-
-  .arrival-modal h2 {
-    font-size: 28px;
-    margin-bottom: 12px;
-  }
-
-  .arrival-modal p {
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-
-  .arrival-modal button {
-    padding: 12px 32px;
-    font-size: 14px;
-  }
-
-  .control-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
+  .ctrl-btn {
+    padding: 10px 20px;
   }
 }
 
-/* Landscape Mode */
-@media (max-width: 800px) and (orientation: landscape) {
-  .destination-card {
-    bottom: 20px;
-    padding: 12px 20px;
-    min-width: 240px;
+/* Landscape */
+@media (orientation: landscape) and (max-height: 500px) {
+  .nav-instruction-card {
+    top: 50px;
+    padding: 8px 12px;
   }
 
-  .destination-card h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
-  }
-
-  .distance {
-    font-size: 20px;
-  }
-
-  .ar-controls {
-    bottom: 15px;
-    right: 15px;
-    gap: 10px;
-  }
-
-  .control-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
-  }
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .ar-status-bar {
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.9),
-      rgba(0, 0, 0, 0.5)
-    );
-  }
-
-  .destination-card {
-    background: rgba(0, 0, 0, 0.9);
+  .bottom-info-panel {
+    bottom: 60px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 60%;
+    max-width: 400px;
   }
 }
 
 /* Reduce Motion */
 @media (prefers-reduced-motion: reduce) {
-  .destination-card,
-  .arrival-overlay,
+  .nav-instruction-card,
+  .bottom-info-panel,
   .arrival-modal,
-  .status-dot,
-  .close-btn,
-  .control-btn {
+  .arrival-emoji {
     animation: none;
-    transition: none;
-  }
-}
-
-/* Accessibility */
-@media (prefers-contrast: more) {
-  .ar-status-bar {
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .destination-card {
-    border: 2px solid rgba(76, 175, 80, 0.6);
-  }
-
-  .control-btn {
-    border: 2px solid rgba(76, 175, 80, 0.8);
   }
 }

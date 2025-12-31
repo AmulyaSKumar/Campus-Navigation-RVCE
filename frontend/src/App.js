@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import MapPage from "./Components/MapPage";
-import Chatbot from "./Components/chatbot";
 import { loadGoogleMapsAPI } from "./api/googleMapsLoader";
 import "./App.css";
 
@@ -35,7 +34,6 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Navbar onPlaceSelected={handlePlaceSelected} />} />
                     <Route path="/map" element={<MapPage coordinates={selectedCoordinates} locationData={selectedLocation} onPlaceSelected={handlePlaceSelected} />} />
-                    <Route path="/chat" element={<Chatbot />} />
                 </Routes>
             </div>
         </Router>

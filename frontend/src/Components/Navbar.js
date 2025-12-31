@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Search from "./Search";
+import { API_ENDPOINTS } from "../config/apiConfig";
 import "./Navbar.css";
 import logo from "./logo.png";
 
@@ -13,12 +14,7 @@ const Navbar = ({ onPlaceSelected }) => {
   const fetchTopPlaces = async () => {
     setIsLoading(true);
     try {
-      const API_BASE = (process.env.REACT_APP_API_BASE ||
-        (['localhost', '127.0.0.1'].includes(window.location.hostname)
-          ? 'http://127.0.0.1:5001'
-          : '')).replace(/\/$/, ''); // Remove trailing slash
-      console.log("API base for top places:", API_BASE || "(empty)");
-      const response = await axios.get(`${API_BASE}/api/top-places`);
+      const response = await axios.get(API_ENDPOINTS.topPlaces());
       if (Array.isArray(response.data) && response.data.length > 0) {
         setTopPlaces(response.data);
       } else {
@@ -46,11 +42,7 @@ const Navbar = ({ onPlaceSelected }) => {
 
   const handleTopPlaceClick = async (place) => {
     try {
-      const API_BASE = (process.env.REACT_APP_API_BASE ||
-        (['localhost', '127.0.0.1'].includes(window.location.hostname)
-          ? 'http://127.0.0.1:5001'
-          : '')).replace(/\/$/, ''); // Remove trailing slash
-      await axios.post(`${API_BASE}/api/search`, {
+      await axios.post(API_ENDPOINTS.search.submit(), {
         placeName: place.name,
       });
       
