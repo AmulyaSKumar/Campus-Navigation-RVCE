@@ -83,45 +83,57 @@ const Search = ({ onPlaceSelected, updateTopPlaces }) => {
 
   return (
     <div className="relative w-full max-w-md">
-      <div className="relative w-full">
+      <div className="relative w-full group">
+        {/* Search Icon */}
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 
+                        group-focus-within:text-blue-500 transition-colors">
+          🔍
+        </div>
+        
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
           placeholder="Search for a location..."
-          className="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base 
-                     transition-all duration-200 bg-gray-50 
-                     focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
-                     focus:bg-white focus:outline-none min-h-[44px]"
+          className="w-full py-3.5 pl-12 pr-12 border-2 border-gray-200 rounded-xl text-base 
+                     transition-all duration-300 bg-white shadow-sm
+                     focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                     focus:bg-white focus:outline-none focus:shadow-lg
+                     min-h-[52px] placeholder:text-gray-400"
           autoComplete="off"
         />
+        
         {isLoading && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 
                           w-5 h-5 border-2 border-gray-200 border-t-blue-500 
                           rounded-full animate-spin" />
         )}
       </div>
 
       {error && (
-        <div className="text-red-600 text-sm mt-2 p-2 bg-red-50 rounded">
-          {error}
+        <div className="text-red-600 text-sm mt-2 p-3 bg-red-50 rounded-lg border border-red-100 
+                        flex items-center gap-2">
+          <span>⚠️</span> {error}
         </div>
       )}
 
       {suggestions.length > 0 && (
-        <ul className="absolute top-full left-0 right-0 mt-1 p-0 
-                       list-none bg-white border border-gray-200 rounded-lg 
-                       shadow-lg z-[1000] max-h-72 overflow-y-auto">
+        <ul className="absolute top-full left-0 right-0 mt-2 p-2
+                       list-none bg-white border border-gray-100 rounded-xl 
+                       shadow-xl shadow-gray-200/50 z-[1000] max-h-72 overflow-y-auto
+                       backdrop-blur-sm">
           {suggestions.map((place, index) => (
             <li
               key={`${place.name}-${index}`}
               onClick={() => handleSelect(place)}
               className="py-3 px-4 cursor-pointer transition-all duration-200 
-                         text-purple-600 text-sm border-b border-gray-100
-                         min-h-[44px] flex items-center
-                         hover:bg-gray-50 hover:pl-5 hover:font-medium
-                         active:bg-gray-100"
+                         text-gray-700 text-sm rounded-lg mb-1
+                         min-h-[44px] flex items-center gap-3
+                         hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 
+                         hover:text-blue-600 hover:font-medium
+                         active:bg-blue-100"
             >
+              <span className="text-blue-400">📍</span>
               {place.name}
             </li>
           ))}

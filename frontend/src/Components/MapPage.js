@@ -587,7 +587,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden font-sans">
+    <div className="relative h-screen w-full overflow-hidden font-sans bg-slate-100">
       {isARMode && locationData ? (
         <ARScene 
           selectedLocation={locationData} 
@@ -595,56 +595,71 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
         />
       ) : (
         <>
+          {/* Enhanced Back Button */}
           <button
-            className="fixed top-16 left-4 z-[1100] w-9 h-9 flex items-center justify-center 
-                       bg-white border border-gray-200 text-gray-900 rounded-full shadow-md 
-                       cursor-pointer text-lg leading-none min-h-[44px] min-w-[44px]
-                       hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 transition-all"
+            className="fixed top-5 left-5 z-[1100] w-12 h-12 flex items-center justify-center 
+                       bg-white/95 backdrop-blur-sm border-0 text-gray-700 rounded-xl 
+                       shadow-lg shadow-gray-200/50 cursor-pointer text-xl 
+                       min-h-[48px] min-w-[48px] transition-all duration-300
+                       hover:-translate-y-1 hover:shadow-xl hover:bg-white
+                       active:translate-y-0 active:scale-95"
             onClick={handleBackAndChangeDestination}
-            title="Back"
+            title="Back to Home"
             aria-label="Go back"
           >
-            ←
+            <span className="transform hover:scale-110 transition-transform">←</span>
           </button>
 
+          {/* Enhanced Permission Banner */}
           {showPermissionBanner && (
-            <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-amber-50 text-gray-800 
-                           border border-amber-200 py-2 px-3 rounded-lg flex items-center gap-2.5 
-                           shadow-md z-[1100] text-sm" role="status" aria-live="polite">
-              <span>Location required for accurate navigation</span>
-              <button className="bg-amber-500 text-white border-none py-1.5 px-2.5 rounded-md 
-                                cursor-pointer font-semibold min-h-[32px]" 
+            <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-50 to-orange-50
+                           text-gray-800 border border-amber-200/50 py-3 px-5 rounded-xl 
+                           flex items-center gap-3 shadow-lg shadow-amber-100/50 z-[1100] text-sm
+                           backdrop-blur-sm" role="status" aria-live="polite">
+              <span className="text-amber-500 text-lg">📍</span>
+              <span className="font-medium">Location required for navigation</span>
+              <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white 
+                                border-none py-2 px-4 rounded-lg cursor-pointer font-semibold 
+                                min-h-[36px] shadow-md hover:shadow-lg hover:-translate-y-0.5
+                                transition-all duration-300" 
                       onClick={requestLocationPermission}>Enable</button>
             </div>
           )}
 
           <div id="map" className="h-full w-full z-[1]"></div>
 
-          <div className="fixed top-5 right-5 w-64 z-[1001] bg-white rounded-lg shadow-lg overflow-hidden
-                         sm:w-48 sm:top-3 sm:right-3">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => handleSidebarSearch(e.target.value)}
-              placeholder="Search..."
-              className="w-full py-2.5 px-3.5 border-none text-sm bg-white min-h-[40px]
-                        focus:outline-none focus:bg-gray-50 transition-all"
-              autoComplete="off"
-            />
-            {isSearchLoading && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 
-                             border-2 border-gray-200 border-t-purple-500 rounded-full animate-spin" />
-            )}
+          {/* Enhanced Search Sidebar */}
+          <div className="fixed top-5 right-5 w-72 z-[1001] bg-white/95 backdrop-blur-md rounded-2xl 
+                         shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100/50
+                         sm:w-56 sm:top-3 sm:right-3">
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSidebarSearch(e.target.value)}
+                placeholder="Search destination..."
+                className="w-full py-3.5 pl-12 pr-4 border-none text-sm bg-transparent min-h-[48px]
+                          focus:outline-none focus:bg-gray-50/50 transition-all placeholder:text-gray-400"
+                autoComplete="off"
+              />
+              {isSearchLoading && (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 
+                               border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin" />
+              )}
+            </div>
             {searchSuggestions.length > 0 && (
-              <ul className="list-none p-0 m-0 bg-white border-t border-gray-200 max-h-48 overflow-y-auto">
+              <ul className="list-none p-2 m-0 bg-white/95 border-t border-gray-100 max-h-52 overflow-y-auto">
                 {searchSuggestions.map((place, index) => (
                   <li
                     key={`${place.name}-${index}`}
                     onClick={() => handleSelectFromSidebar(place)}
-                    className="py-2.5 px-3.5 border-b border-gray-100 cursor-pointer text-sm text-gray-800 
-                              min-h-[40px] flex items-center transition-all
-                              hover:bg-gray-50 hover:pl-4 hover:text-purple-600 hover:font-medium"
+                    className="py-3 px-4 rounded-xl cursor-pointer text-sm text-gray-700 
+                              min-h-[44px] flex items-center gap-3 transition-all duration-200 mb-1
+                              hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 
+                              hover:text-blue-600 hover:font-medium"
                   >
+                    <span className="text-blue-400 text-xs">📍</span>
                     {place.name}
                   </li>
                 ))}
@@ -652,68 +667,90 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
             )}
           </div>
 
+          {/* Enhanced Location Image Card */}
           {locationData && locationData.image_url && (
-            <div className="absolute top-24 right-5 bg-white p-3 rounded-xl shadow-lg z-[1000] 
-                           max-w-[300px] border border-gray-100 hidden md:block">
+            <div className="absolute top-24 right-5 bg-white/95 backdrop-blur-sm p-4 rounded-2xl 
+                           shadow-xl shadow-gray-200/50 z-[1000] max-w-[280px] 
+                           border border-gray-100/50 hidden md:block
+                           hover:shadow-2xl transition-shadow duration-300">
               <img 
                 src={locationData.image_url} 
                 alt={locationData.name || 'Location'}
-                className="w-64 h-44 object-cover rounded-lg block mb-2"
+                className="w-60 h-40 object-cover rounded-xl block mb-3"
               />
-              <h3 className="m-0 text-base text-gray-900 font-semibold px-1">{locationData.name}</h3>
+              <h3 className="m-0 text-base text-gray-800 font-semibold px-1 
+                            bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text">
+                {locationData.name}
+              </h3>
             </div>
           )}
 
 
+          {/* Enhanced Error Toast */}
           {error && (
-            <div className="absolute top-5 left-1/2 -translate-x-1/2 bg-red-500 text-white 
-                           py-3 px-6 rounded-lg text-sm z-[2000] shadow-md">
-              {error}
+            <div className="absolute top-5 left-1/2 -translate-x-1/2 
+                           bg-gradient-to-r from-red-500 to-rose-500 text-white 
+                           py-3.5 px-6 rounded-xl text-sm z-[2000] shadow-lg shadow-red-200/50
+                           flex items-center gap-2 font-medium">
+              <span>⚠️</span> {error}
             </div>
           )}
 
+          {/* Enhanced Speed Panel */}
           {isNavigating && (
-            <div className="speed-panel">
-              <div className="speed-info">
-                <div className="current-speed">
-                  Current Speed: {currentSpeed} km/h
+            <div className="fixed top-20 left-5 bg-white/95 backdrop-blur-sm rounded-2xl 
+                           shadow-lg shadow-gray-200/50 p-4 z-[1000] border border-gray-100/50">
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <span className="text-blue-500">🚗</span>
+                  <span className="font-medium">{currentSpeed} km/h</span>
                 </div>
-                <div className="average-speed">
-                  Average Speed: {averageSpeed} km/h
+                <div className="flex items-center gap-2 text-gray-600">
+                  <span className="text-green-500">📊</span>
+                  <span>Avg: {averageSpeed} km/h</span>
                 </div>
                 {locationAccuracy && (
-                  <div className="location-accuracy">
-                    GPS Accuracy: ±{Math.round(locationAccuracy)}m
+                  <div className="flex items-center gap-2 text-gray-500 text-xs">
+                    <span>📡</span>
+                    <span>GPS: ±{Math.round(locationAccuracy)}m</span>
                   </div>
                 )}
               </div>
             </div>
           )}
 
+          {/* Enhanced Directions Panel */}
           {isNavigating && directions.length > 0 && (
-            <div className="absolute top-5 left-5 w-72 max-w-[90%] max-h-[calc(100vh-100px)] 
-                           bg-white rounded-xl shadow-lg p-4 z-[1000] overflow-hidden flex flex-col
-                           md:bottom-24 md:top-auto md:left-1/2 md:-translate-x-1/2 md:w-[90%] md:max-h-[40vh]
+            <div className="absolute top-5 left-20 w-80 max-w-[85%] max-h-[calc(100vh-120px)] 
+                           bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl shadow-gray-200/50 
+                           p-5 z-[1000] overflow-hidden flex flex-col border border-gray-100/50
+                           md:bottom-28 md:top-auto md:left-1/2 md:-translate-x-1/2 md:w-[90%] md:max-h-[40vh]
                            sm:hidden">
-              <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
-                <h3 className="m-0 text-lg text-gray-800 font-semibold">Directions</h3>
+              <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                <h3 className="m-0 text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 
+                              bg-clip-text text-transparent">Directions</h3>
                 {totalDistance !== null && (
-                  <div className="flex items-center gap-2 text-gray-600 text-sm">
-                    <span>{formatDistance(totalDistance)}</span>
-                    <span className="text-gray-400">•</span>
-                    <span>{formatTime(estimatedTime)}</span>
+                  <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full">
+                    <span className="text-blue-600 text-sm font-semibold">{formatDistance(totalDistance)}</span>
+                    <span className="text-blue-300">•</span>
+                    <span className="text-blue-500 text-sm">{formatTime(estimatedTime)}</span>
                   </div>
                 )}
               </div>
-              <div className="overflow-y-auto flex-grow pr-2">
+              <div className="overflow-y-auto flex-grow pr-2 space-y-1">
                 {directions.map((direction, index) => (
-                  <div key={index} className="flex items-start py-3 border-b border-gray-100 last:border-b-0">
-                    <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mr-3 text-lg text-blue-500">
+                  <div key={index} className="flex items-start py-3 px-3 rounded-xl transition-colors
+                                             hover:bg-gray-50 group">
+                    <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center mr-3 
+                                  text-lg bg-blue-100 text-blue-600 rounded-lg
+                                  group-hover:bg-blue-500 group-hover:text-white transition-colors">
                       {getDirectionIcon(direction.type)}
                     </div>
                     <div className="flex-grow flex flex-col gap-1">
-                      <span className="text-sm text-gray-800 leading-relaxed">{direction.text}</span>
-                      <span className="text-xs text-gray-600">
+                      <span className="text-sm text-gray-700 leading-relaxed font-medium">
+                        {direction.text}
+                      </span>
+                      <span className="text-xs text-gray-400 font-medium">
                         {formatDistance(direction.distance)}
                       </span>
                     </div>
@@ -723,32 +760,43 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
             </div>
           )}
           
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-3 z-[1000] 
-                         flex-wrap justify-center w-[90%] max-w-lg px-2.5
-                         sm:bottom-2.5 sm:gap-1.5 sm:w-full">
+          {/* Enhanced Action Buttons */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-[1000] 
+                         flex-wrap justify-center w-[90%] max-w-lg px-4
+                         sm:bottom-4 sm:gap-2 sm:w-full">
             <button 
-              className="py-3 px-6 bg-blue-500 text-white border-none rounded-3xl text-base font-medium 
-                        cursor-pointer shadow-md flex-1 min-w-[140px] min-h-[44px] 
-                        flex items-center justify-center transition-all
-                        hover:bg-blue-600 hover:shadow-lg hover:-translate-y-0.5
-                        active:translate-y-0 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-60
-                        sm:py-2.5 sm:px-3 sm:text-xs sm:min-w-[100px]"
+              className="py-4 px-8 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 
+                        text-white border-none rounded-2xl text-base font-semibold 
+                        cursor-pointer shadow-lg shadow-blue-200/50 flex-1 min-w-[160px] min-h-[52px] 
+                        flex items-center justify-center gap-2 transition-all duration-300
+                        hover:shadow-xl hover:shadow-blue-300/50 hover:-translate-y-1 hover:scale-[1.02]
+                        active:translate-y-0 active:scale-100
+                        disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
+                        disabled:opacity-60 disabled:shadow-none
+                        sm:py-3 sm:px-4 sm:text-sm sm:min-w-[120px]"
               onClick={handleGetDirections}
               disabled={!coordinates}
             >
-              {isNavigating ? "Recalculate Route" : "Start Navigation"}
+              <span>{isNavigating ? "🔄" : "🧭"}</span>
+              {isNavigating ? "Recalculate" : "Start Navigation"}
             </button>
             
             <button 
-              className="btn-ar flex-1 min-w-[140px] sm:py-2.5 sm:px-3 sm:text-xs sm:min-w-[100px]"
+              className="py-4 px-8 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 
+                        text-white border-none rounded-2xl text-base font-semibold 
+                        cursor-pointer shadow-lg shadow-purple-200/50 flex-1 min-w-[160px] min-h-[52px] 
+                        flex items-center justify-center gap-2 transition-all duration-300
+                        hover:shadow-xl hover:shadow-purple-300/50 hover:-translate-y-1 hover:scale-[1.02]
+                        active:translate-y-0 active:scale-100
+                        disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
+                        disabled:opacity-60 disabled:shadow-none
+                        sm:py-3 sm:px-4 sm:text-sm sm:min-w-[120px]"
               onClick={handleStartAR}
               disabled={!coordinates}
               title="Launch AR Navigation"
             >
-              AR Navigation
-            </button> 
-
-
+              <span>📱</span> AR Navigation
+            </button>
           </div>
         </>
       )}
