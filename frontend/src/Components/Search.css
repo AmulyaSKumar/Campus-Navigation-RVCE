@@ -1,15 +1,18 @@
-
+/* ====== SEARCH CONTAINER ====== */
 .search-container {
   position: relative;
   width: 100%;
   max-width: 500px;
+  box-sizing: border-box;
 }
 
 .search-input-wrapper {
   position: relative;
   width: 100%;
+  box-sizing: border-box;
 }
 
+/* ====== SEARCH INPUT ====== */
 .search-input {
   width: 100%;
   padding: 12px 16px;
@@ -18,6 +21,8 @@
   font-size: 16px;
   outline: none;
   transition: border-color 0.2s;
+  box-sizing: border-box;
+  min-height: 44px;
 }
 
 .search-input:focus {
@@ -25,6 +30,7 @@
   box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
 }
 
+/* ====== LOADING SPINNER ====== */
 .loading-spinner {
   position: absolute;
   right: 12px;
@@ -38,6 +44,12 @@
   animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* ====== SUGGESTIONS DROPDOWN ====== */
 .suggestions-list {
   position: absolute;
   top: 100%;
@@ -51,6 +63,9 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .suggestion-item {
@@ -58,13 +73,24 @@
   cursor: pointer;
   transition: background-color 0.2s;
   color: #8573ea;
-  
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .suggestion-item:hover {
   background-color: #f5f5f5;
+  padding-left: 20px;
+  font-weight: 500;
 }
 
+.suggestion-item:active {
+  background-color: #efefef;
+}
+
+/* ====== ERROR MESSAGE ====== */
 .error-message {
   color: #d93025;
   font-size: 14px;
@@ -74,45 +100,174 @@
   border-radius: 4px;
 }
 
-@keyframes spin {
-  0% { transform: translateY(-50%) rotate(0deg); }
-  100% { transform: translateY(-50%) rotate(360deg); }
+/* ====== RESPONSIVE DESIGN ====== */
+
+/* Large Screens (1024px+) */
+@media screen and (min-width: 1024px) {
+  .search-container {
+    max-width: 500px;
+  }
+  
+  .search-input {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
 }
 
-/* New Media Queries for Search.css */
-@media screen and (max-width: 1024px) {
+/* Tablets (768px - 1023px) */
+@media screen and (max-width: 1023px) {
   .search-container {
     max-width: 400px;
   }
   
   .search-input {
-    padding: 10px 14px;
+    padding: 11px 14px;
     font-size: 15px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .search-container {
-    max-width: 300px;
+    min-height: 42px;
   }
   
   .suggestion-item {
     padding: 10px 14px;
+    font-size: 13px;
+    min-height: 40px;
+  }
+  
+  .suggestions-list {
+    max-height: 250px;
   }
 }
 
-@media screen and (max-width: 480px) {
+/* Large Phones (600px - 767px) */
+@media screen and (max-width: 767px) {
   .search-container {
-    max-width: 250px;
+    max-width: 100%;
+    width: 90%;
+    margin: 0 auto;
   }
   
   .search-input {
-    padding: 8px 12px;
+    padding: 10px 13px;
     font-size: 14px;
+    min-height: 40px;
+  }
+  
+  .loading-spinner {
+    width: 18px;
+    height: 18px;
   }
   
   .suggestion-item {
-    padding: 8px 12px;
+    padding: 9px 12px;
+    font-size: 12px;
+    min-height: 38px;
+  }
+  
+  .suggestions-list {
+    max-height: 200px;
+  }
+}
+
+/* Standard Phones (480px - 599px) */
+@media screen and (max-width: 599px) {
+  .search-container {
+    max-width: 100%;
+    width: 95%;
+    margin: 0 auto;
+  }
+  
+  .search-input {
+    padding: 10px 12px;
+    font-size: 14px;
+    min-height: 40px;
+    border-radius: 6px;
+  }
+  
+  .loading-spinner {
+    width: 16px;
+    height: 16px;
+    right: 10px;
+  }
+  
+  .suggestion-item {
+    padding: 9px 11px;
+    font-size: 12px;
+    min-height: 38px;
+  }
+  
+  .suggestions-list {
+    max-height: 180px;
+    border-radius: 6px;
+  }
+  
+  .error-message {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
+/* Small Phones (under 480px) */
+@media screen and (max-width: 479px) {
+  .search-container {
+    max-width: 100%;
+    width: 95%;
+    margin: 0 auto;
+  }
+  
+  .search-input {
+    padding: 9px 11px;
+    font-size: 13px;
+    min-height: 40px;
+    border-radius: 6px;
+  }
+  
+  .search-input::placeholder {
+    font-size: 12px;
+  }
+  
+  .loading-spinner {
+    width: 16px;
+    height: 16px;
+    right: 9px;
+  }
+  
+  .suggestion-item {
+    padding: 8px 10px;
+    font-size: 11px;
+    min-height: 36px;
+  }
+  
+  .suggestions-list {
+    max-height: 160px;
+    border-radius: 6px;
+  }
+  
+  .error-message {
+    font-size: 11px;
+    padding: 5px;
+    margin-top: 6px;
+  }
+}
+
+/* Extra Small Phones (under 375px) */
+@media screen and (max-width: 375px) {
+  .search-container {
+    width: 100%;
+  }
+  
+  .search-input {
+    padding: 8px 10px;
+    font-size: 12px;
+    min-height: 38px;
+  }
+  
+  .suggestion-item {
+    padding: 7px 9px;
+    font-size: 11px;
+    min-height: 34px;
+  }
+  
+  .suggestions-list {
+    max-height: 150px;
   }
 }
 
