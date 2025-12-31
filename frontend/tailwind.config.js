@@ -69,11 +69,21 @@ module.exports = {
       animation: {
         'spin-slow': 'spin 1s linear infinite',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
+        'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
       },
       keyframes: {
         'pulse-glow': {
           '0%, 100%': { boxShadow: '0 0 20px rgba(118, 255, 3, 0.4)' },
           '50%': { boxShadow: '0 0 40px rgba(118, 255, 3, 0.8)' },
+        },
+        'pulse-subtle': {
+          '0%, 100%': { opacity: '0.9' },
+          '50%': { opacity: '1' },
+        },
+        'bounce-gentle': {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-2px)' },
         }
       }
     },

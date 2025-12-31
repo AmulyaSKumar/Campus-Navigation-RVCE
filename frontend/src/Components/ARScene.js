@@ -656,7 +656,7 @@ const ARScene = ({ selectedLocation, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-black z-[9999] overflow-hidden font-google">
+    <div className="fixed inset-0 w-full h-full bg-black z-[9999] overflow-hidden font-sans">
       {/* Camera Stream */}
       <video
         ref={videoRef}
@@ -672,115 +672,142 @@ const ARScene = ({ selectedLocation, onClose }) => {
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-10 pointer-events-none"></canvas>
 
       {/* Top Status Bar */}
-      <div className="absolute top-0 left-0 right-0 h-16 px-4 safe-top flex justify-between items-center 
-                      bg-gradient-to-b from-black/60 to-transparent z-20">
-        <div className="flex items-center gap-2 bg-black/50 py-2 px-4 rounded-full text-white text-sm font-medium backdrop-blur-lg">
-          <span className={`w-2 h-2 rounded-full ${
-            arStatus === 'tracking' ? 'bg-green-400 shadow-[0_0_10px_#00E676]' :
-            arStatus === 'error' ? 'bg-red-500' : 'bg-orange-400'
+      <div className="absolute top-0 left-0 right-0 h-18 px-6 safe-top flex justify-between items-center
+                      bg-gradient-to-b from-black/80 via-black/60 to-transparent z-20 backdrop-blur-sm">
+        <div className="flex items-center gap-3 bg-black/70 py-3 px-5 rounded-2xl text-white text-sm font-semibold backdrop-blur-xl
+                        border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+          <span className={`w-3 h-3 rounded-full animate-pulse ${
+            arStatus === 'tracking' ? 'bg-green-400 shadow-[0_0_12px_#00E676]' :
+            arStatus === 'error' ? 'bg-red-500 shadow-[0_0_12px_#EF4444]' : 'bg-blue-400 shadow-[0_0_12px_#60A5FA]'
           }`}></span>
-          <span>
-            {arStatus === "initializing" && "Starting..."}
-            {arStatus === "tracking" && "Live View"}
+          <span className="drop-shadow-lg">
+            {arStatus === "initializing" && "Initializing AR..."}
+            {arStatus === "tracking" && "AR Navigation Active"}
             {arStatus === "error" && "Camera Error"}
           </span>
         </div>
-        <button className="w-11 h-11 rounded-full bg-primary/80 backdrop-blur-lg border-none text-white 
-                          text-xl flex items-center justify-center cursor-pointer
-                          hover:bg-primary active:scale-95 transition-all" onClick={handleClose}>✕</button>
+        <button className="w-12 h-12 rounded-2xl bg-red-600/80 backdrop-blur-xl border-2 border-red-400/50 text-white
+                          text-xl flex items-center justify-center cursor-pointer shadow-lg
+                          hover:bg-red-500/90 hover:shadow-red-500/30 active:scale-95 transition-all
+                          hover:border-red-300/70" onClick={handleClose}>✕</button>
       </div>
 
-      {/* Navigation Instruction Card - Google Maps Style */}
+      {/* Navigation Instruction Card - Unity Style */}
       {selectedLocation && !arrived && (
-        <div className="absolute top-20 safe-top left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-ar 
-                        py-3 px-5 flex items-center gap-4 min-w-[260px] max-w-[90%] z-30">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-primaryDark 
-                         flex items-center justify-center shadow-md">
-            {turnDirection === "straight" && <span className="text-white text-3xl font-bold">↑</span>}
-            {turnDirection === "right" && <span className="text-white text-3xl font-bold">↱</span>}
-            {turnDirection === "left" && <span className="text-white text-3xl font-bold">↰</span>}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/90 backdrop-blur-xl rounded-2xl
+                        py-6 px-8 flex flex-col items-center gap-3 min-w-[280px] max-w-[90%] z-40 border-2 border-blue-400/30
+                        shadow-[0_0_30px_rgba(59,130,246,0.3)] animate-pulse-subtle">
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-400 via-blue-600 to-blue-800
+                         flex items-center justify-center shadow-2xl border-2 border-blue-300/50
+                         relative overflow-hidden">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-300/20 to-transparent rounded-2xl"></div>
+
+            {turnDirection === "straight" && (
+              <svg className="w-14 h-14 text-white relative z-10 drop-shadow-lg animate-bounce-gentle" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 4L13.5 9.5H16.5L14 12L15 16.5L12 14L9 16.5L10 12L7.5 9.5H10.5L12 4Z"/>
+              </svg>
+            )}
+            {turnDirection === "right" && (
+              <svg className="w-14 h-14 text-white relative z-10 drop-shadow-lg animate-bounce-gentle" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 6L14 12L12 12L12 18L10 18L10 12L8 12L8 6Z" transform="rotate(90 11 12)"/>
+              </svg>
+            )}
+            {turnDirection === "left" && (
+              <svg className="w-14 h-14 text-white relative z-10 drop-shadow-lg animate-bounce-gentle" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 6L14 12L12 12L12 18L10 18L10 12L8 12L8 6Z" transform="rotate(-90 11 12)"/>
+              </svg>
+            )}
           </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-bold text-gray-900 text-lg">{getTurnText(getCurrentBearing()).text}</span>
-            <span className="text-sm text-gray-500">toward {selectedLocation.name}</span>
+          <div className="flex flex-col items-center gap-1">
+            <span className="font-bold text-white text-lg drop-shadow-2xl tracking-wide text-center">{getTurnText(getCurrentBearing()).text}</span>
+            <span className="text-sm text-blue-200 drop-shadow-lg font-medium text-center">→ {selectedLocation.name}</span>
           </div>
         </div>
       )}
 
       {/* Bottom Info Panel */}
       {selectedLocation && !arrived && (
-        <div className="absolute bottom-28 safe-bottom left-4 right-4 bg-white/95 backdrop-blur-lg 
-                        rounded-3xl shadow-ar p-5 z-30">
-          <div className="flex justify-around items-center mb-4">
+        <div className="absolute bottom-20 safe-bottom left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-xl
+                        rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.2)] p-4 z-30 border border-blue-400/20 max-w-sm">
+          <div className="flex justify-around items-center mb-3">
             <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold text-primary">{formatDistance(distance)}</span>
-              <span className="text-xs text-gray-400 uppercase tracking-wider">Distance</span>
+              <span className="text-lg font-bold text-blue-300 drop-shadow-lg">{formatDistance(distance)}</span>
+              <span className="text-xs text-blue-200 uppercase tracking-wider font-semibold">Distance</span>
             </div>
-            <div className="w-px h-10 bg-gray-200"></div>
+            <div className="w-px h-8 bg-blue-400/30"></div>
             <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold text-gray-700">{eta || "--"}</span>
-              <span className="text-xs text-gray-400 uppercase tracking-wider">Walk time</span>
+              <span className="text-lg font-bold text-green-300 drop-shadow-lg">{eta || "--"}</span>
+              <span className="text-xs text-green-200 uppercase tracking-wider font-semibold">Walk time</span>
             </div>
           </div>
-          
-          <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
+
+          <div className="flex items-center gap-3 pt-3 border-t border-blue-400/20">
             {selectedLocation.image_url && (
-              <img 
-                src={selectedLocation.image_url} 
+              <img
+                src={selectedLocation.image_url}
                 alt=""
-                className="w-12 h-12 rounded-lg object-cover"
+                className="w-10 h-10 rounded-lg object-cover border border-blue-400/30"
                 onError={(e) => e.target.style.display = 'none'}
               />
             )}
-            <div className="flex flex-col">
-              <span className="font-semibold text-gray-900 text-sm">{selectedLocation.name}</span>
-              <span className="text-xs text-gray-400">
+            <div className="flex flex-col flex-1">
+              <span className="font-bold text-white text-sm drop-shadow-lg">{selectedLocation.name}</span>
+              <span className="text-xs text-blue-200 drop-shadow-md font-mono">
                 {selectedLocation.coordinates[0].toFixed(4)}°, {selectedLocation.coordinates[1].toFixed(4)}°
               </span>
             </div>
+            <button
+              className="flex items-center justify-center gap-1 bg-blue-600/80 text-white py-2 px-3
+                         rounded-lg border border-blue-400/50 hover:bg-blue-500/90 transition-all duration-200
+                         shadow-lg hover:shadow-blue-500/25 font-semibold text-xs"
+              onClick={() => compassHeadingRef.current = 0}
+              title="Calibrate Compass"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Calibrate</span>
+            </button>
           </div>
         </div>
       )}
 
       {/* Arrival Celebration */}
       {arrived && (
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl p-8 text-center max-w-sm mx-4 shadow-2xl animate-bounce">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+        <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-black/95 backdrop-blur-xl rounded-3xl p-8 text-center max-w-sm mx-4
+                          shadow-[0_0_50px_rgba(34,197,94,0.3)] border-2 border-green-400/30 animate-pulse-subtle">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-green-400 via-green-500 to-green-600
+                           flex items-center justify-center shadow-2xl border-2 border-green-300/50
+                           relative overflow-hidden">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-green-300/30 to-transparent rounded-2xl animate-pulse"></div>
+              <svg className="w-12 h-12 text-white relative z-10 drop-shadow-2xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">You've Arrived!</h2>
-            <p className="text-gray-600 mb-4">{selectedLocation.name}</p>
+            <h2 className="text-3xl font-bold text-white mb-3 drop-shadow-2xl tracking-wide">ARRIVED!</h2>
+            <p className="text-green-200 mb-6 text-lg font-semibold drop-shadow-lg">🎯 {selectedLocation.name}</p>
             {selectedLocation.image_url && (
-              <img 
-                src={selectedLocation.image_url} 
+              <img
+                src={selectedLocation.image_url}
                 alt=""
-                className="w-full h-32 object-cover rounded-xl mb-4"
+                className="w-full h-36 object-cover rounded-2xl mb-6 border-2 border-green-400/30 shadow-lg"
                 onError={(e) => e.target.style.display = 'none'}
               />
             )}
-            <button className="w-full py-3 bg-primary text-white font-semibold rounded-xl 
-                              hover:bg-primaryDark transition-colors" onClick={handleClose}>End Navigation</button>
+            <button className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-2xl
+                              hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-2xl
+                              border-2 border-green-300/50 hover:border-green-200/70 text-lg tracking-wide
+                              hover:shadow-green-500/30 active:scale-95" onClick={handleClose}>
+              EXIT NAVIGATION
+            </button>
           </div>
         </div>
       )}
 
-      {/* Bottom Control Bar */}
-      <div className="absolute bottom-4 safe-bottom left-1/2 -translate-x-1/2 flex gap-4 z-40">
-        <button className="flex flex-col items-center gap-1 bg-accent/90 text-white py-2.5 px-5 
-                          rounded-2xl backdrop-blur-lg min-h-[56px] border-none cursor-pointer
-                          hover:bg-accent active:scale-95 transition-all" onClick={handleClose}>
-          <span className="text-lg">✕</span>
-          <small className="text-[10px] uppercase tracking-wider">Exit</small>
-        </button>
-        <button className="flex flex-col items-center gap-1 bg-primary/20 text-primary py-2.5 px-5 
-                          rounded-2xl backdrop-blur-lg min-h-[56px] border border-primary/30 cursor-pointer
-                          hover:bg-primary/30 active:scale-95 transition-all" 
-                onClick={() => compassHeadingRef.current = 0}>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <small className="text-[10px] uppercase tracking-wider">Calibrate</small>
-        </button>
-      </div>
+      {/* Arrival Celebration */}
     </div>
   );
 };

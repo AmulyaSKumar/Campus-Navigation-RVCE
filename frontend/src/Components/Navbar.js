@@ -106,18 +106,6 @@ const Navbar = ({ onPlaceSelected }) => {
         {/* Buttons */}
         <div className="flex flex-col gap-2 w-full max-w-sm md:flex-row md:gap-3">
           <button 
-            className="flex-1 py-2.5 md:py-3 px-4 md:px-5 bg-bgCard text-textBody font-medium rounded-xl 
-                       border-2 border-gray-200 shadow-sm text-sm md:text-base
-                       hover:bg-primary/5 hover:border-primary/30 hover:-translate-y-0.5 hover:shadow-md
-                       active:translate-y-0 transition-all duration-200 
-                       min-h-[44px] md:min-h-[48px] flex items-center justify-center gap-2"
-            onClick={requestLocationFromNavbar}
-          >
-            <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
-            Enable Location
-          </button>
-
-          <button 
             className="flex-1 py-2.5 md:py-3 px-4 md:px-5 bg-primary 
                        text-white font-semibold rounded-xl shadow-button text-sm md:text-base
                        hover:bg-primaryDark hover:-translate-y-0.5 hover:shadow-lg

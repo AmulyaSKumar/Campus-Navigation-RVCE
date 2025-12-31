@@ -767,11 +767,11 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
             </button>
             
             <button 
-              className="py-3 md:py-4 px-3 md:px-6 bg-accent 
+              className="py-3 md:py-4 px-3 md:px-6 bg-primary 
                         text-white border-none rounded-xl md:rounded-2xl text-sm md:text-base font-semibold 
                         cursor-pointer shadow-button flex-1 min-h-[50px] md:min-h-[52px] 
                         flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-200
-                        hover:opacity-90 hover:-translate-y-0.5 hover:shadow-lg
+                        hover:bg-primaryDark hover:-translate-y-0.5 hover:shadow-lg
                         active:translate-y-0
                         disabled:bg-gray-300 disabled:cursor-not-allowed 
                         disabled:opacity-60 disabled:shadow-none"
