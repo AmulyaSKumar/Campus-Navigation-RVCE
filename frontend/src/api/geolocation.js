@@ -1,7 +1,7 @@
 // src/api/geolocation.js
 
 // FAKE LOCATION: ISE Dept RVCE - Set to true for demo/presentation
-const USE_FAKE_LOCATION = true;
+const USE_FAKE_LOCATION = false;
 const FAKE_COORDS = {
     latitude: 12.923383,   // ISE Dept RVCE
     longitude: 77.501071

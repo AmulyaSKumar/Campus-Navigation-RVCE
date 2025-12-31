@@ -11,7 +11,7 @@ import "./MapPage.css";
 
 // ============ FAKE LOCATION FOR DEMO ============
 // Set to true for presentation/demo mode
-const USE_FAKE_LOCATION = true;
+const USE_FAKE_LOCATION = false;
 const FAKE_LOCATION = {
   coords: {
     latitude: 12.923383,   // ISE Dept RVCE
