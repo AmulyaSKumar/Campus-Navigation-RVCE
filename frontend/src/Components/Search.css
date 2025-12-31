@@ -1,9 +1,16 @@
+/* ====== BOX SIZING RESET ====== */
+.search-container,
+.search-container *,
+.search-container *::before,
+.search-container *::after {
+  box-sizing: border-box;
+}
+
 /* ====== SEARCH CONTAINER ====== */
 .search-container {
   position: relative;
   width: 100%;
   max-width: 500px;
-  box-sizing: border-box;
 }
 
 .search-input-wrapper {

@@ -1,3 +1,11 @@
+/* ====== BOX SIZING RESET ====== */
+.map-page,
+.map-page *,
+.map-page *::before,
+.map-page *::after {
+  box-sizing: border-box;
+}
+
 /* ====== MAP PAGE STRUCTURE ====== */
 .map-page {
   position: relative;
@@ -5,7 +13,6 @@
   width: 100%;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  box-sizing: border-box;
 }
 
 .map-container {

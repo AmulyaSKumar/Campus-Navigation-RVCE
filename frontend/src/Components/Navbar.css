@@ -1,3 +1,11 @@
+/* ====== BOX SIZING RESET ====== */
+.navbar-container,
+.navbar-container *,
+.navbar-container *::before,
+.navbar-container *::after {
+    box-sizing: border-box;
+}
+
 /* ====== NAVBAR CONTAINER ====== */
 .navbar-container {
     display: flex;
@@ -7,7 +15,6 @@
     width: 100%;
     background: #ffffff;
     padding: 16px;
-    box-sizing: border-box;
 }
 
 /* ====== NAVBAR BOX ====== */

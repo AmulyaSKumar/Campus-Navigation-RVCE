@@ -1,4 +1,11 @@
 /* AR Scene Container - Google Maps Live View Style */
+.ar-scene-container,
+.ar-scene-container *,
+.ar-scene-container *::before,
+.ar-scene-container *::after {
+  box-sizing: border-box;
+}
+
 .ar-scene-container {
   position: fixed;
   top: 0;
