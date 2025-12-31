@@ -720,10 +720,10 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Directions Panel */}
           {isNavigating && directions.length > 0 && (
-            <div className=\"fixed bottom-20 left-3 right-3 md:absolute md:top-5 md:left-20 md:bottom-auto md:right-auto 
+            <div className="fixed bottom-20 left-3 right-3 md:absolute md:top-5 md:left-20 md:bottom-auto md:right-auto 
                            w-auto md:w-72 lg:w-80 max-h-[30vh] md:max-h-[calc(100vh-120px)] 
                            bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl shadow-gray-200/50 
-                           p-3 md:p-5 z-[999] overflow-hidden flex flex-col border border-gray-100/50\">"
+                           p-3 md:p-5 z-[999] overflow-hidden flex flex-col border border-gray-100/50">
               <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
                 <h3 className="m-0 text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 
                               bg-clip-text text-transparent">Directions</h3>
