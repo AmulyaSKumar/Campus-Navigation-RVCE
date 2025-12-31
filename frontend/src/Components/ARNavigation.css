@@ -1,4 +1,4 @@
-/* AR Navigation Component Styles */
+/* AR Navigation Component Styles - AR-Native Overlay Design */
 .ar-navigation-container {
   position: fixed;
   top: 0;
@@ -7,24 +7,40 @@
   height: 100vh;
   background: #000;
   z-index: 1000;
-  font-family: 'Inter', sans-serif;
-  color: #F8FAFC;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #FFFFFF;
+  overflow: hidden;
+  touch-action: manipulation;
 }
 
-/* Status Bar */
+/* ============================================
+   GLASSMORPHISM BASE STYLES
+   ============================================ */
+.glass-panel {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+/* ============================================
+   STATUS BAR - Minimal Top Bar
+   ============================================ */
 .ar-status-bar {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(10px);
+  height: 44px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  z-index: 10;
+  padding: 0 16px;
+  padding-top: env(safe-area-inset-top, 0);
+  z-index: 100;
 }
 
 .status-indicator {
@@ -38,44 +54,54 @@
   height: 8px;
   border-radius: 50%;
   background: #64748B;
+  transition: background 0.3s ease;
 }
 
 .status-dot.initializing {
-  background: #F59E0B;
-  animation: pulse 2s infinite;
+  background: #facc15;
+  animation: pulse-dot 1.5s ease-in-out infinite;
 }
 
 .status-dot.tracking {
-  background: #10B981;
+  background: #4ade80;
 }
 
 .status-dot.error {
-  background: #EF4444;
+  background: #f87171;
 }
 
 .status-text {
-  font-size: 0.9375rem;
+  font-size: 13px;
   font-weight: 500;
-  color: #F8FAFC;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 .close-button {
-  background: rgba(37, 99, 235, 0.2);
-  border: 1px solid #2563EB;
-  color: #2563EB;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 1.125rem;
-  font-weight: 600;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 18px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.close-button:hover {
-  background: rgba(37, 99, 235, 0.3);
+.close-button:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* AR Viewport */
+/* ============================================
+   AR VIEWPORT
+   ============================================ */
 .ar-viewport {
   position: relative;
   width: 100%;
@@ -103,7 +129,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
 
 .ar-canvas {
@@ -115,320 +141,479 @@
   pointer-events: none;
 }
 
-/* Navigation Instruction Card */
-.nav-instruction-card {
-  position: absolute;
-  top: 50%;
+/* ============================================
+   TOP DIRECTION OVERLAY (EDGE-ANCHORED)
+   ============================================ */
+.direction-overlay {
+  position: fixed;
+  top: 60px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 20px 28px;
+  transform: translateX(-50%);
+  max-width: 80%;
+  z-index: 50;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  border: 1px solid rgba(100, 116, 139, 0.2);
-  min-width: 120px;
+  padding-top: env(safe-area-inset-top, 0);
+  animation: slideInDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.3s ease;
 }
 
-.nav-direction-icon {
-  width: 70px;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #2563EB;
-  border-radius: 16px;
-  font-size: 3rem;
+.direction-overlay.fade-out {
+  opacity: 0.5;
 }
 
-.direction-icon {
-  color: #F8FAFC;
-  font-weight: bold;
+.direction-arrow {
+  font-size: 56px;
+  line-height: 1;
+  text-shadow: 0 0 30px currentColor, 0 0 60px currentColor, 0 4px 12px rgba(0,0,0,0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.nav-text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+.direction-arrow.aligned {
+  color: #4ade80;
+  animation: pulse-glow-green 2s ease-in-out infinite;
 }
 
-.nav-action {
-  font-size: 0.85rem;
+.direction-arrow.neutral {
+  color: #60a5fa;
+}
+
+.direction-arrow.off-route {
+  color: #facc15;
+}
+
+.direction-arrow.wrong {
+  color: #f87171;
+}
+
+.direction-text {
+  font-size: 22px;
   font-weight: 600;
-  color: #F8FAFC;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 8px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.nav-destination {
-  font-size: 0.7rem;
-  color: #64748B;
-}
-
-/* Compass Ring */
-.compass-ring {
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid rgba(100, 116, 139, 0.3);
-}
-
-.compass-needle {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.compass-n {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #EF4444;
-}
-
-/* Bottom Info Panel */
-.bottom-info-panel {
-  position: absolute;
-  bottom: 90px;
-  left: 20px;
-  right: 20px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 16px;
-  border: 1px solid rgba(100, 116, 139, 0.2);
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-
-.info-value {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #F8FAFC;
-}
-
-.info-label {
-  font-size: 0.8125rem;
-  color: #64748B;
-  margin-top: 2px;
-}
-
-.info-divider {
-  width: 1px;
-  height: 30px;
-  background: rgba(100, 116, 139, 0.3);
-}
-
-.destination-preview {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.destination-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.destination-details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.destination-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #F8FAFC;
-}
-
-.destination-coords {
-  font-size: 0.8125rem;
-  color: #64748B;
-}
-
-/* Arrival Popup */
-.arrival-popup {
+/* ============================================
+   CENTER RETICLE (MINIMAL)
+   ============================================ */
+.center-reticle {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 24px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.center-reticle.visible {
+  opacity: 1;
+}
+
+.center-reticle.aligned {
+  background: #4ade80;
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.6);
+}
+
+/* ============================================
+   BOTTOM INFO BAR (EDGE-ANCHORED)
+   ============================================ */
+.bottom-info-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 14px 18px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0));
+  z-index: 50;
+  animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-bar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.destination-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.destination-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.destination-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.stat-icon {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  animation: distance-countdown 0.3s ease;
+}
+
+/* ============================================
+   CALIBRATION TOAST (NON-INTRUSIVE)
+   ============================================ */
+.calibration-toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 200;
+  animation: fadeInScale 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calibration-toast.hidden {
+  animation: fadeOutScale 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.calibration-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #60a5fa;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.calibration-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================================
+   ARRIVAL OVERLAY
+   ============================================ */
+.arrival-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  animation: fadeIn 0.3s ease;
+}
+
+.arrival-card {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 28px;
   text-align: center;
-  border: 1px solid rgba(100, 116, 139, 0.2);
   max-width: 300px;
-  width: 90%;
-}
-
-.arrival-content h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #F8FAFC;
-  margin: 12px 0 8px 0;
-}
-
-.arrival-content p {
-  font-size: 1rem;
-  color: #64748B;
-  margin-bottom: 16px;
+  width: 85%;
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .arrival-icon {
-  font-size: 3rem;
+  font-size: 48px;
+  margin-bottom: 12px;
+  animation: bounce 0.5s ease;
+}
+
+.arrival-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #4ade80;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.arrival-destination {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 20px 0;
 }
 
 .arrival-image {
   width: 100%;
-  height: 120px;
-  border-radius: 12px;
+  height: 100px;
+  border-radius: 14px;
   object-fit: cover;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.arrival-popup button {
-  background: #2563EB;
-  color: #F8FAFC;
+.arrival-button {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
   border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
-  font-size: 1rem;
+  border-radius: 14px;
+  color: #000;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.arrival-popup button:hover {
-  background: #1E40AF;
+.arrival-button:active {
+  transform: scale(0.98);
 }
 
-/* Control Bar */
-.ar-control-bar {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+/* ============================================
+   COMPASS (MINIMAL, EDGE-POSITIONED)
+   ============================================ */
+.compass-indicator {
+  position: fixed;
+  top: 70px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
-  gap: 16px;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
-  padding: 8px;
-  border: 1px solid rgba(100, 116, 139, 0.2);
-}
-
-.control-button {
-  background: rgba(100, 116, 139, 0.2);
-  border: 1px solid rgba(100, 116, 139, 0.3);
-  color: #F8FAFC;
-  border-radius: 16px;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 70px;
+  justify-content: center;
+  z-index: 50;
 }
 
-.control-button:hover {
-  background: rgba(100, 116, 139, 0.3);
-  transform: translateY(-2px);
+.compass-needle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f87171;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  transition: transform 0.1s ease-out;
 }
 
-.control-button.primary {
-  background: #2563EB;
-  border-color: #2563EB;
+/* ============================================
+   DEPRECATED - Hidden old elements
+   ============================================ */
+.nav-instruction-card,
+.bottom-info-panel,
+.ar-control-bar,
+.compass-ring {
+  display: none !important;
 }
 
-.control-button.primary:hover {
-  background: #1E40AF;
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
 }
 
-.control-icon {
-  font-size: 1.25rem;
-}
-
-.control-label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-}
-
-/* Animations */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
+@keyframes pulse-glow-green {
+  0%, 100% { 
+    text-shadow: 0 0 30px #4ade80, 0 0 60px #4ade80, 0 4px 12px rgba(0,0,0,0.5);
+    transform: scale(1);
   }
-  50% {
-    opacity: 0.5;
+  50% { 
+    text-shadow: 0 0 40px #4ade80, 0 0 80px #4ade80, 0 0 100px #22c55e, 0 4px 12px rgba(0,0,0,0.5);
+    transform: scale(1.05);
   }
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .ar-status-bar {
-    height: 50px;
-    padding: 0 16px;
+@keyframes slideInDown {
+  from { 
+    opacity: 0; 
+    transform: translateX(-50%) translateY(-20px); 
   }
+  to { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(0); 
+  }
+}
 
-  .nav-instruction-card {
+@keyframes slideInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInScale {
+  from { 
+    opacity: 0; 
+    transform: translateX(-50%) scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1); 
+  }
+}
+
+@keyframes fadeOutScale {
+  from { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1); 
+  }
+  to { 
+    opacity: 0; 
+    transform: translateX(-50%) scale(0.9); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes distance-countdown {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+/* ============================================
+   RESPONSIVE (MOBILE FIRST)
+   ============================================ */
+@media (max-width: 380px) {
+  .direction-arrow {
+    font-size: 48px;
+  }
+  
+  .direction-text {
+    font-size: 18px;
+    padding: 6px 16px;
+  }
+  
+  .bottom-info-bar {
+    padding: 12px 14px;
+  }
+  
+  .destination-name {
+    font-size: 14px;
+  }
+  
+  .stat-item {
+    font-size: 13px;
+    gap: 4px;
+  }
+  
+  .info-stats {
+    gap: 10px;
+  }
+}
+
+@media (min-height: 700px) {
+  .direction-overlay {
     top: 70px;
-    left: 16px;
-    right: 16px;
-    padding: 12px;
   }
-
-  .bottom-info-panel {
-    bottom: 100px;
-    left: 16px;
-    right: 16px;
-    padding: 12px;
+  
+  .bottom-info-bar {
+    bottom: 24px;
   }
+}
 
-  .compass-ring {
-    width: 70px;
-    height: 70px;
-    right: 16px;
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass-panel,
+  .bottom-info-bar,
+  .calibration-toast,
+  .direction-text {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(255, 255, 255, 0.3);
   }
-
-  .ar-control-bar {
-    bottom: 20px;
-    gap: 12px;
-    padding: 6px;
-  }
-
-  .control-button {
-    padding: 10px 12px;
-    min-width: 60px;
+  
+  .direction-text,
+  .destination-name,
+  .stat-item {
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
   }
 }

@@ -682,19 +682,19 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Speed Panel */}
           {isNavigating && (
-            <div className="fixed top-16 left-3 md:top-20 md:left-5 bg-bgCard backdrop-blur-sm rounded-xl md:rounded-2xl 
-                           shadow-soft p-3 md:p-4 z-[1000] border border-gray-100">
-              <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
-                <div className="flex items-center gap-2 text-textHeading">
-                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            <div className="fixed top-16 left-3 md:top-5 md:left-16 bg-bgCard backdrop-blur-sm rounded-xl md:rounded-2xl 
+                           shadow-soft p-2 md:p-3 z-[1000] border border-gray-100">
+              <div className="space-y-1 text-xs">
+                <div className="flex items-center gap-1.5 text-textHeading">
+                  <svg className="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                   <span className="font-medium">{currentSpeed} km/h</span>
                 </div>
-                <div className="flex items-center gap-2 text-textBody">
-                  <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                <div className="flex items-center gap-1.5 text-textBody">
+                  <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                   <span>Avg: {averageSpeed} km/h</span>
                 </div>
                 {locationAccuracy && (
-                  <div className="flex items-center gap-2 text-textHelper text-xs">
+                  <div className="flex items-center gap-1.5 text-textHelper">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" /></svg>
                     <span>GPS: +/-{Math.round(locationAccuracy)}m</span>
                   </div>
@@ -705,34 +705,34 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Directions Panel */}
           {isNavigating && directions.length > 0 && (
-            <div className="fixed bottom-20 left-3 right-3 md:absolute md:top-5 md:left-20 md:bottom-auto md:right-auto 
-                           w-auto md:w-72 lg:w-80 max-h-[30vh] md:max-h-[calc(100vh-120px)] 
+            <div className="fixed bottom-20 left-3 right-3 md:absolute md:top-14 md:left-16 md:bottom-auto md:right-auto 
+                           w-auto md:w-64 lg:w-72 max-h-[25vh] md:max-h-[calc(100vh-140px)] 
                            bg-bgCard backdrop-blur-sm rounded-xl md:rounded-2xl shadow-soft 
-                           p-3 md:p-5 z-[999] overflow-hidden flex flex-col border border-gray-100">
-              <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
-                <h3 className="m-0 text-lg font-bold text-textHeading">Directions</h3>
+                           p-2 md:p-4 z-[999] overflow-hidden flex flex-col border border-gray-100">
+              <div className="flex justify-between items-center mb-2 md:mb-3 pb-2 md:pb-3 border-b border-gray-100">
+                <h3 className="m-0 text-sm md:text-base font-bold text-textHeading">Directions</h3>
                 {totalDistance !== null && (
-                  <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full">
-                    <span className="text-primary text-sm font-semibold">{formatDistance(totalDistance)}</span>
+                  <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-full">
+                    <span className="text-primary text-xs font-semibold">{formatDistance(totalDistance)}</span>
                     <span className="text-primary/40">•</span>
-                    <span className="text-primary/80 text-sm">{formatTime(estimatedTime)}</span>
+                    <span className="text-primary/80 text-xs">{formatTime(estimatedTime)}</span>
                   </div>
                 )}
               </div>
-              <div className="overflow-y-auto flex-grow pr-2 space-y-1">
+              <div className="overflow-y-auto flex-grow pr-1 space-y-0.5">
                 {directions.map((direction, index) => (
-                  <div key={index} className="flex items-start py-3 px-3 rounded-xl transition-colors
+                  <div key={index} className="flex items-start py-2 px-2 rounded-lg transition-colors
                                              hover:bg-bgPage group">
-                    <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center mr-3 
-                                  text-lg bg-primary/10 text-primary rounded-lg
+                    <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mr-2 
+                                  text-sm bg-primary/10 text-primary rounded-md
                                   group-hover:bg-primary group-hover:text-white transition-colors">
                       {getDirectionIcon(direction.type)}
                     </div>
-                    <div className="flex-grow flex flex-col gap-1">
-                      <span className="text-sm text-textBody leading-relaxed font-medium">
+                    <div className="flex-grow flex flex-col gap-0.5">
+                      <span className="text-xs text-textBody leading-relaxed font-medium">
                         {direction.text}
                       </span>
-                      <span className="text-xs text-textHelper font-medium">
+                      <span className="text-[10px] text-textHelper font-medium">
                         {formatDistance(direction.distance)}
                       </span>
                     </div>

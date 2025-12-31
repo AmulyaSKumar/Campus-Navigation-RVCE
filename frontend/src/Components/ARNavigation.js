@@ -46,11 +46,15 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
   const [deviceHeading, setDeviceHeading] = useState(0);
   const [eta, setEta] = useState(null);
   const [pathPoints, setPathPoints] = useState([]);
+  const [isCalibrating, setIsCalibrating] = useState(false);
+  const [directionFaded, setDirectionFaded] = useState(false);
+  const [lastDirection, setLastDirection] = useState(null);
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const streamRef = useRef(null);
+  const fadeTimeoutRef = useRef(null);
 
   // Haversine formula to calculate distance between two coordinates
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -472,25 +476,79 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
   // Get turn direction text
   const getTurnDirection = () => {
     if (direction === null) return "";
-    if (direction > 315 || direction < 45) return "Go Straight";
-    if (direction >= 45 && direction < 135) return "Turn Right";
-    if (direction >= 135 && direction < 225) return "Turn Around";
-    return "Turn Left";
+    if (direction > 315 || direction < 45) return "GO STRAIGHT";
+    if (direction >= 45 && direction < 135) return "TURN RIGHT";
+    if (direction >= 135 && direction < 225) return "TURN AROUND";
+    return "TURN LEFT";
+  };
+
+  // Get direction arrow symbol
+  const getDirectionArrow = () => {
+    if (direction === null) return "↑";
+    if (direction > 315 || direction < 45) return "↑";
+    if (direction >= 45 && direction < 135) return "→";
+    if (direction >= 135 && direction < 225) return "↓";
+    return "←";
+  };
+
+  // Get direction state for color coding
+  const getDirectionState = () => {
+    if (direction === null) return "neutral";
+    if (direction > 315 || direction < 45) return "aligned"; // Going straight = aligned
+    if (direction >= 45 && direction < 135) return "off-route"; // Turn right
+    if (direction >= 135 && direction < 225) return "wrong"; // Turn around
+    return "off-route"; // Turn left
+  };
+
+  // Check if aligned (for reticle)
+  const isAligned = direction !== null && (direction > 315 || direction < 45);
+
+  // Handle direction fade after 2s if unchanged
+  useEffect(() => {
+    if (direction !== lastDirection) {
+      setDirectionFaded(false);
+      setLastDirection(direction);
+      
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
+      
+      fadeTimeoutRef.current = setTimeout(() => {
+        setDirectionFaded(true);
+      }, 2000);
+    }
+    
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
+    };
+  }, [direction, lastDirection]);
+
+  // Calibration handler
+  const handleCalibrate = async () => {
+    setIsCalibrating(true);
+    await requestDeviceOrientationPermission();
+    
+    // Simulate calibration duration
+    setTimeout(() => {
+      setIsCalibrating(false);
+    }, 2500);
   };
 
   return (
     <div className="ar-navigation-container">
-      {/* AR Status Bar */}
+      {/* AR Status Bar - Minimal */}
       <div className="ar-status-bar">
         <div className="status-indicator">
           <span className={`status-dot ${arStatus}`}></span>
           <span className="status-text">
-            {arStatus === "initializing" && "Initializing AR..."}
-            {arStatus === "tracking" && "Live View"}
+            {arStatus === "initializing" && "Initializing..."}
+            {arStatus === "tracking" && "AR Active"}
             {arStatus === "error" && "Error"}
           </span>
         </div>
-        <button className="close-button" onClick={onClose}>
+        <button className="close-button" onClick={onClose} aria-label="Close AR">
           ✕
         </button>
       </div>
@@ -514,83 +572,76 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
         {/* AR Overlay Canvas */}
         <canvas ref={canvasRef} className="ar-canvas" />
 
-        {/* Top Navigation Card */}
-        {!arrived && selectedLocation && (
-          <div className="nav-instruction-card">
-            <div className="nav-direction-icon">
-              {direction !== null && (
-                <>
-                  {(direction > 315 || direction < 45) && <span className="direction-icon">↑</span>}
-                  {(direction >= 45 && direction < 135) && <span className="direction-icon turn-right">↱</span>}
-                  {(direction >= 135 && direction < 225) && <span className="direction-icon turn-around">↓</span>}
-                  {(direction >= 225 && direction <= 315) && <span className="direction-icon turn-left">↰</span>}
-                </>
-              )}
-            </div>
-            <div className="nav-text">
-              <span className="nav-action">{getTurnDirection()}</span>
-              <span className="nav-destination">toward {selectedLocation.name}</span>
-            </div>
+        {/* Center Reticle - Minimal */}
+        <div className={`center-reticle ${isAligned ? 'aligned visible' : ''}`} />
+
+        {/* Top Direction Overlay - Edge Anchored */}
+        {!arrived && selectedLocation && direction !== null && (
+          <div className={`direction-overlay ${directionFaded ? 'fade-out' : ''}`}>
+            <span className={`direction-arrow ${getDirectionState()}`}>
+              {getDirectionArrow()}
+            </span>
+            <span className="direction-text">
+              {getTurnDirection()}
+            </span>
           </div>
         )}
 
-        {/* Compass Ring */}
+        {/* Compass Indicator - Minimal */}
         {!arrived && (
-          <div className="compass-ring">
-            <div 
+          <div className="compass-indicator">
+            <span 
               className="compass-needle"
               style={{ transform: `rotate(${-deviceHeading}deg)` }}
             >
-              <span className="compass-n">N</span>
-            </div>
+              N
+            </span>
           </div>
         )}
 
-        {/* Bottom Info Panel */}
+        {/* Bottom Info Bar - Edge Anchored */}
         {selectedLocation && !arrived && (
-          <div className="bottom-info-panel">
-            <div className="info-row">
-              <div className="info-item distance-info">
-                <span className="info-value">{distance ? formatDistance(distance) : "--"}</span>
-                <span className="info-label">Distance</span>
-              </div>
-              <div className="info-divider" />
-              <div className="info-item eta-info">
-                <span className="info-value">{eta || "--"}</span>
-                <span className="info-label">Walk time</span>
-              </div>
-              <div className="info-divider" />
-              <div className="info-item accuracy-info">
-                <span className="info-value">±{Math.round(gpsAccuracy || 0)}m</span>
-                <span className="info-label">GPS</span>
-              </div>
-            </div>
-            
-            <div className="destination-preview">
-              {selectedLocation.image_url && (
-                <img 
-                  src={selectedLocation.image_url} 
-                  alt={selectedLocation.name}
-                  className="destination-thumb"
-                />
-              )}
-              <div className="destination-details">
+          <div className="bottom-info-bar">
+            <div className="info-bar-content">
+              <div className="destination-badge">
+                {selectedLocation.image_url && (
+                  <img 
+                    src={selectedLocation.image_url} 
+                    alt=""
+                    className="destination-thumb"
+                  />
+                )}
                 <span className="destination-name">{selectedLocation.name}</span>
-                <span className="destination-coords">
-                  {selectedLocation.coordinates[0].toFixed(5)}, {selectedLocation.coordinates[1].toFixed(5)}
-                </span>
+              </div>
+              <div className="info-stats">
+                <div className="stat-item">
+                  <span className="stat-icon">📍</span>
+                  <span className="stat-value">{distance ? formatDistance(distance) : "--"}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-icon">⏱</span>
+                  <span className="stat-value">{eta || "--"}</span>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Arrival Notification */}
+        {/* Calibration Toast - Non-intrusive */}
+        {isCalibrating && (
+          <div className="calibration-toast">
+            <div className="calibration-spinner"></div>
+            <span className="calibration-text">Hold phone steady...</span>
+          </div>
+        )}
+
+        {/* Arrival Overlay */}
         {arrived && (
-          <div className="arrival-popup">
-            <div className="arrival-content">
+          <div className="arrival-overlay">
+            <div className="arrival-card">
               <div className="arrival-icon">🎯</div>
-              <h2>You've Arrived!</h2>
-              <p>{selectedLocation.name}</p>
+              <h2 className="arrival-title">You've Arrived!</h2>
+              <p className="arrival-destination">{selectedLocation.name}</p>
               {selectedLocation.image_url && (
                 <img 
                   src={selectedLocation.image_url} 
@@ -598,49 +649,12 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
                   className="arrival-image"
                 />
               )}
-              <button 
-                onClick={onClose}
-                className="bg-primary text-white font-semibold py-3 px-6 rounded-xl hover:bg-primaryDark transition-colors"
-              >
+              <button className="arrival-button" onClick={onClose}>
                 End Navigation
               </button>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Control Bar */}
-      <div className="ar-control-bar">
-        <button
-          className="control-button"
-          onClick={() => {
-            setDeviceHeading(0);
-            console.log("Recentering...");
-          }}
-          title="Recenter View"
-        >
-          <span className="control-icon">⊕</span>
-          <span className="control-label">Center</span>
-        </button>
-        <button
-          className="control-button primary"
-          onClick={onClose}
-          title="Exit AR"
-        >
-          <span className="control-icon">✕</span>
-          <span className="control-label">Exit AR</span>
-        </button>
-        <button
-          className="control-button"
-          onClick={async () => {
-            await requestDeviceOrientationPermission();
-            console.log("Calibrating compass...");
-          }}
-          title="Calibrate Compass"
-        >
-          <span className="control-icon">🧭</span>
-          <span className="control-label">Calibrate</span>
-        </button>
       </div>
     </div>
   );
