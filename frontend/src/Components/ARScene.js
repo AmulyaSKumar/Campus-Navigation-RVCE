@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { API_ENDPOINTS } from "../config/apiConfig";
 
 // ============ FAKE LOCATION FOR DEMO ============
@@ -40,7 +40,6 @@ const ARScene = ({ selectedLocation, onClose }) => {
   const [distance, setDistance] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [arrived, setArrived] = useState(false);
-  const [allLocations, setAllLocations] = useState([]);
   const [eta, setEta] = useState(null);
   const [turnDirection, setTurnDirection] = useState("straight");
   const videoRef = useRef(null);
@@ -520,7 +519,8 @@ const ARScene = ({ selectedLocation, onClose }) => {
       const response = await fetch(API_ENDPOINTS.locations.all());
       if (response.ok) {
         const data = await response.json();
-        setAllLocations(data);
+        // Data fetched but not used in this component
+        console.log("Locations fetched:", data.length);
       }
     } catch (error) {
       console.error("Error fetching locations:", error);
@@ -685,16 +685,16 @@ const ARScene = ({ selectedLocation, onClose }) => {
             {arStatus === "error" && "Camera Error"}
           </span>
         </div>
-        <button className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-lg border-none text-white 
+        <button className="w-11 h-11 rounded-full bg-primary/80 backdrop-blur-lg border-none text-white 
                           text-xl flex items-center justify-center cursor-pointer
-                          hover:bg-black/60 active:scale-95 transition-all" onClick={handleClose}>✕</button>
+                          hover:bg-primary active:scale-95 transition-all" onClick={handleClose}>✕</button>
       </div>
 
       {/* Navigation Instruction Card - Google Maps Style */}
       {selectedLocation && !arrived && (
         <div className="absolute top-20 safe-top left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-ar 
                         py-3 px-5 flex items-center gap-4 min-w-[260px] max-w-[90%] z-30">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-primaryDark 
                          flex items-center justify-center shadow-md">
             {turnDirection === "straight" && <span className="text-white text-3xl font-bold">↑</span>}
             {turnDirection === "right" && <span className="text-white text-3xl font-bold">↱</span>}
@@ -713,7 +713,7 @@ const ARScene = ({ selectedLocation, onClose }) => {
                         rounded-3xl shadow-ar p-5 z-30">
           <div className="flex justify-around items-center mb-4">
             <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold text-blue-600">{formatDistance(distance)}</span>
+              <span className="text-2xl font-bold text-primary">{formatDistance(distance)}</span>
               <span className="text-xs text-gray-400 uppercase tracking-wider">Distance</span>
             </div>
             <div className="w-px h-10 bg-gray-200"></div>
@@ -759,23 +759,23 @@ const ARScene = ({ selectedLocation, onClose }) => {
                 onError={(e) => e.target.style.display = 'none'}
               />
             )}
-            <button className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl 
-                              hover:bg-blue-700 transition-colors" onClick={handleClose}>End Navigation</button>
+            <button className="w-full py-3 bg-primary text-white font-semibold rounded-xl 
+                              hover:bg-primaryDark transition-colors" onClick={handleClose}>End Navigation</button>
           </div>
         </div>
       )}
 
       {/* Bottom Control Bar */}
       <div className="absolute bottom-4 safe-bottom left-1/2 -translate-x-1/2 flex gap-4 z-40">
-        <button className="flex flex-col items-center gap-1 bg-red-500/90 text-white py-2.5 px-5 
+        <button className="flex flex-col items-center gap-1 bg-accent/90 text-white py-2.5 px-5 
                           rounded-2xl backdrop-blur-lg min-h-[56px] border-none cursor-pointer
-                          hover:bg-red-600 active:scale-95 transition-all" onClick={handleClose}>
+                          hover:bg-accent active:scale-95 transition-all" onClick={handleClose}>
           <span className="text-lg">✕</span>
           <small className="text-[10px] uppercase tracking-wider">Exit</small>
         </button>
-        <button className="flex flex-col items-center gap-1 bg-white/20 text-white py-2.5 px-5 
-                          rounded-2xl backdrop-blur-lg min-h-[56px] border border-white/30 cursor-pointer
-                          hover:bg-white/30 active:scale-95 transition-all" 
+        <button className="flex flex-col items-center gap-1 bg-primary/20 text-primary py-2.5 px-5 
+                          rounded-2xl backdrop-blur-lg min-h-[56px] border border-primary/30 cursor-pointer
+                          hover:bg-primary/30 active:scale-95 transition-all" 
                 onClick={() => compassHeadingRef.current = 0}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <small className="text-[10px] uppercase tracking-wider">Calibrate</small>

@@ -7,13 +7,11 @@ import { loadGoogleMapsAPI } from "./api/googleMapsLoader";
 function App() {
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [mapsLoaded, setMapsLoaded] = useState(false);
 
     // Load Google Maps API on app startup
     useEffect(() => {
         loadGoogleMapsAPI()
             .then(() => {
-                setMapsLoaded(true);
                 console.log("Google Maps API initialized successfully");
             })
             .catch((error) => {

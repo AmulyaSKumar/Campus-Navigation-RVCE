@@ -17,7 +17,12 @@ const Directions = ({ map, start, end }) => {
 
     return (
         <div>
-            <button onClick={fetchDirections}>Get Directions</button>
+            <button 
+                onClick={fetchDirections}
+                className="bg-primary hover:bg-primaryDark text-white font-inter font-medium text-body px-4 py-2 rounded-lg transition-colors duration-200"
+            >
+                Get Directions
+            </button>
         </div>
     );
 };

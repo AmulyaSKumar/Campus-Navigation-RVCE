@@ -15,7 +15,9 @@ module.exports = {
     },
     extend: {
       colors: {
+        // Professional University Theme Colors
         primary: {
+          DEFAULT: '#2563EB',
           50: '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
@@ -27,6 +29,13 @@ module.exports = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
+        primaryDark: '#1E40AF',
+        accent: '#4F46E5',
+        bgPage: '#F8FAFC',
+        bgCard: '#FFFFFF',
+        textHeading: '#0F172A',
+        textBody: '#475569',
+        textHelper: '#64748B',
         dark: {
           100: '#1f2d3d',
           200: '#111827',
@@ -34,8 +43,15 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-        google: ['Google Sans', 'Segoe UI', 'Roboto', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+      },
+      fontSize: {
+        // Custom typography scale
+        'app-title': ['2rem', { lineHeight: '1.2', fontWeight: '700', letterSpacing: '-0.01em' }],
+        'section-heading': ['1.25rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '-0.01em' }],
+        'subheading': ['1rem', { lineHeight: '1.4', fontWeight: '600' }],
+        'body': ['0.9375rem', { lineHeight: '1.6', fontWeight: '400' }],
+        'helper': ['0.8125rem', { lineHeight: '1.5', fontWeight: '400' }],
       },
       spacing: {
         '18': '4.5rem',

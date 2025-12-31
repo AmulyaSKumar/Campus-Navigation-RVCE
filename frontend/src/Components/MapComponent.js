@@ -21,7 +21,7 @@ const MapComponent = ({ coordinates }) => {
   if (!coordinates || !currentLocation) return null;
 
   return (
-    <div style={{ height: "60vh", position: "relative" }}>
+    <div className="h-60vh relative">
       <MapContainer
         center={coordinates}
         zoom={16}

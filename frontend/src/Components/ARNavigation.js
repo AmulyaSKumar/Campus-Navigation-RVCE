@@ -598,7 +598,12 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
                   className="arrival-image"
                 />
               )}
-              <button onClick={onClose}>End Navigation</button>
+              <button 
+                onClick={onClose}
+                className="bg-primary text-white font-semibold py-3 px-6 rounded-xl hover:bg-primaryDark transition-colors"
+              >
+                End Navigation
+              </button>
             </div>
           </div>
         )}

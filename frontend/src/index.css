@@ -7,14 +7,39 @@
 @layer base {
   html {
     @apply text-base scroll-smooth w-full h-full overflow-x-hidden;
+    font-size: 16px;
   }
 
   body {
     @apply m-0 p-0 font-sans antialiased w-full h-full overflow-x-hidden fixed inset-0;
+    @apply bg-bgPage text-textBody;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Typography Hierarchy */
+  h1 {
+    @apply text-app-title text-textHeading tracking-tight;
+  }
+
+  h2 {
+    @apply text-section-heading text-textHeading tracking-tight;
+  }
+
+  h3 {
+    @apply text-subheading text-primaryDark;
+  }
+
+  p {
+    @apply text-body text-textBody leading-relaxed;
+  }
+
+  small {
+    @apply text-xs text-textHelper;
   }
 
   #root {
@@ -44,18 +69,20 @@
 @layer components {
   /* Primary Button */
   .btn-primary {
-    @apply w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg 
-           shadow-md hover:bg-blue-700 hover:-translate-y-0.5 
+    @apply w-full py-3 px-6 bg-primary text-white font-semibold rounded-lg 
+           shadow-button hover:bg-primaryDark hover:-translate-y-0.5 
            active:translate-y-0 transition-all duration-200 
-           min-h-[48px] flex items-center justify-center text-center;
+           min-h-[48px] flex items-center justify-center text-center
+           text-sm sm:text-base;
   }
   
   /* Secondary Button */
   .btn-secondary {
-    @apply w-full py-3 px-6 bg-transparent text-gray-800 font-semibold rounded-lg 
-           border border-gray-200 hover:bg-gray-50 hover:-translate-y-0.5 
+    @apply w-full py-3 px-6 bg-transparent text-primaryDark font-medium rounded-lg 
+           border border-primary/30 hover:bg-primary/5 hover:-translate-y-0.5 
            active:translate-y-0 transition-all duration-200 
-           min-h-[48px] flex items-center justify-center text-center;
+           min-h-[48px] flex items-center justify-center text-center
+           text-sm;
   }
   
   /* AR Navigation Button */
@@ -71,23 +98,34 @@
   
   /* Search Input */
   .input-search {
-    @apply w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base 
-           transition-all duration-200 bg-gray-50 
-           focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
-           focus:bg-white focus:outline-none;
+    @apply w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-body 
+           transition-all duration-200 bg-bgPage 
+           focus:border-primary focus:ring-2 focus:ring-primary/20 
+           focus:bg-bgCard focus:outline-none
+           placeholder:text-textHelper;
   }
   
   /* Card Container */
   .card {
-    @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6;
+    @apply bg-bgCard rounded-xl shadow-soft border border-gray-100 p-6;
+  }
+  
+  /* Section Title */
+  .section-title {
+    @apply text-section-heading text-textHeading mb-4;
+  }
+  
+  /* App Title */
+  .app-title {
+    @apply text-app-title text-textHeading;
   }
   
   /* Top Place Button */
   .btn-place {
-    @apply bg-gray-100 border-none py-2.5 px-4 rounded-lg cursor-pointer 
-           text-sm font-semibold text-gray-900 whitespace-nowrap 
+    @apply bg-bgPage border border-gray-200 py-2.5 px-4 rounded-lg cursor-pointer 
+           text-sm font-semibold text-textHeading whitespace-nowrap 
            min-h-[44px] flex items-center justify-center
-           hover:bg-blue-50 hover:-translate-y-0.5 
+           hover:bg-primary/5 hover:border-primary/30 hover:-translate-y-0.5 
            active:translate-y-0 transition-all duration-200;
   }
   

@@ -85,8 +85,8 @@ const Search = ({ onPlaceSelected, updateTopPlaces }) => {
     <div className="relative w-full">
       <div className="relative w-full group">
         {/* Search Icon */}
-        <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 
-                        group-focus-within:text-blue-500 transition-colors">
+        <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-textHelper 
+                        group-focus-within:text-primary transition-colors">
           <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         </div>
         
@@ -96,16 +96,16 @@ const Search = ({ onPlaceSelected, updateTopPlaces }) => {
           onChange={handleInputChange}
           placeholder="Search for a location..."
           className="w-full py-3 md:py-3.5 pl-10 md:pl-12 pr-10 md:pr-12 border-2 border-gray-200 rounded-xl text-sm md:text-base 
-                     transition-all duration-300 bg-white shadow-sm
-                     focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
-                     focus:bg-white focus:outline-none focus:shadow-lg
-                     min-h-[48px] md:min-h-[52px] placeholder:text-gray-400"
+                     transition-all duration-300 bg-bgCard shadow-sm text-textBody
+                     focus:border-primary focus:ring-4 focus:ring-primary/10 
+                     focus:bg-bgCard focus:outline-none focus:shadow-lg
+                     min-h-[48px] md:min-h-[52px] placeholder:text-textHelper"
           autoComplete="off"
         />
         
         {isLoading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2 
-                          w-5 h-5 border-2 border-gray-200 border-t-blue-500 
+                          w-5 h-5 border-2 border-gray-200 border-t-primary 
                           rounded-full animate-spin" />
         )}
       </div>
@@ -119,21 +119,21 @@ const Search = ({ onPlaceSelected, updateTopPlaces }) => {
 
       {suggestions.length > 0 && (
         <ul className="absolute top-full left-0 right-0 mt-2 p-1.5 md:p-2
-                       list-none bg-white border border-gray-100 rounded-xl 
-                       shadow-xl shadow-gray-200/50 z-[1000] max-h-60 md:max-h-72 overflow-y-auto
+                       list-none bg-bgCard border border-gray-100 rounded-xl 
+                       shadow-soft z-[1000] max-h-60 md:max-h-72 overflow-y-auto
                        backdrop-blur-sm">
           {suggestions.map((place, index) => (
             <li
               key={`${place.name}-${index}`}
               onClick={() => handleSelect(place)}
               className="py-2.5 md:py-3 px-3 md:px-4 cursor-pointer transition-all duration-200 
-                         text-gray-700 text-xs md:text-sm rounded-lg mb-1
+                         text-textBody text-xs md:text-sm rounded-lg mb-1
                          min-h-[40px] md:min-h-[44px] flex items-center gap-2 md:gap-3
-                         hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 
-                         hover:text-blue-600 hover:font-medium
-                         active:bg-blue-100"
+                         hover:bg-primary/5 
+                         hover:text-primary hover:font-medium
+                         active:bg-primary/10"
             >
-              <svg className="w-3 h-3 md:w-4 md:h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
               {place.name}
             </li>
           ))}

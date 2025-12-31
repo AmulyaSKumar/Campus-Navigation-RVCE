@@ -74,18 +74,14 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
   const [averageSpeed, setAverageSpeed] = useState(0);
   const [error, setError] = useState(null);
   const [isARMode, setIsARMode] = useState(false);
-  const [showBackButton, setShowBackButton] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [locationPermission, setLocationPermission] = useState(null);
-  const [cameraPermission, setCameraPermission] = useState(null);
   const [showPermissionBanner, setShowPermissionBanner] = useState(false);
   const routingMachineRef = useRef(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const destinationMarkerRef = useRef(null);
   const userMarkerRef = useRef(null);
-  const lastUpdateTimeRef = useRef(Date.now());
   const speedReadingsRef = useRef([]);
   const lastLocationRef = useRef(null);
   const lastLocationTimeRef = useRef(null);
@@ -94,10 +90,6 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
   const mapUpdateTimeoutRef = useRef(null);
   const isFirstUpdateRef = useRef(true);
   const debounceTimerRef = useRef(null);
-
-
-
-  const [locationImage, setLocationImage] = useState(null);
 
   const locationOptions = {
     enableHighAccuracy: true,
@@ -162,12 +154,10 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
     getFakeOrRealLocation(
       () => {
-        setLocationPermission("granted");
         setShowPermissionBanner(false);
         console.log("Location permission granted.");
       },
       (err) => {
-        setLocationPermission("denied");
         setShowPermissionBanner(true);
         console.warn("Location permission denied:", err);
         alert("Location access denied. Some features may not work.");
@@ -184,10 +174,8 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
         try {
           const status = await navigator.permissions.query({ name: "geolocation" });
           if (!mounted) return;
-          setLocationPermission(status.state);
           setShowPermissionBanner(status.state !== "granted");
           status.onchange = () => {
-            setLocationPermission(status.state);
             setShowPermissionBanner(status.state !== "granted");
           };
         } catch (e) {
@@ -213,10 +201,8 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         // Stop tracks immediately; we only needed permission
         stream.getTracks().forEach((t) => t.stop());
-        setCameraPermission("granted");
         setIsARMode(true);
       } catch (err) {
-        setCameraPermission("denied");
         alert("Camera access denied. AR requires camera permission.");
       }
     } else {
@@ -587,7 +573,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden font-sans bg-slate-100">
+    <div className="relative h-screen w-full overflow-hidden font-sans bg-bgPage">
       {isARMode && locationData ? (
         <ARScene 
           selectedLocation={locationData} 
@@ -598,10 +584,10 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           {/* Enhanced Back Button */}
           <button
             className="fixed top-3 left-3 md:top-5 md:left-5 z-[1100] w-10 h-10 md:w-12 md:h-12 flex items-center justify-center 
-                       bg-white/95 backdrop-blur-sm border-0 text-gray-700 rounded-lg md:rounded-xl 
-                       shadow-lg shadow-gray-200/50 cursor-pointer text-lg md:text-xl 
+                       bg-bgCard backdrop-blur-sm border border-gray-100 text-textBody rounded-lg md:rounded-xl 
+                       shadow-soft cursor-pointer text-lg md:text-xl 
                        min-h-[40px] min-w-[40px] md:min-h-[48px] md:min-w-[48px] transition-all duration-300
-                       hover:-translate-y-1 hover:shadow-xl hover:bg-white
+                       hover:-translate-y-1 hover:shadow-lg hover:bg-bgCard
                        active:translate-y-0 active:scale-95"
             onClick={handleBackAndChangeDestination}
             title="Back to Home"
@@ -612,16 +598,16 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Permission Banner */}
           {showPermissionBanner && (
-            <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-50 to-orange-50
-                           text-gray-800 border border-amber-200/50 py-3 px-5 rounded-xl 
-                           flex items-center gap-3 shadow-lg shadow-amber-100/50 z-[1100] text-sm
+            <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-amber-50
+                           text-textHeading border border-amber-200 py-3 px-5 rounded-xl 
+                           flex items-center gap-3 shadow-soft z-[1100] text-sm
                            backdrop-blur-sm" role="status" aria-live="polite">
               <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
               <span className="font-medium">Location required for navigation</span>
-              <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white 
+              <button className="bg-primary text-white 
                                 border-none py-2 px-4 rounded-lg cursor-pointer font-semibold 
-                                min-h-[36px] shadow-md hover:shadow-lg hover:-translate-y-0.5
-                                transition-all duration-300" 
+                                min-h-[36px] shadow-button hover:bg-primaryDark hover:-translate-y-0.5
+                                transition-all duration-200" 
                       onClick={requestLocationPermission}>Enable</button>
             </div>
           )}
@@ -629,36 +615,36 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           <div id="map" className="h-full w-full z-[1]"></div>
 
           {/* Enhanced Search Sidebar */}
-          <div className="fixed top-3 right-3 w-52 md:w-64 lg:w-72 z-[1001] bg-white/95 backdrop-blur-md rounded-xl md:rounded-2xl 
-                         shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100/50">
+          <div className="fixed top-3 right-3 w-52 md:w-64 lg:w-72 z-[1001] bg-bgCard backdrop-blur-md rounded-xl md:rounded-2xl 
+                         shadow-soft overflow-hidden border border-gray-100">
             <div className="relative">
-              <svg className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <svg className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-textHelper" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSidebarSearch(e.target.value)}
                 placeholder="Search..."
                 className="w-full py-3 md:py-3.5 pl-10 md:pl-12 pr-3 md:pr-4 border-none text-sm bg-transparent min-h-[44px] md:min-h-[48px]
-                          focus:outline-none focus:bg-gray-50/50 transition-all placeholder:text-gray-400"
+                          text-textBody focus:outline-none focus:bg-bgPage transition-all placeholder:text-textHelper"
                 autoComplete="off"
               />
               {isSearchLoading && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 
-                               border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin" />
+                               border-2 border-gray-200 border-t-primary rounded-full animate-spin" />
               )}
             </div>
             {searchSuggestions.length > 0 && (
-              <ul className="list-none p-2 m-0 bg-white/95 border-t border-gray-100 max-h-52 overflow-y-auto">
+              <ul className="list-none p-2 m-0 bg-bgCard border-t border-gray-100 max-h-52 overflow-y-auto">
                 {searchSuggestions.map((place, index) => (
                   <li
                     key={`${place.name}-${index}`}
                     onClick={() => handleSelectFromSidebar(place)}
-                    className="py-3 px-4 rounded-xl cursor-pointer text-sm text-gray-700 
+                    className="py-3 px-4 rounded-xl cursor-pointer text-sm text-textBody 
                               min-h-[44px] flex items-center gap-3 transition-all duration-200 mb-1
-                              hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 
-                              hover:text-blue-600 hover:font-medium"
+                              hover:bg-primary/5 
+                              hover:text-primary hover:font-medium"
                   >
-                    <svg className="w-3 h-3 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
+                    <svg className="w-3 h-3 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
                     {place.name}
                   </li>
                 ))}
@@ -668,17 +654,16 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Location Image Card */}
           {locationData && locationData.image_url && (
-            <div className="absolute top-24 right-5 bg-white/95 backdrop-blur-sm p-4 rounded-2xl 
-                           shadow-xl shadow-gray-200/50 z-[1000] max-w-[280px] 
-                           border border-gray-100/50 hidden md:block
-                           hover:shadow-2xl transition-shadow duration-300">
+            <div className="absolute top-24 right-5 bg-bgCard backdrop-blur-sm p-4 rounded-2xl 
+                           shadow-soft z-[1000] max-w-[280px] 
+                           border border-gray-100 hidden md:block
+                           hover:shadow-lg transition-shadow duration-300">
               <img 
                 src={locationData.image_url} 
                 alt={locationData.name || 'Location'}
                 className="w-60 h-40 object-cover rounded-xl block mb-3"
               />
-              <h3 className="m-0 text-base text-gray-800 font-semibold px-1 
-                            bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text">
+              <h3 className="m-0 text-base text-textHeading font-semibold px-1">
                 {locationData.name}
               </h3>
             </div>
@@ -697,19 +682,19 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Speed Panel */}
           {isNavigating && (
-            <div className="fixed top-16 left-3 md:top-20 md:left-5 bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl 
-                           shadow-lg shadow-gray-200/50 p-3 md:p-4 z-[1000] border border-gray-100/50">
+            <div className="fixed top-16 left-3 md:top-20 md:left-5 bg-bgCard backdrop-blur-sm rounded-xl md:rounded-2xl 
+                           shadow-soft p-3 md:p-4 z-[1000] border border-gray-100">
               <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                <div className="flex items-center gap-2 text-textHeading">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                   <span className="font-medium">{currentSpeed} km/h</span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-600">
+                <div className="flex items-center gap-2 text-textBody">
                   <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                   <span>Avg: {averageSpeed} km/h</span>
                 </div>
                 {locationAccuracy && (
-                  <div className="flex items-center gap-2 text-gray-500 text-xs">
+                  <div className="flex items-center gap-2 text-textHelper text-xs">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" /></svg>
                     <span>GPS: +/-{Math.round(locationAccuracy)}m</span>
                   </div>
@@ -722,33 +707,32 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           {isNavigating && directions.length > 0 && (
             <div className="fixed bottom-20 left-3 right-3 md:absolute md:top-5 md:left-20 md:bottom-auto md:right-auto 
                            w-auto md:w-72 lg:w-80 max-h-[30vh] md:max-h-[calc(100vh-120px)] 
-                           bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl shadow-gray-200/50 
-                           p-3 md:p-5 z-[999] overflow-hidden flex flex-col border border-gray-100/50">
+                           bg-bgCard backdrop-blur-sm rounded-xl md:rounded-2xl shadow-soft 
+                           p-3 md:p-5 z-[999] overflow-hidden flex flex-col border border-gray-100">
               <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
-                <h3 className="m-0 text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 
-                              bg-clip-text text-transparent">Directions</h3>
+                <h3 className="m-0 text-lg font-bold text-textHeading">Directions</h3>
                 {totalDistance !== null && (
-                  <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full">
-                    <span className="text-blue-600 text-sm font-semibold">{formatDistance(totalDistance)}</span>
-                    <span className="text-blue-300">•</span>
-                    <span className="text-blue-500 text-sm">{formatTime(estimatedTime)}</span>
+                  <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full">
+                    <span className="text-primary text-sm font-semibold">{formatDistance(totalDistance)}</span>
+                    <span className="text-primary/40">•</span>
+                    <span className="text-primary/80 text-sm">{formatTime(estimatedTime)}</span>
                   </div>
                 )}
               </div>
               <div className="overflow-y-auto flex-grow pr-2 space-y-1">
                 {directions.map((direction, index) => (
                   <div key={index} className="flex items-start py-3 px-3 rounded-xl transition-colors
-                                             hover:bg-gray-50 group">
+                                             hover:bg-bgPage group">
                     <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center mr-3 
-                                  text-lg bg-blue-100 text-blue-600 rounded-lg
-                                  group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                  text-lg bg-primary/10 text-primary rounded-lg
+                                  group-hover:bg-primary group-hover:text-white transition-colors">
                       {getDirectionIcon(direction.type)}
                     </div>
                     <div className="flex-grow flex flex-col gap-1">
-                      <span className="text-sm text-gray-700 leading-relaxed font-medium">
+                      <span className="text-sm text-textBody leading-relaxed font-medium">
                         {direction.text}
                       </span>
-                      <span className="text-xs text-gray-400 font-medium">
+                      <span className="text-xs text-textHelper font-medium">
                         {formatDistance(direction.distance)}
                       </span>
                     </div>
@@ -760,16 +744,16 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           
           {/* Enhanced Action Buttons */}
           <div className="fixed bottom-0 left-0 right-0 pb-4 pt-3 px-3 md:px-4 
-                         bg-gradient-to-t from-white/95 via-white/80 to-transparent
+                         bg-gradient-to-t from-bgCard via-bgCard/80 to-transparent
                          flex gap-2 md:gap-4 z-[1000] safe-bottom">
             <button 
-              className="py-3 md:py-4 px-3 md:px-6 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 
+              className="py-3 md:py-4 px-3 md:px-6 bg-primary 
                         text-white border-none rounded-xl md:rounded-2xl text-sm md:text-base font-semibold 
-                        cursor-pointer shadow-lg shadow-blue-200/50 flex-1 min-h-[50px] md:min-h-[52px] 
-                        flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-300
-                        hover:shadow-xl hover:shadow-blue-300/50
-                        active:scale-95
-                        disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
+                        cursor-pointer shadow-button flex-1 min-h-[50px] md:min-h-[52px] 
+                        flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-200
+                        hover:bg-primaryDark hover:-translate-y-0.5 hover:shadow-lg
+                        active:translate-y-0
+                        disabled:bg-gray-300 disabled:cursor-not-allowed 
                         disabled:opacity-60 disabled:shadow-none"
               onClick={handleGetDirections}
               disabled={!coordinates}
@@ -783,13 +767,13 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
             </button>
             
             <button 
-              className="py-3 md:py-4 px-3 md:px-6 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 
+              className="py-3 md:py-4 px-3 md:px-6 bg-accent 
                         text-white border-none rounded-xl md:rounded-2xl text-sm md:text-base font-semibold 
-                        cursor-pointer shadow-lg shadow-purple-200/50 flex-1 min-h-[50px] md:min-h-[52px] 
-                        flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-300
-                        hover:shadow-xl hover:shadow-purple-300/50
-                        active:scale-95
-                        disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
+                        cursor-pointer shadow-button flex-1 min-h-[50px] md:min-h-[52px] 
+                        flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-200
+                        hover:opacity-90 hover:-translate-y-0.5 hover:shadow-lg
+                        active:translate-y-0
+                        disabled:bg-gray-300 disabled:cursor-not-allowed 
                         disabled:opacity-60 disabled:shadow-none"
               onClick={handleStartAR}
               disabled={!coordinates}

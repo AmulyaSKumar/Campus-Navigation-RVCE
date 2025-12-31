@@ -72,7 +72,7 @@ const Navbar = ({ onPlaceSelected }) => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-3 md:p-4 safe-top safe-bottom">
+    <div className="flex justify-center items-center min-h-screen w-full bg-bgPage p-3 md:p-4 safe-top safe-bottom">
       {/* Logo */}
       <img 
         src={logo} 
@@ -82,20 +82,19 @@ const Navbar = ({ onPlaceSelected }) => {
       
       {/* Main Card */}
       <div className="flex flex-col items-center justify-center p-5 md:p-8 lg:p-10 
-                      bg-white/90 backdrop-blur-sm text-gray-900 rounded-2xl 
-                      shadow-xl shadow-blue-500/10 border border-white/50
+                      bg-bgCard backdrop-blur-sm text-textBody rounded-2xl 
+                      shadow-soft border border-gray-100
                       max-w-xl w-full text-center relative mt-14 md:mt-12
-                      transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/15">
+                      transition-all duration-300 hover:shadow-xl">
         
         {/* Title */}
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-extrabold 
-                       bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 
-                       bg-clip-text text-transparent mb-2 tracking-tight leading-tight">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold 
+                       text-textHeading mb-2 tracking-tight leading-tight">
           Campus Navigator
         </h1>
         
         {/* Subtitle */}
-        <p className="text-xs md:text-sm text-gray-500 mb-6 md:mb-8 leading-relaxed max-w-sm px-2">
+        <p className="text-xs md:text-sm text-textHelper mb-6 md:mb-8 leading-relaxed max-w-sm px-2">
           Find buildings, departments and popular spots on campus.
         </p>
 
@@ -107,9 +106,9 @@ const Navbar = ({ onPlaceSelected }) => {
         {/* Buttons */}
         <div className="flex flex-col gap-2 w-full max-w-sm md:flex-row md:gap-3">
           <button 
-            className="flex-1 py-2.5 md:py-3 px-4 md:px-5 bg-white text-gray-700 font-semibold rounded-xl 
+            className="flex-1 py-2.5 md:py-3 px-4 md:px-5 bg-bgCard text-textBody font-medium rounded-xl 
                        border-2 border-gray-200 shadow-sm text-sm md:text-base
-                       hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-0.5 hover:shadow-md
+                       hover:bg-primary/5 hover:border-primary/30 hover:-translate-y-0.5 hover:shadow-md
                        active:translate-y-0 transition-all duration-200 
                        min-h-[44px] md:min-h-[48px] flex items-center justify-center gap-2"
             onClick={requestLocationFromNavbar}
@@ -119,9 +118,9 @@ const Navbar = ({ onPlaceSelected }) => {
           </button>
 
           <button 
-            className="flex-1 py-2.5 md:py-3 px-4 md:px-5 bg-gradient-to-r from-blue-600 to-indigo-600 
-                       text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 text-sm md:text-base
-                       hover:from-blue-500 hover:to-indigo-500 hover:-translate-y-0.5 hover:shadow-xl
+            className="flex-1 py-2.5 md:py-3 px-4 md:px-5 bg-primary 
+                       text-white font-semibold rounded-xl shadow-button text-sm md:text-base
+                       hover:bg-primaryDark hover:-translate-y-0.5 hover:shadow-lg
                        active:translate-y-0 transition-all duration-200 
                        min-h-[44px] md:min-h-[48px] flex items-center justify-center gap-2"
             onClick={() => navigate("/map")}
@@ -134,22 +133,23 @@ const Navbar = ({ onPlaceSelected }) => {
         {/* Popular Locations */}
         {topPlaces.length > 0 && (
           <div className="w-full mt-6 md:mt-10 pt-4 md:pt-6 border-t border-gray-100">
-            <h3 className="text-xs md:text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 md:mb-4">
+            <h3 className="text-xs md:text-sm font-semibold text-textHelper uppercase tracking-wider mb-3 md:mb-4">
               Popular Locations
             </h3>
             <div className="flex flex-row flex-wrap justify-center items-center gap-1.5 md:gap-2 w-full">
               {isLoading ? (
-                <div className="flex items-center gap-2 text-xs md:text-sm text-gray-400">
-                  <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                <div className="flex items-center gap-2 text-xs md:text-sm text-textHelper">
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
                   Loading...
                 </div>
               ) : (
                 topPlaces.map((place) => (
                   <button
                     key={place.name}
-                    className="bg-gray-100 hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 
-                               hover:text-white border-none py-2 px-3 md:py-2.5 md:px-4 rounded-full cursor-pointer 
-                               text-xs md:text-sm font-medium text-gray-700 whitespace-nowrap 
+                    className="bg-bgPage hover:bg-primary hover:text-white 
+                               border border-gray-200 hover:border-primary
+                               py-2 px-3 md:py-2.5 md:px-4 rounded-full cursor-pointer 
+                               text-xs md:text-sm font-medium text-textBody whitespace-nowrap 
                                min-h-[36px] md:min-h-[40px] flex items-center justify-center
                                hover:-translate-y-0.5 hover:shadow-md
                                active:translate-y-0 transition-all duration-200"

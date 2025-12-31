@@ -38,68 +38,39 @@ function Chatbot() {
     };
 
     return (
-        <div className="chatbot-container" style={{
-            maxWidth: "500px",
-            margin: "20px auto",
-            padding: "20px",
-            boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-            borderRadius: "8px"
-        }}>
-            <h2>Campus Navigator Assistant</h2>
-            <div className="chat-messages" style={{
-                height: "400px",
-                overflowY: "auto",
-                padding: "20px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                marginBottom: "20px"
-            }}>
+        <div className="max-w-lg mx-auto my-5 p-5 bg-bgCard rounded-xl shadow-soft border border-gray-100">
+            <h2 className="text-section-heading text-textHeading mb-4">Campus Navigator Assistant</h2>
+            <div className="h-96 overflow-y-auto p-4 border border-gray-200 rounded-lg mb-5 bg-bgPage">
                 {chat.map((msg, index) => (
                     <div
                         key={index}
-                        style={{
-                            textAlign: msg.sender === "user" ? "right" : "left",
-                            margin: "10px 0",
-                            padding: "8px 12px",
-                            backgroundColor: msg.sender === "user" ? "#007bff" : "#e9ecef",
-                            color: msg.sender === "user" ? "white" : "black",
-                            borderRadius: "12px",
-                            maxWidth: "70%",
-                            marginLeft: msg.sender === "user" ? "auto" : "0",
-                            wordWrap: "break-word"
-                        }}
+                        className={`my-2.5 py-2 px-3 rounded-xl max-w-[70%] break-words text-body
+                            ${msg.sender === "user" 
+                                ? "ml-auto text-right bg-primary text-white" 
+                                : "mr-auto text-left bg-gray-100 text-textBody"
+                            }`}
                     >
                         {msg.text}
                     </div>
                 ))}
             </div>
-            <div className="chat-input" style={{
-                display: "flex",
-                gap: "10px"
-            }}>
+            <div className="flex gap-3">
                 <input
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
-                    style={{
-                        flex: 1,
-                        padding: "10px",
-                        borderRadius: "4px",
-                        border: "1px solid #ddd"
-                    }}
+                    className="flex-1 py-3 px-4 rounded-lg border-2 border-gray-200 bg-bgCard text-textBody
+                              focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none
+                              transition-all duration-200 placeholder:text-textHelper"
                 />
                 <button
                     onClick={sendMessage}
-                    style={{
-                        padding: "10px 20px",
-                        backgroundColor: "#007bff",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer"
-                    }}
+                    className="py-3 px-6 bg-primary text-white font-semibold rounded-lg
+                              hover:bg-primaryDark hover:-translate-y-0.5 
+                              active:translate-y-0 transition-all duration-200
+                              shadow-button cursor-pointer"
                 >
                     Send
                 </button>
