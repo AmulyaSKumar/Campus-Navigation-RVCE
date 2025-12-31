@@ -48,7 +48,8 @@ class JsonDB:
 CORS(app, origins=app.config.get('CORS_ORIGINS', [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'https://campus-navigation-rvce.vercel.app'
+    'https://campus-navigation-rvce.vercel.app',
+    'https://campus-backend-k8lt.onrender.com'
 ]), supports_credentials=True)
 
 # Logging configuration
