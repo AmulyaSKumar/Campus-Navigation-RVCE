@@ -42,14 +42,20 @@ const ARScene = ({ selectedLocation, onClose }) => {
   const [arrived, setArrived] = useState(false);
   const [eta, setEta] = useState(null);
   const [turnDirection, setTurnDirection] = useState("straight");
+  const [isCalibrating, setIsCalibrating] = useState(false);
+  const [directionFaded, setDirectionFaded] = useState(false);
+  const [lastBearing, setLastBearing] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const compassHeadingRef = useRef(0);
+  const smoothedHeadingRef = useRef(0); // For low-pass filter
   const watchIdRef = useRef(null);
   const animationFrameRef = useRef(null);
   const startTimeRef = useRef(Date.now());
-  const mediaStreamRef = useRef(null); // Store media stream for proper cleanup
-  const orientationHandlerRef = useRef(null); // Store orientation handler for cleanup
+  const mediaStreamRef = useRef(null);
+  const orientationHandlerRef = useRef(null);
+  const fadeTimeoutRef = useRef(null);
+  const hasAbsoluteOrientationRef = useRef(false);
 
   /**
    * HAVERSINE FORMULA
@@ -115,12 +121,22 @@ const ARScene = ({ selectedLocation, onClose }) => {
     return `${minutes} min`;
   };
 
-  // Get turn direction text
+  // Get turn direction text and arrow
   const getTurnText = (angle) => {
-    if (angle > 315 || angle < 45) return { text: "Head straight", icon: "↑" };
-    if (angle >= 45 && angle < 135) return { text: "Turn right", icon: "→" };
-    if (angle >= 135 && angle < 225) return { text: "Turn around", icon: "↓" };
-    return { text: "Turn left", icon: "←" };
+    if (angle > 315 || angle < 45) return { text: "GO STRAIGHT", arrow: "↑", state: "aligned" };
+    if (angle >= 45 && angle < 135) return { text: "TURN RIGHT", arrow: "→", state: "off-route" };
+    if (angle >= 135 && angle < 225) return { text: "TURN AROUND", arrow: "↓", state: "wrong" };
+    return { text: "TURN LEFT", arrow: "←", state: "off-route" };
+  };
+
+  // Get direction state color - softened for better daylight/night balance
+  const getStateColor = (state) => {
+    switch(state) {
+      case "aligned": return "#6EE7A0"; // Softer green (less neon)
+      case "off-route": return "#F5D060"; // Softer amber/yellow
+      case "wrong": return "#F59090"; // Softer red
+      default: return "#7DD4E8"; // Softer blue
+    }
   };
 
   /**
@@ -206,25 +222,62 @@ const ARScene = ({ selectedLocation, onClose }) => {
   /**
    * GET DEVICE COMPASS HEADING
    * Listens to device orientation events and extracts compass heading
-   * Falls back to alpha rotation for non-iOS devices
+   * Uses deviceorientationabsolute when available (Android), webkitCompassHeading (iOS)
+   * Applies low-pass filter to smooth jittery readings
    */
   const startCompassTracking = () => {
+    // Low-pass filter coefficient (0-1, higher = more smoothing)
+    const SMOOTHING_FACTOR = 0.3;
+    
     const handleOrientation = (event) => {
-      let heading = event.alpha; // 0-360 degrees (compass)
+      let heading = null;
 
-      // iOS Safari uses webkitCompassHeading
-      if (typeof event.webkitCompassHeading !== "undefined") {
+      // iOS Safari uses webkitCompassHeading (true north, 0-360)
+      if (typeof event.webkitCompassHeading !== "undefined" && event.webkitCompassHeading !== null) {
         heading = event.webkitCompassHeading;
+      } 
+      // For deviceorientationabsolute or regular deviceorientation
+      else if (event.alpha !== null) {
+        // Alpha is the compass direction the device faces
+        // For absolute orientation, alpha is relative to true north
+        // For regular orientation, alpha is relative to arbitrary direction
+        
+        if (event.absolute === true || hasAbsoluteOrientationRef.current) {
+          // Android with absolute orientation: alpha 0 = North
+          // But alpha increases counter-clockwise, so we need to invert
+          heading = (360 - event.alpha) % 360;
+        } else {
+          // Fallback for non-absolute (less accurate)
+          heading = (360 - event.alpha) % 360;
+        }
       }
 
-      // Normalize heading
-      heading = (heading + 360) % 360;
-      compassHeadingRef.current = heading;
+      if (heading !== null) {
+        // Normalize heading
+        heading = (heading + 360) % 360;
+        
+        // Apply low-pass filter for smooth compass movement
+        // Handle the wrap-around at 0/360 degrees
+        let diff = heading - smoothedHeadingRef.current;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        
+        smoothedHeadingRef.current = (smoothedHeadingRef.current + diff * SMOOTHING_FACTOR + 360) % 360;
+        compassHeadingRef.current = smoothedHeadingRef.current;
+      }
     };
 
     // Store handler reference for cleanup
     orientationHandlerRef.current = handleOrientation;
-    window.addEventListener("deviceorientation", handleOrientation);
+    
+    // Try to use absolute orientation first (more accurate on Android)
+    if (window.DeviceOrientationAbsoluteEvent) {
+      hasAbsoluteOrientationRef.current = true;
+      window.addEventListener("deviceorientationabsolute", handleOrientation, true);
+    } else {
+      // Fall back to regular device orientation
+      window.addEventListener("deviceorientation", handleOrientation, true);
+    }
   };
 
   /**
@@ -233,32 +286,45 @@ const ARScene = ({ selectedLocation, onClose }) => {
    */
   const stopCompassTracking = () => {
     if (orientationHandlerRef.current) {
-      window.removeEventListener("deviceorientation", orientationHandlerRef.current);
+      if (hasAbsoluteOrientationRef.current) {
+        window.removeEventListener("deviceorientationabsolute", orientationHandlerRef.current, true);
+      } else {
+        window.removeEventListener("deviceorientation", orientationHandlerRef.current, true);
+      }
       orientationHandlerRef.current = null;
     }
   };
 
   // ============ SIMPLE CLEAN AR NAVIGATION ============
-  // Single color: Cyan Blue (#00D4FF)
-  const AR_COLOR = "#00D4FF";
-  const AR_COLOR_RGB = "0, 212, 255";
+  // Softer, more subtle color palette for daylight/night balance
+  const AR_COLOR = "#60C8E8"; // Softer cyan (less intense)
+  const AR_COLOR_RGB = "96, 200, 232"; // Muted cyan
+  const AR_COLOR_ALIGNED = "#7DD4A8"; // Soft green when aligned
+  const AR_COLOR_ALIGNED_RGB = "125, 212, 168";
 
   /**
    * DRAW LARGE NAVIGATION ARROW
    * Clean, simple, big arrow pointing forward
+   * Accepts isAligned parameter to reduce intensity when on track
    */
-  const drawNavigationArrow = (ctx, x, y, scale, alpha) => {
+  const drawNavigationArrow = (ctx, x, y, scale, alpha, isAligned = false) => {
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(scale, scale * 0.5); // Perspective flatten
     
-    // Arrow size - BIG
-    const w = 100;
-    const h = 120;
+    // Arrow size - smaller when aligned for less visual clutter
+    const w = isAligned ? 70 : 100;
+    const h = isAligned ? 85 : 120;
     
-    // Glow
-    ctx.shadowColor = AR_COLOR;
-    ctx.shadowBlur = 30 * alpha;
+    // Use softer color and reduced glow when aligned
+    const colorRGB = isAligned ? AR_COLOR_ALIGNED_RGB : AR_COLOR_RGB;
+    const glowColor = isAligned ? AR_COLOR_ALIGNED : AR_COLOR;
+    const glowIntensity = isAligned ? 10 : 18; // Reduced from 30
+    const alphaMultiplier = isAligned ? 0.5 : 0.8; // Fade when aligned
+    
+    // Glow - reduced intensity
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = glowIntensity * alpha;
     
     // Simple arrow shape
     ctx.beginPath();
@@ -271,16 +337,16 @@ const ARScene = ({ selectedLocation, onClose }) => {
     ctx.lineTo(-w/2, h * 0.1);     // Left wing
     ctx.closePath();
     
-    // Fill with gradient
+    // Fill with gradient - softer opacity
     const gradient = ctx.createLinearGradient(0, -h/2, 0, h/2);
-    gradient.addColorStop(0, `rgba(${AR_COLOR_RGB}, ${alpha})`);
-    gradient.addColorStop(1, `rgba(${AR_COLOR_RGB}, ${alpha * 0.3})`);
+    gradient.addColorStop(0, `rgba(${colorRGB}, ${alpha * alphaMultiplier})`);
+    gradient.addColorStop(1, `rgba(${colorRGB}, ${alpha * alphaMultiplier * 0.3})`);
     ctx.fillStyle = gradient;
     ctx.fill();
     
-    // White border
-    ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.8})`;
-    ctx.lineWidth = 3;
+    // White border - thinner when aligned
+    ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * alphaMultiplier * 0.6})`;
+    ctx.lineWidth = isAligned ? 2 : 2.5;
     ctx.stroke();
     
     ctx.restore();
@@ -289,28 +355,37 @@ const ARScene = ({ selectedLocation, onClose }) => {
   /**
    * DRAW PATH LINE
    * Simple glowing line on the ground
+   * Accepts isAligned parameter to show minimal path when on track
    */
-  const drawPathLine = (ctx, width, height, offsetX, time) => {
+  const drawPathLine = (ctx, width, height, offsetX, time, isAligned = false) => {
     const startY = height * 0.3;
     const endY = height * 0.95;
     
     ctx.save();
     
-    // Glow
-    ctx.shadowColor = AR_COLOR;
-    ctx.shadowBlur = 20;
+    // Use softer styling when aligned
+    const colorRGB = isAligned ? AR_COLOR_ALIGNED_RGB : AR_COLOR_RGB;
+    const glowColor = isAligned ? AR_COLOR_ALIGNED : AR_COLOR;
+    const glowIntensity = isAligned ? 8 : 12; // Reduced from 20
+    const lineOpacity = isAligned ? 0.4 : 0.7; // Much softer when aligned
+    const lineWidth = isAligned ? 6 : 10; // Thinner when aligned
     
-    // Path gradient
+    // Glow - reduced
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = glowIntensity;
+    
+    // Path gradient - softer opacity
     const gradient = ctx.createLinearGradient(0, startY, 0, endY);
-    gradient.addColorStop(0, `rgba(${AR_COLOR_RGB}, 0.9)`);
-    gradient.addColorStop(1, `rgba(${AR_COLOR_RGB}, 0.2)`);
+    gradient.addColorStop(0, `rgba(${colorRGB}, ${lineOpacity})`);
+    gradient.addColorStop(1, `rgba(${colorRGB}, ${lineOpacity * 0.2})`);
     
     ctx.strokeStyle = gradient;
-    ctx.lineWidth = 12;
+    ctx.lineWidth = lineWidth;
     ctx.lineCap = "round";
     
-    // Animated dash
-    const dashOffset = (time * 150) % 50;
+    // Animated dash - slower when aligned for calmer feel
+    const dashSpeed = isAligned ? 80 : 120;
+    const dashOffset = (time * dashSpeed) % 50;
     ctx.setLineDash([30, 20]);
     ctx.lineDashOffset = -dashOffset;
     
@@ -325,51 +400,65 @@ const ARScene = ({ selectedLocation, onClose }) => {
 
   /**
    * DRAW DESTINATION MARKER
-   * Simple pin marker
+   * Simple pin marker - subtle when aligned
    */
-  const drawDestinationMarker = (ctx, x, y, name, time) => {
-    const pulse = Math.sin(time * 3) * 0.1 + 1;
+  const drawDestinationMarker = (ctx, x, y, name, time, isAligned = false) => {
+    // Slower, subtler pulse when aligned
+    const pulseSpeed = isAligned ? 1.5 : 3;
+    const pulseAmount = isAligned ? 0.05 : 0.1;
+    const pulse = Math.sin(time * pulseSpeed) * pulseAmount + 1;
     
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(pulse, pulse);
     
-    // Glow
-    ctx.shadowColor = "#00FF88";
-    ctx.shadowBlur = 25;
+    // Softer colors
+    const markerColor = isAligned ? "#7DD4A8" : "#5EC489"; // Softer greens
+    const glowIntensity = isAligned ? 10 : 15; // Reduced from 25
+    const markerSize = isAligned ? 22 : 26; // Smaller when aligned
+    const opacity = isAligned ? 0.7 : 0.9;
+    
+    // Glow - reduced
+    ctx.shadowColor = markerColor;
+    ctx.shadowBlur = glowIntensity;
     
     // Pin circle
     ctx.beginPath();
-    ctx.arc(0, 0, 30, 0, Math.PI * 2);
-    ctx.fillStyle = "#00FF88";
+    ctx.arc(0, 0, markerSize, 0, Math.PI * 2);
+    ctx.fillStyle = markerColor;
+    ctx.globalAlpha = opacity;
     ctx.fill();
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 4;
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.8})`;
+    ctx.lineWidth = 3;
     ctx.stroke();
     
     // Inner dot
     ctx.beginPath();
-    ctx.arc(0, 0, 12, 0, Math.PI * 2);
-    ctx.fillStyle = "white";
+    ctx.arc(0, 0, markerSize * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
     ctx.fill();
     
-    // Name label
-    ctx.shadowBlur = 4;
-    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.font = "bold 18px Arial, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillStyle = "white";
-    ctx.fillText(name, 0, -55);
+    // Name label - hide when aligned (less clutter)
+    if (!isAligned) {
+      ctx.shadowBlur = 3;
+      ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+      ctx.font = "bold 16px Arial, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.fillText(name, 0, -48);
+    }
     
     ctx.restore();
   };
 
   /**
    * DRAW TURN ARROW
-   * Big turn indicator
+   * Turn indicator - softened colors
    */
   const drawTurnArrow = (ctx, x, y, isRight, time) => {
-    const flash = (Math.sin(time * 6) + 1) / 2;
+    // Slower flash for calmer feel
+    const flash = (Math.sin(time * 4) + 1) / 2;
     
     ctx.save();
     ctx.translate(x, y);
@@ -378,33 +467,29 @@ const ARScene = ({ selectedLocation, onClose }) => {
       ctx.scale(-1, 1);
     }
     
-    // Glow
-    ctx.shadowColor = "#FFB800";
-    ctx.shadowBlur = 25;
+    // Softer amber color, reduced glow
+    const turnColor = "rgb(230, 170, 50)"; // Softer amber
+    ctx.shadowColor = turnColor;
+    ctx.shadowBlur = 12; // Reduced from 25
     
-    // Draw 3 chevrons
-    for (let i = 0; i < 3; i++) {
-      const offset = i * 25;
-      const alpha = 1 - i * 0.25 + flash * 0.25;
+    // Draw 2 chevrons instead of 3 (less visual noise)
+    for (let i = 0; i < 2; i++) {
+      const offset = i * 22;
+      const alpha = 0.7 - i * 0.2 + flash * 0.2;
       
-      ctx.strokeStyle = `rgba(255, 184, 0, ${alpha})`;
-      ctx.lineWidth = 10 - i * 2;
+      ctx.strokeStyle = `rgba(230, 170, 50, ${alpha})`;
+      ctx.lineWidth = 7 - i * 2;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       
       ctx.beginPath();
-      ctx.moveTo(-20 + offset, -40);
-      ctx.lineTo(20 + offset, 0);
-      ctx.lineTo(-20 + offset, 40);
+      ctx.moveTo(-16 + offset, -32);
+      ctx.lineTo(16 + offset, 0);
+      ctx.lineTo(-16 + offset, 32);
       ctx.stroke();
     }
     
-    // Turn text
-    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.font = "bold 16px Arial";
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#FFB800";
-    ctx.fillText(isRight ? "TURN" : "TURN", isRight ? -30 : 30, 70);
+    // Remove turn text - the direction overlay already shows this
     
     ctx.restore();
   };
@@ -433,6 +518,8 @@ const ARScene = ({ selectedLocation, onClose }) => {
      * ANIMATION LOOP
      * Clean simple AR navigation
      */
+    let lastTurnDir = "straight"; // For hysteresis
+    
     const animate = () => {
       const time = (Date.now() - startTimeRef.current) / 1000;
       
@@ -449,17 +536,51 @@ const ARScene = ({ selectedLocation, onClose }) => {
         );
 
         // Adjust bearing by device heading
+        // compassHeadingRef.current is degrees from true north that device is facing
+        // bearing is degrees from true north to destination
+        // relativeBearing is how far off we are from facing the destination
         const relativeBearing = (bearing - compassHeadingRef.current + 360) % 360;
         
-        // Determine turn direction
-        let turnDir = "straight";
-        let pathOffsetX = 0;
+        // Determine turn direction with hysteresis to prevent jittering
+        // Use wider "straight" zone (45°) but require larger deviation (50°) to change state
+        let turnDir = lastTurnDir;
         
-        if (relativeBearing > 30 && relativeBearing < 180) {
-          turnDir = "right";
+        // Define thresholds with hysteresis
+        const STRAIGHT_THRESHOLD = 40; // Within 40° = straight
+        const TURN_THRESHOLD = 50; // Must exceed 50° to trigger turn (when currently straight)
+        
+        if (lastTurnDir === "straight") {
+          // Currently going straight - need bigger angle to trigger turn
+          if (relativeBearing > TURN_THRESHOLD && relativeBearing < 180) {
+            turnDir = "right";
+          } else if (relativeBearing > 180 && relativeBearing < (360 - TURN_THRESHOLD)) {
+            turnDir = "left";
+          }
+        } else if (lastTurnDir === "right") {
+          // Currently showing right turn
+          if (relativeBearing <= STRAIGHT_THRESHOLD || relativeBearing >= 320) {
+            turnDir = "straight";
+          } else if (relativeBearing > 180) {
+            turnDir = "left";
+          }
+        } else if (lastTurnDir === "left") {
+          // Currently showing left turn
+          if (relativeBearing <= STRAIGHT_THRESHOLD || relativeBearing >= 320) {
+            turnDir = "straight";
+          } else if (relativeBearing < 180 && relativeBearing > STRAIGHT_THRESHOLD) {
+            turnDir = "right";
+          }
+        }
+        
+        lastTurnDir = turnDir;
+        
+        // Calculate path offset based on actual relative bearing
+        let pathOffsetX = 0;
+        if (relativeBearing > 0 && relativeBearing <= 180) {
+          // Destination is to the right
           pathOffsetX = Math.min((relativeBearing / 90) * 150, 200);
-        } else if (relativeBearing > 180 && relativeBearing < 330) {
-          turnDir = "left";
+        } else if (relativeBearing > 180 && relativeBearing < 360) {
+          // Destination is to the left
           pathOffsetX = -Math.min(((360 - relativeBearing) / 90) * 150, 200);
         }
         
@@ -468,34 +589,39 @@ const ARScene = ({ selectedLocation, onClose }) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
-        // Draw path line
-        drawPathLine(ctx, canvas.width, canvas.height, pathOffsetX, time);
+        // Check if aligned (going straight)
+        const isOnTrack = turnDir === "straight";
         
-        // Draw large arrows
-        const numArrows = 4;
+        // Draw path line - subtle when aligned
+        drawPathLine(ctx, canvas.width, canvas.height, pathOffsetX, time, isOnTrack);
+        
+        // Draw arrows - fewer and more subtle when aligned
+        const numArrows = isOnTrack ? 2 : 3; // Fewer arrows when on track
+        const arrowSpeed = isOnTrack ? 0.4 : 0.6; // Slower animation when aligned
+        
         for (let i = 0; i < numArrows; i++) {
-          const progress = ((time * 0.7 + i / numArrows) % 1);
-          const arrowY = canvas.height * 0.30 + (canvas.height * 0.60 * progress);
-          const scale = 0.6 + (1 - progress) * 0.6;
-          const alpha = 1 - progress * 0.5;
+          const progress = ((time * arrowSpeed + i / numArrows) % 1);
+          const arrowY = canvas.height * 0.35 + (canvas.height * 0.55 * progress);
+          const scale = 0.5 + (1 - progress) * 0.5;
+          const alpha = (1 - progress * 0.6) * (isOnTrack ? 0.6 : 1); // Fade more when aligned
           
           const curveProgress = progress;
           const arrowX = centerX + pathOffsetX * (1 - curveProgress) * curveProgress * 2;
           
-          drawNavigationArrow(ctx, arrowX, arrowY, scale, alpha);
+          drawNavigationArrow(ctx, arrowX, arrowY, scale, alpha, isOnTrack);
         }
         
-        // Draw destination when facing it
+        // Draw destination when facing it (within 45 degrees) - subtle when aligned
         if (relativeBearing > 315 || relativeBearing < 45) {
           const markerX = centerX + (relativeBearing > 180 ? -(360 - relativeBearing) : relativeBearing) * 2;
-          drawDestinationMarker(ctx, markerX, canvas.height * 0.22, selectedLocation.name, time);
+          drawDestinationMarker(ctx, markerX, canvas.height * 0.24, selectedLocation.name, time, isOnTrack);
         }
         
-        // Draw turn arrows when needed
+        // Draw turn arrows only when NOT aligned (need attention)
         if (turnDir === "right") {
-          drawTurnArrow(ctx, canvas.width - 80, centerY - 30, true, time);
+          drawTurnArrow(ctx, canvas.width - 70, centerY - 20, true, time);
         } else if (turnDir === "left") {
-          drawTurnArrow(ctx, 80, centerY - 30, false, time);
+          drawTurnArrow(ctx, 70, centerY - 20, false, time);
         }
       }
 
@@ -531,6 +657,7 @@ const ARScene = ({ selectedLocation, onClose }) => {
    * START GPS TRACKING
    * Continuously monitors user's location using geolocation API
    * Updates distance to destination in real-time
+   * Filters out inaccurate GPS readings
    */
   const startGPSTracking = async () => {
     if (!navigator.geolocation && !USE_FAKE_LOCATION) {
@@ -538,11 +665,21 @@ const ARScene = ({ selectedLocation, onClose }) => {
       return;
     }
 
+    // Maximum acceptable GPS accuracy (in meters)
+    const MAX_ACCURACY = 50;
+
     // Watch user position (updates as they move)
     watchIdRef.current = watchFakeOrRealPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
-        setUserLocation({ latitude, longitude });
+        const { latitude, longitude, accuracy } = position.coords;
+        
+        // Filter out very inaccurate GPS readings
+        if (accuracy && accuracy > MAX_ACCURACY) {
+          console.log(`GPS accuracy too low: ${accuracy}m, skipping update`);
+          return;
+        }
+        
+        setUserLocation({ latitude, longitude, accuracy });
 
         if (selectedLocation) {
           // Calculate real-time distance using Haversine formula
@@ -555,8 +692,9 @@ const ARScene = ({ selectedLocation, onClose }) => {
           setDistance(dist);
           setEta(calculateETA(dist));
 
-          // Check if user has arrived (within 10 meters)
-          if (dist < 10) {
+          // Check if user has arrived (within 15 meters considering GPS accuracy)
+          const arrivalThreshold = Math.max(15, accuracy || 15);
+          if (dist < arrivalThreshold) {
             setArrived(true);
             clearFakeOrRealWatch(watchIdRef.current);
           }
@@ -655,6 +793,45 @@ const ARScene = ({ selectedLocation, onClose }) => {
     onClose();
   };
 
+  // Handle calibration with toast - resets compass smoothing
+  const handleCalibrate = () => {
+    setIsCalibrating(true);
+    smoothedHeadingRef.current = 0;
+    compassHeadingRef.current = 0;
+    setTimeout(() => {
+      setIsCalibrating(false);
+    }, 2500);
+  };
+
+  // Direction fade effect after 2s
+  useEffect(() => {
+    const currentBearing = getCurrentBearing();
+    if (currentBearing !== lastBearing) {
+      setDirectionFaded(false);
+      setLastBearing(currentBearing);
+      
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
+      
+      fadeTimeoutRef.current = setTimeout(() => {
+        setDirectionFaded(true);
+      }, 2000);
+    }
+    
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
+    };
+  }, [userLocation, lastBearing]);
+
+  // Check if aligned
+  const isAligned = () => {
+    const bearing = getCurrentBearing();
+    return bearing > 315 || bearing < 45;
+  };
+
   return (
     <div className="fixed inset-0 w-full h-full bg-black z-[9999] overflow-hidden font-sans">
       {/* Camera Stream */}
@@ -666,148 +843,205 @@ const ARScene = ({ selectedLocation, onClose }) => {
       ></video>
       
       {/* Gradient background when no camera */}
-      <div className="absolute inset-0 bg-ar-gradient -z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 -z-10"></div>
 
       {/* AR Canvas Overlay */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-10 pointer-events-none"></canvas>
 
-      {/* Top Status Bar */}
-      <div className="absolute top-0 left-0 right-0 h-18 px-6 safe-top flex justify-between items-center
-                      bg-gradient-to-b from-black/80 via-black/60 to-transparent z-20 backdrop-blur-sm">
-        <div className="flex items-center gap-3 bg-black/70 py-3 px-5 rounded-2xl text-white text-sm font-semibold backdrop-blur-xl
-                        border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-          <span className={`w-3 h-3 rounded-full animate-pulse ${
-            arStatus === 'tracking' ? 'bg-green-400 shadow-[0_0_12px_#00E676]' :
-            arStatus === 'error' ? 'bg-red-500 shadow-[0_0_12px_#EF4444]' : 'bg-blue-400 shadow-[0_0_12px_#60A5FA]'
+      {/* Center Reticle - Subtle reassurance when aligned */}
+      <div 
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full z-15 pointer-events-none transition-all duration-500 ${
+          isAligned() 
+            ? 'opacity-80 w-3 h-3 bg-emerald-400/80 shadow-[0_0_12px_rgba(52,211,153,0.4)]' 
+            : 'opacity-0 w-2 h-2'
+        }`}
+      />
+
+      {/* Top Status Bar - Minimal Gradient */}
+      <div className="absolute top-0 left-0 right-0 h-12 px-4 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent z-20">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full transition-colors ${
+            arStatus === 'tracking' ? 'bg-green-400' :
+            arStatus === 'error' ? 'bg-red-400' : 'bg-yellow-400 animate-pulse'
           }`}></span>
-          <span className="drop-shadow-lg">
-            {arStatus === "initializing" && "Initializing AR..."}
-            {arStatus === "tracking" && "AR Navigation Active"}
-            {arStatus === "error" && "Camera Error"}
+          <span className="text-white/90 text-sm font-medium drop-shadow-md">
+            {arStatus === "initializing" && "Initializing..."}
+            {arStatus === "tracking" && "AR Active"}
+            {arStatus === "error" && "Error"}
           </span>
         </div>
-        <button className="w-12 h-12 rounded-2xl bg-red-600/80 backdrop-blur-xl border-2 border-red-400/50 text-white
-                          text-xl flex items-center justify-center cursor-pointer shadow-lg
-                          hover:bg-red-500/90 hover:shadow-red-500/30 active:scale-95 transition-all
-                          hover:border-red-300/70" onClick={handleClose}>✕</button>
+        <button 
+          className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-lg flex items-center justify-center active:scale-95 transition-transform" 
+          onClick={handleClose}
+        >
+          ✕
+        </button>
       </div>
 
-      {/* Navigation Instruction Card - Unity Style */}
-      {selectedLocation && !arrived && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/90 backdrop-blur-xl rounded-2xl
-                        py-6 px-8 flex flex-col items-center gap-3 min-w-[280px] max-w-[90%] z-40 border-2 border-blue-400/30
-                        shadow-[0_0_30px_rgba(59,130,246,0.3)] animate-pulse-subtle">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-400 via-blue-600 to-blue-800
-                         flex items-center justify-center shadow-2xl border-2 border-blue-300/50
-                         relative overflow-hidden">
-            {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-300/20 to-transparent rounded-2xl"></div>
+      {/* Top Direction Overlay - Hidden when aligned (user doesn't need instructions) */}
+      {selectedLocation && !arrived && !isAligned() && (
+        <div 
+          className={`absolute top-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-40 transition-opacity duration-300 ${
+            directionFaded ? 'opacity-40' : 'opacity-90'
+          }`}
+          style={{ maxWidth: '80%' }}
+        >
+          <span 
+            className="text-5xl leading-none transition-all duration-300"
+            style={{ 
+              color: getStateColor(getTurnText(getCurrentBearing()).state),
+              textShadow: `0 0 20px ${getStateColor(getTurnText(getCurrentBearing()).state)}, 0 4px 10px rgba(0,0,0,0.4)`
+            }}
+          >
+            {getTurnText(getCurrentBearing()).arrow}
+          </span>
+          <span 
+            className="text-lg font-semibold uppercase tracking-wider px-4 py-1.5 rounded-full backdrop-blur-md border border-white/10"
+            style={{ 
+              background: 'rgba(0,0,0,0.4)',
+              color: 'rgba(255,255,255,0.9)',
+              textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+            }}
+          >
+            {getTurnText(getCurrentBearing()).text}
+          </span>
+        </div>
+      )}
 
-            {turnDirection === "straight" && (
-              <svg className="w-14 h-14 text-white relative z-10 drop-shadow-lg animate-bounce-gentle" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 4L13.5 9.5H16.5L14 12L15 16.5L12 14L9 16.5L10 12L7.5 9.5H10.5L12 4Z"/>
-              </svg>
-            )}
-            {turnDirection === "right" && (
-              <svg className="w-14 h-14 text-white relative z-10 drop-shadow-lg animate-bounce-gentle" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 6L14 12L12 12L12 18L10 18L10 12L8 12L8 6Z" transform="rotate(90 11 12)"/>
-              </svg>
-            )}
-            {turnDirection === "left" && (
-              <svg className="w-14 h-14 text-white relative z-10 drop-shadow-lg animate-bounce-gentle" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 6L14 12L12 12L12 18L10 18L10 12L8 12L8 6Z" transform="rotate(-90 11 12)"/>
-              </svg>
-            )}
+      {/* On Track Indicator - Minimal reassurance when aligned */}
+      {selectedLocation && !arrived && isAligned() && (
+        <div 
+          className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full z-40 backdrop-blur-sm border border-emerald-500/20 animate-fade-in"
+          style={{ background: 'rgba(16, 185, 129, 0.15)' }}
+        >
+          <span className="text-emerald-400 text-lg">✓</span>
+          <span className="text-emerald-300/90 text-sm font-medium">On Track</span>
+        </div>
+      )}
+
+      {/* Compass Indicator - Minimal Edge with Calibration Button */}
+      {!arrived && (
+        <button 
+          onClick={handleCalibrate}
+          className="absolute top-16 right-4 w-11 h-11 rounded-full flex items-center justify-center z-30 backdrop-blur-md border border-white/15 active:scale-95 transition-transform"
+          style={{ background: 'rgba(0,0,0,0.5)' }}
+          title="Tap to recalibrate compass"
+        >
+          <span 
+            className="text-base font-bold text-red-400 transition-transform duration-100"
+            style={{ 
+              transform: `rotate(${-compassHeadingRef.current}deg)`,
+              textShadow: '0 1px 3px rgba(0,0,0,0.5)'
+            }}
+          >
+            N
+          </span>
+        </button>
+      )}
+
+      {/* Calibration Toast - Non-intrusive with instructions */}
+      {isCalibrating && (
+        <div 
+          className="absolute top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 py-3 px-5 rounded-2xl z-50 backdrop-blur-md border border-white/15 animate-fade-in"
+          style={{ background: 'rgba(0,0,0,0.7)' }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-white/20 border-t-blue-400 rounded-full animate-spin"></div>
+            <span className="text-sm font-medium text-white/90">Calibrating compass...</span>
           </div>
-          <div className="flex flex-col items-center gap-1">
-            <span className="font-bold text-white text-lg drop-shadow-2xl tracking-wide text-center">{getTurnText(getCurrentBearing()).text}</span>
-            <span className="text-sm text-blue-200 drop-shadow-lg font-medium text-center">→ {selectedLocation.name}</span>
+          <span className="text-xs text-white/60 text-center">Move phone in figure-8 pattern</span>
+        </div>
+      )}
+
+      {/* Bottom Info Bar - Edge Anchored, Glassmorphism */}
+      {selectedLocation && !arrived && (
+        <div 
+          className="absolute bottom-4 left-4 right-4 rounded-2xl z-30 backdrop-blur-xl border border-white/12 p-3.5"
+          style={{ 
+            background: 'rgba(0,0,0,0.55)',
+            paddingBottom: 'calc(14px + env(safe-area-inset-bottom, 0))'
+          }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            {/* Destination Badge */}
+            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+              {selectedLocation.image_url && (
+                <img
+                  src={selectedLocation.image_url}
+                  alt=""
+                  className="w-10 h-10 rounded-xl object-cover flex-shrink-0 border border-white/15"
+                  onError={(e) => e.target.style.display = 'none'}
+                />
+              )}
+              <div className="flex flex-col min-w-0">
+                <span 
+                  className="text-sm font-medium text-white truncate"
+                  style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}
+                >
+                  {selectedLocation.name}
+                </span>
+                {/* GPS Accuracy Indicator */}
+                {userLocation?.accuracy && (
+                  <span 
+                    className={`text-xs ${
+                      userLocation.accuracy < 15 ? 'text-green-400' :
+                      userLocation.accuracy < 30 ? 'text-yellow-400' : 'text-red-400'
+                    }`}
+                  >
+                    GPS ±{Math.round(userLocation.accuracy)}m
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="flex items-center gap-1.5 text-sm text-white/90">
+                <span className="opacity-80">📍</span>
+                <span className="font-medium tabular-nums">{formatDistance(distance)}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-sm text-white/90">
+                <span className="opacity-80">⏱</span>
+                <span className="font-medium tabular-nums">{eta || "--"}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Bottom Info Panel */}
-      {selectedLocation && !arrived && (
-        <div className="absolute bottom-20 safe-bottom left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-xl
-                        rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.2)] p-4 z-30 border border-blue-400/20 max-w-sm">
-          <div className="flex justify-around items-center mb-3">
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-lg font-bold text-blue-300 drop-shadow-lg">{formatDistance(distance)}</span>
-              <span className="text-xs text-blue-200 uppercase tracking-wider font-semibold">Distance</span>
-            </div>
-            <div className="w-px h-8 bg-blue-400/30"></div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-lg font-bold text-green-300 drop-shadow-lg">{eta || "--"}</span>
-              <span className="text-xs text-green-200 uppercase tracking-wider font-semibold">Walk time</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 pt-3 border-t border-blue-400/20">
-            {selectedLocation.image_url && (
-              <img
-                src={selectedLocation.image_url}
-                alt=""
-                className="w-10 h-10 rounded-lg object-cover border border-blue-400/30"
-                onError={(e) => e.target.style.display = 'none'}
-              />
-            )}
-            <div className="flex flex-col flex-1">
-              <span className="font-bold text-white text-sm drop-shadow-lg">{selectedLocation.name}</span>
-              <span className="text-xs text-blue-200 drop-shadow-md font-mono">
-                {selectedLocation.coordinates[0].toFixed(4)}°, {selectedLocation.coordinates[1].toFixed(4)}°
-              </span>
-            </div>
-            <button
-              className="flex items-center justify-center gap-1 bg-blue-600/80 text-white py-2 px-3
-                         rounded-lg border border-blue-400/50 hover:bg-blue-500/90 transition-all duration-200
-                         shadow-lg hover:shadow-blue-500/25 font-semibold text-xs"
-              onClick={() => compassHeadingRef.current = 0}
-              title="Calibrate Compass"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Calibrate</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Arrival Celebration */}
+      {/* Arrival Overlay */}
       {arrived && (
-        <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-black/95 backdrop-blur-xl rounded-3xl p-8 text-center max-w-sm mx-4
-                          shadow-[0_0_50px_rgba(34,197,94,0.3)] border-2 border-green-400/30 animate-pulse-subtle">
-            <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-green-400 via-green-500 to-green-600
-                           flex items-center justify-center shadow-2xl border-2 border-green-300/50
-                           relative overflow-hidden">
-              {/* Glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-300/30 to-transparent rounded-2xl animate-pulse"></div>
-              <svg className="w-12 h-12 text-white relative z-10 drop-shadow-2xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-3 drop-shadow-2xl tracking-wide">ARRIVED!</h2>
-            <p className="text-green-200 mb-6 text-lg font-semibold drop-shadow-lg">🎯 {selectedLocation.name}</p>
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 animate-fade-in">
+          <div 
+            className="rounded-3xl p-7 text-center max-w-xs mx-4 backdrop-blur-2xl border border-white/15 animate-scale-in"
+            style={{ background: 'rgba(0,0,0,0.7)' }}
+          >
+            <div className="text-5xl mb-3 animate-bounce">🎯</div>
+            <h2 
+              className="text-2xl font-semibold text-green-400 mb-2"
+              style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}
+            >
+              You've Arrived!
+            </h2>
+            <p className="text-base font-medium text-white/80 mb-5">{selectedLocation.name}</p>
             {selectedLocation.image_url && (
               <img
                 src={selectedLocation.image_url}
                 alt=""
-                className="w-full h-36 object-cover rounded-2xl mb-6 border-2 border-green-400/30 shadow-lg"
+                className="w-full h-24 object-cover rounded-xl mb-5 border border-white/10"
                 onError={(e) => e.target.style.display = 'none'}
               />
             )}
-            <button className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-2xl
-                              hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-2xl
-                              border-2 border-green-300/50 hover:border-green-200/70 text-lg tracking-wide
-                              hover:shadow-green-500/30 active:scale-95" onClick={handleClose}>
-              EXIT NAVIGATION
+            <button 
+              className="w-full py-3.5 px-6 rounded-xl text-base font-semibold text-black transition-transform active:scale-98"
+              style={{ background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)' }}
+              onClick={handleClose}
+            >
+              End Navigation
             </button>
           </div>
         </div>
       )}
-
-      {/* Arrival Celebration */}
     </div>
   );
 };
