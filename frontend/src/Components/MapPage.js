@@ -720,10 +720,10 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Directions Panel */}
           {isNavigating && directions.length > 0 && (
-            <div className="fixed bottom-24 left-3 right-3 md:absolute md:top-5 md:left-20 md:bottom-auto md:right-auto 
-                           w-auto md:w-72 lg:w-80 max-h-[35vh] md:max-h-[calc(100vh-120px)] 
+            <div className=\"fixed bottom-20 left-3 right-3 md:absolute md:top-5 md:left-20 md:bottom-auto md:right-auto 
+                           w-auto md:w-72 lg:w-80 max-h-[30vh] md:max-h-[calc(100vh-120px)] 
                            bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl shadow-gray-200/50 
-                           p-3 md:p-5 z-[1000] overflow-hidden flex flex-col border border-gray-100/50">
+                           p-3 md:p-5 z-[999] overflow-hidden flex flex-col border border-gray-100/50\">"
               <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
                 <h3 className="m-0 text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 
                               bg-clip-text text-transparent">Directions</h3>
@@ -759,45 +759,44 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           )}
           
           {/* Enhanced Action Buttons */}
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-2 md:gap-4 z-[1000] 
-                         w-[95%] max-w-md px-2 md:px-4">
+          <div className="fixed bottom-0 left-0 right-0 pb-4 pt-3 px-3 md:px-4 
+                         bg-gradient-to-t from-white/95 via-white/80 to-transparent
+                         flex gap-2 md:gap-4 z-[1000] safe-bottom">
             <button 
-              className="py-3 md:py-4 px-4 md:px-8 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 
-                        text-white border-none rounded-xl md:rounded-2xl text-xs md:text-base font-semibold 
-                        cursor-pointer shadow-lg shadow-blue-200/50 flex-1 min-h-[48px] md:min-h-[52px] 
+              className="py-3 md:py-4 px-3 md:px-6 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 
+                        text-white border-none rounded-xl md:rounded-2xl text-sm md:text-base font-semibold 
+                        cursor-pointer shadow-lg shadow-blue-200/50 flex-1 min-h-[50px] md:min-h-[52px] 
                         flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-300
-                        hover:shadow-xl hover:shadow-blue-300/50 hover:-translate-y-1 hover:scale-[1.02]
-                        active:translate-y-0 active:scale-100
+                        hover:shadow-xl hover:shadow-blue-300/50
+                        active:scale-95
                         disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
                         disabled:opacity-60 disabled:shadow-none"
               onClick={handleGetDirections}
               disabled={!coordinates}
             >
               {isNavigating ? (
-                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
               ) : (
-                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
               )}
-              <span className="hidden xs:inline">{isNavigating ? "Recalculate" : "Navigate"}</span>
-              <span className="xs:hidden">{isNavigating ? "Redo" : "Go"}</span>
+              {isNavigating ? "Recalculate" : "Navigate"}
             </button>
             
             <button 
-              className="py-3 md:py-4 px-4 md:px-8 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 
-                        text-white border-none rounded-xl md:rounded-2xl text-xs md:text-base font-semibold 
-                        cursor-pointer shadow-lg shadow-purple-200/50 flex-1 min-h-[48px] md:min-h-[52px] 
+              className="py-3 md:py-4 px-3 md:px-6 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 
+                        text-white border-none rounded-xl md:rounded-2xl text-sm md:text-base font-semibold 
+                        cursor-pointer shadow-lg shadow-purple-200/50 flex-1 min-h-[50px] md:min-h-[52px] 
                         flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-300
-                        hover:shadow-xl hover:shadow-purple-300/50 hover:-translate-y-1 hover:scale-[1.02]
-                        active:translate-y-0 active:scale-100
+                        hover:shadow-xl hover:shadow-purple-300/50
+                        active:scale-95
                         disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
                         disabled:opacity-60 disabled:shadow-none"
               onClick={handleStartAR}
               disabled={!coordinates}
               title="Launch AR Navigation"
             >
-              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-              <span className="hidden xs:inline">AR Nav</span>
-              <span className="xs:hidden">AR</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              AR View
             </button>
           </div>
         </>
