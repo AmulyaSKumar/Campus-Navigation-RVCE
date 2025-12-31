@@ -49,6 +49,8 @@ const ARScene = ({ selectedLocation, onClose }) => {
   const watchIdRef = useRef(null);
   const animationFrameRef = useRef(null);
   const startTimeRef = useRef(Date.now());
+  const mediaStreamRef = useRef(null); // Store media stream for proper cleanup
+  const orientationHandlerRef = useRef(null); // Store orientation handler for cleanup
 
   /**
    * HAVERSINE FORMULA
@@ -128,6 +130,14 @@ const ARScene = ({ selectedLocation, onClose }) => {
    */
   const requestCameraPermission = async () => {
     try {
+      // Stop any existing stream first
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+        mediaStreamRef.current = null;
+      }
+      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { 
           facingMode: "environment",
@@ -136,6 +146,9 @@ const ARScene = ({ selectedLocation, onClose }) => {
         },
         audio: false,
       });
+      
+      // Store stream reference for cleanup
+      mediaStreamRef.current = stream;
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -146,8 +159,28 @@ const ARScene = ({ selectedLocation, onClose }) => {
       }
     } catch (error) {
       console.error("Camera permission denied:", error);
+      setArStatus("error");
       // Start AR rendering anyway with gradient background
       startARRendering();
+    }
+  };
+
+  /**
+   * STOP CAMERA STREAM
+   * Properly releases camera resources
+   */
+  const stopCameraStream = () => {
+    // Stop all tracks in the media stream
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+      mediaStreamRef.current = null;
+    }
+    
+    // Clear video element
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
   };
 
@@ -190,11 +223,20 @@ const ARScene = ({ selectedLocation, onClose }) => {
       compassHeadingRef.current = heading;
     };
 
+    // Store handler reference for cleanup
+    orientationHandlerRef.current = handleOrientation;
     window.addEventListener("deviceorientation", handleOrientation);
+  };
 
-    return () => {
-      window.removeEventListener("deviceorientation", handleOrientation);
-    };
+  /**
+   * STOP COMPASS TRACKING
+   * Removes device orientation listener
+   */
+  const stopCompassTracking = () => {
+    if (orientationHandlerRef.current) {
+      window.removeEventListener("deviceorientation", orientationHandlerRef.current);
+      orientationHandlerRef.current = null;
+    }
   };
 
   // ============ SIMPLE CLEAN AR NAVIGATION ============
@@ -546,17 +588,25 @@ const ARScene = ({ selectedLocation, onClose }) => {
 
     initializeAR();
 
-    // Cleanup
+    // Cleanup - IMPORTANT: Properly release all resources
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-      }
+      // Stop camera stream
+      stopCameraStream();
+      
+      // Stop GPS tracking
       if (watchIdRef.current) {
         clearFakeOrRealWatch(watchIdRef.current);
+        watchIdRef.current = null;
       }
+      
+      // Stop animation frame
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
       }
+      
+      // Stop compass tracking
+      stopCompassTracking();
     };
   }, [selectedLocation]);
 
@@ -576,6 +626,33 @@ const ARScene = ({ selectedLocation, onClose }) => {
       selectedLocation.coordinates[0],
       selectedLocation.coordinates[1]
     ) - compassHeadingRef.current + 360) % 360;
+  };
+
+  /**
+   * HANDLE CLOSE
+   * Properly cleanup all resources before closing AR view
+   */
+  const handleClose = () => {
+    // Stop camera stream first
+    stopCameraStream();
+    
+    // Stop GPS tracking
+    if (watchIdRef.current) {
+      clearFakeOrRealWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+    
+    // Stop animation frame
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    
+    // Stop compass tracking
+    stopCompassTracking();
+    
+    // Call parent's onClose
+    onClose();
   };
 
   return (
@@ -605,12 +682,12 @@ const ARScene = ({ selectedLocation, onClose }) => {
           <span>
             {arStatus === "initializing" && "Starting..."}
             {arStatus === "tracking" && "Live View"}
-            {arStatus === "error" && "Error"}
+            {arStatus === "error" && "Camera Error"}
           </span>
         </div>
         <button className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-lg border-none text-white 
                           text-xl flex items-center justify-center cursor-pointer
-                          hover:bg-black/60 active:scale-95 transition-all" onClick={onClose}>✕</button>
+                          hover:bg-black/60 active:scale-95 transition-all" onClick={handleClose}>✕</button>
       </div>
 
       {/* Navigation Instruction Card - Google Maps Style */}
@@ -683,7 +760,7 @@ const ARScene = ({ selectedLocation, onClose }) => {
               />
             )}
             <button className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl 
-                              hover:bg-blue-700 transition-colors" onClick={onClose}>End Navigation</button>
+                              hover:bg-blue-700 transition-colors" onClick={handleClose}>End Navigation</button>
           </div>
         </div>
       )}
@@ -692,7 +769,7 @@ const ARScene = ({ selectedLocation, onClose }) => {
       <div className="absolute bottom-4 safe-bottom left-1/2 -translate-x-1/2 flex gap-4 z-40">
         <button className="flex flex-col items-center gap-1 bg-red-500/90 text-white py-2.5 px-5 
                           rounded-2xl backdrop-blur-lg min-h-[56px] border-none cursor-pointer
-                          hover:bg-red-600 active:scale-95 transition-all" onClick={onClose}>
+                          hover:bg-red-600 active:scale-95 transition-all" onClick={handleClose}>
           <span className="text-lg">✕</span>
           <small className="text-[10px] uppercase tracking-wider">Exit</small>
         </button>
