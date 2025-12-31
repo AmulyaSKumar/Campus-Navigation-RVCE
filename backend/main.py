@@ -10,8 +10,6 @@ import time
 if not hasattr(time, 'clock'):
     time.clock = time.perf_counter
 
-from chatbot.chat import chatbot  
-from chatbot.semantic_model import find_best_match
 from config import config_dict
 
 app = Flask(__name__)
@@ -49,39 +47,10 @@ class JsonDB:
 # CORS configuration - Allow all origins in development
 CORS(app, origins=app.config.get('CORS_ORIGINS', ['http://localhost:3000', 'http://127.0.0.1:3000']), supports_credentials=True)
 
-# Test chatbot response in terminal
-response = chatbot.get_response("HELLO")
-print(response)
-
 # Logging configuration
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    try:
-        message = request.json.get('message')
-        if not message:
-            return jsonify({'response': 'Please provide a message.'}), 400
-
-        # Find the closest question
-        best_match = find_best_match(message.upper())
-        
-        if best_match:
-            # Get response from AIML for the matched question
-            response = chatbot.get_response(best_match)
-        else:
-            response = chatbot.get_response(message.upper())
-
-        logger.info(f"User message: {message}")
-        logger.info(f"Bot response: {response}")
-        
-        return jsonify({'response': str(response)})
-
-    except Exception as e:
-        logger.error(f"Error in chat endpoint: {str(e)}")
-        return jsonify({'response': 'Sorry, I encountered an error!'}), 500
-    
 @app.route('/api/search', methods=['GET'])
 def search_locations():
     query = request.args.get('q', '').strip()
