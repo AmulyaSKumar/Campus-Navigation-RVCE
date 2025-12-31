@@ -692,7 +692,9 @@ const ARScene = ({ selectedLocation, onClose }) => {
       {arrived && (
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-3xl p-8 text-center max-w-sm mx-4 shadow-2xl animate-bounce">
-            <div className="text-6xl mb-4">🎯</div>
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+            </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">You've Arrived!</h2>
             <p className="text-gray-600 mb-4">{selectedLocation.name}</p>
             {selectedLocation.image_url && (
@@ -721,7 +723,7 @@ const ARScene = ({ selectedLocation, onClose }) => {
                           rounded-2xl backdrop-blur-lg min-h-[56px] border border-white/30 cursor-pointer
                           hover:bg-white/30 active:scale-95 transition-all" 
                 onClick={() => compassHeadingRef.current = 0}>
-          <span className="text-lg">🧭</span>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <small className="text-[10px] uppercase tracking-wider">Calibrate</small>
         </button>
       </div>

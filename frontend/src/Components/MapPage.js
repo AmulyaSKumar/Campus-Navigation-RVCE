@@ -616,7 +616,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
                            text-gray-800 border border-amber-200/50 py-3 px-5 rounded-xl 
                            flex items-center gap-3 shadow-lg shadow-amber-100/50 z-[1100] text-sm
                            backdrop-blur-sm" role="status" aria-live="polite">
-              <span className="text-amber-500 text-lg">📍</span>
+              <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
               <span className="font-medium">Location required for navigation</span>
               <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white 
                                 border-none py-2 px-4 rounded-lg cursor-pointer font-semibold 
@@ -633,7 +633,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
                          shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100/50
                          sm:w-56 sm:top-3 sm:right-3">
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               <input
                 type="text"
                 value={searchQuery}
@@ -659,7 +659,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
                               hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 
                               hover:text-blue-600 hover:font-medium"
                   >
-                    <span className="text-blue-400 text-xs">📍</span>
+                    <svg className="w-3 h-3 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
                     {place.name}
                   </li>
                 ))}
@@ -692,7 +692,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
                            bg-gradient-to-r from-red-500 to-rose-500 text-white 
                            py-3.5 px-6 rounded-xl text-sm z-[2000] shadow-lg shadow-red-200/50
                            flex items-center gap-2 font-medium">
-              <span>⚠️</span> {error}
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg> {error}
             </div>
           )}
 
@@ -702,17 +702,17 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
                            shadow-lg shadow-gray-200/50 p-4 z-[1000] border border-gray-100/50">
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-gray-700">
-                  <span className="text-blue-500">🚗</span>
+                  <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                   <span className="font-medium">{currentSpeed} km/h</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
-                  <span className="text-green-500">📊</span>
+                  <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                   <span>Avg: {averageSpeed} km/h</span>
                 </div>
                 {locationAccuracy && (
                   <div className="flex items-center gap-2 text-gray-500 text-xs">
-                    <span>📡</span>
-                    <span>GPS: ±{Math.round(locationAccuracy)}m</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" /></svg>
+                    <span>GPS: +/-{Math.round(locationAccuracy)}m</span>
                   </div>
                 )}
               </div>
@@ -777,7 +777,11 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
               onClick={handleGetDirections}
               disabled={!coordinates}
             >
-              <span>{isNavigating ? "🔄" : "🧭"}</span>
+              {isNavigating ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+              )}
               {isNavigating ? "Recalculate" : "Start Navigation"}
             </button>
             
@@ -795,7 +799,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
               disabled={!coordinates}
               title="Launch AR Navigation"
             >
-              <span>📱</span> AR Navigation
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg> AR Navigation
             </button>
           </div>
         </>
