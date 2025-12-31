@@ -44,8 +44,12 @@ class JsonDB:
             print(f"Error writing {file_path}: {e}")
             return False
 
-# CORS configuration - Allow all origins in development
-CORS(app, origins=app.config.get('CORS_ORIGINS', ['http://localhost:3000', 'http://127.0.0.1:3000']), supports_credentials=True)
+# CORS configuration - Allow frontend origins
+CORS(app, origins=app.config.get('CORS_ORIGINS', [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://campus-navigation-rvce.vercel.app'
+]), supports_credentials=True)
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO)
