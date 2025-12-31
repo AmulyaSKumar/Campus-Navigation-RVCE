@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Search from "./Search";
 import { API_ENDPOINTS } from "../config/apiConfig";
-import "./Navbar.css";
 import logo from "./logo.png";
 
 const Navbar = ({ onPlaceSelected }) => {
@@ -73,34 +72,51 @@ const Navbar = ({ onPlaceSelected }) => {
   };
 
   return (
-    <div className="navbar-container">
-      <img src={logo} alt="College Logo" className="logo" />
-      <div className="navbar">
-        <h1>Campus Navigator</h1>
-        <div className="subtitle">Find buildings, departments and popular spots on campus — fast and simply.</div>
+    <div className="flex justify-center items-center min-h-screen w-full bg-white p-4 safe-top safe-bottom">
+      <img 
+        src={logo} 
+        alt="College Logo" 
+        className="absolute top-5 left-5 w-20 h-auto md:w-16 sm:w-14"
+      />
+      <div className="flex flex-col items-center justify-center p-6 md:p-8 bg-white text-gray-900 rounded-xl shadow-lg border border-gray-100 max-w-xl w-full text-center relative mt-12 sm:mt-16">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 tracking-tight leading-tight">
+          Campus Navigator
+        </h1>
+        <p className="text-sm sm:text-base text-gray-500 mb-6 leading-relaxed">
+          Find buildings, departments and popular spots on campus — fast and simply.
+        </p>
 
-        <Search onPlaceSelected={onPlaceSelected} updateTopPlaces={fetchTopPlaces} />
-        <button className="enable-location-btn" onClick={requestLocationFromNavbar}>Enable Location</button>
-                {/* Open Map CTA */}
-        <button className="open-map-button" onClick={() => navigate("/map") }>
+        <div className="w-full max-w-md mb-5">
+          <Search onPlaceSelected={onPlaceSelected} updateTopPlaces={fetchTopPlaces} />
+        </div>
+
+        <button 
+          className="btn-secondary w-full max-w-xs mt-3"
+          onClick={requestLocationFromNavbar}
+        >
+          Enable Location
+        </button>
+
+        <button 
+          className="btn-primary w-full max-w-xs mt-4 font-bold"
+          onClick={() => navigate("/map")}
+        >
           Open Map
         </button>
-        {/* Chatbot Button */}
-  {/*      <button className="chatbot-button" onClick={() => navigate("/chat")}>
-          Open Chatbot
-        </button>
-*/}
+
         {topPlaces.length > 0 && (
-          <div className="top-places-section">
-            <h3>Popular Locations</h3>
-            <div className="top-places">
+          <div className="w-full mt-8">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
+              Popular Locations
+            </h3>
+            <div className="flex flex-row flex-wrap justify-center items-center gap-2 sm:gap-3 w-full">
               {isLoading ? (
-                <span className="loading-text">Loading...</span>
+                <span className="text-sm text-gray-500">Loading...</span>
               ) : (
                 topPlaces.map((place) => (
                   <button
                     key={place.name}
-                    className="top-place-button"
+                    className="btn-place flex-grow-0 flex-shrink-0"
                     onClick={() => handleTopPlaceClick(place)}
                   >
                     {place.name}

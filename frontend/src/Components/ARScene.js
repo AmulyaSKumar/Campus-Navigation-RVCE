@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { API_ENDPOINTS } from "../config/apiConfig";
-import "./ARScene.css";
 
 // ============ FAKE LOCATION FOR DEMO ============
 const USE_FAKE_LOCATION = false;
@@ -603,76 +602,85 @@ const ARScene = ({ selectedLocation, onClose }) => {
   };
 
   return (
-    <div className="ar-scene-container">
+    <div className="fixed inset-0 w-full h-full bg-black z-[9999] overflow-hidden font-google">
       {/* Camera Stream */}
       <video
         ref={videoRef}
-        className="ar-video"
+        className="absolute inset-0 w-full h-full object-cover"
         playsInline
         muted
       ></video>
       
       {/* Gradient background when no camera */}
-      <div className="ar-bg-gradient"></div>
+      <div className="absolute inset-0 bg-ar-gradient -z-10"></div>
 
       {/* AR Canvas Overlay */}
-      <canvas ref={canvasRef} className="ar-canvas"></canvas>
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-10 pointer-events-none"></canvas>
 
       {/* Top Status Bar */}
-      <div className="ar-top-bar">
-        <div className="status-pill">
-          <span className={`status-dot ${arStatus}`}></span>
+      <div className="absolute top-0 left-0 right-0 h-16 px-4 safe-top flex justify-between items-center 
+                      bg-gradient-to-b from-black/60 to-transparent z-20">
+        <div className="flex items-center gap-2 bg-black/50 py-2 px-4 rounded-full text-white text-sm font-medium backdrop-blur-lg">
+          <span className={`w-2 h-2 rounded-full ${
+            arStatus === 'tracking' ? 'bg-green-400 shadow-[0_0_10px_#00E676]' :
+            arStatus === 'error' ? 'bg-red-500' : 'bg-orange-400'
+          }`}></span>
           <span>
             {arStatus === "initializing" && "Starting..."}
             {arStatus === "tracking" && "Live View"}
             {arStatus === "error" && "Error"}
           </span>
         </div>
-        <button className="close-btn" onClick={onClose}>✕</button>
+        <button className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-lg border-none text-white 
+                          text-xl flex items-center justify-center cursor-pointer
+                          hover:bg-black/60 active:scale-95 transition-all" onClick={onClose}>✕</button>
       </div>
 
       {/* Navigation Instruction Card - Google Maps Style */}
       {selectedLocation && !arrived && (
-        <div className="nav-instruction-card">
-          <div className="nav-icon-box">
-            {turnDirection === "straight" && <span className="nav-arrow">↑</span>}
-            {turnDirection === "right" && <span className="nav-arrow right">↱</span>}
-            {turnDirection === "left" && <span className="nav-arrow left">↰</span>}
+        <div className="absolute top-20 safe-top left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-ar 
+                        py-3 px-5 flex items-center gap-4 min-w-[260px] max-w-[90%] z-30">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 
+                         flex items-center justify-center shadow-md">
+            {turnDirection === "straight" && <span className="text-white text-3xl font-bold">↑</span>}
+            {turnDirection === "right" && <span className="text-white text-3xl font-bold">↱</span>}
+            {turnDirection === "left" && <span className="text-white text-3xl font-bold">↰</span>}
           </div>
-          <div className="nav-text-box">
-            <span className="nav-action">{getTurnText(getCurrentBearing()).text}</span>
-            <span className="nav-dest">toward {selectedLocation.name}</span>
+          <div className="flex flex-col gap-0.5">
+            <span className="font-bold text-gray-900 text-lg">{getTurnText(getCurrentBearing()).text}</span>
+            <span className="text-sm text-gray-500">toward {selectedLocation.name}</span>
           </div>
         </div>
       )}
 
       {/* Bottom Info Panel */}
       {selectedLocation && !arrived && (
-        <div className="bottom-info-panel">
-          <div className="stats-row">
-            <div className="stat-item">
-              <span className="stat-value primary">{formatDistance(distance)}</span>
-              <span className="stat-label">Distance</span>
+        <div className="absolute bottom-28 safe-bottom left-4 right-4 bg-white/95 backdrop-blur-lg 
+                        rounded-3xl shadow-ar p-5 z-30">
+          <div className="flex justify-around items-center mb-4">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-2xl font-bold text-blue-600">{formatDistance(distance)}</span>
+              <span className="text-xs text-gray-400 uppercase tracking-wider">Distance</span>
             </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-value secondary">{eta || "--"}</span>
-              <span className="stat-label">Walk time</span>
+            <div className="w-px h-10 bg-gray-200"></div>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-2xl font-bold text-gray-700">{eta || "--"}</span>
+              <span className="text-xs text-gray-400 uppercase tracking-wider">Walk time</span>
             </div>
           </div>
           
-          <div className="dest-preview">
+          <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
             {selectedLocation.image_url && (
               <img 
                 src={selectedLocation.image_url} 
                 alt=""
-                className="dest-thumb"
+                className="w-12 h-12 rounded-lg object-cover"
                 onError={(e) => e.target.style.display = 'none'}
               />
             )}
-            <div className="dest-details">
-              <span className="dest-name">{selectedLocation.name}</span>
-              <span className="dest-coords">
+            <div className="flex flex-col">
+              <span className="font-semibold text-gray-900 text-sm">{selectedLocation.name}</span>
+              <span className="text-xs text-gray-400">
                 {selectedLocation.coordinates[0].toFixed(4)}°, {selectedLocation.coordinates[1].toFixed(4)}°
               </span>
             </div>
@@ -682,33 +690,39 @@ const ARScene = ({ selectedLocation, onClose }) => {
 
       {/* Arrival Celebration */}
       {arrived && (
-        <div className="arrival-overlay">
-          <div className="arrival-modal">
-            <div className="arrival-emoji">🎯</div>
-            <h2>You've Arrived!</h2>
-            <p>{selectedLocation.name}</p>
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl p-8 text-center max-w-sm mx-4 shadow-2xl animate-bounce">
+            <div className="text-6xl mb-4">🎯</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">You've Arrived!</h2>
+            <p className="text-gray-600 mb-4">{selectedLocation.name}</p>
             {selectedLocation.image_url && (
               <img 
                 src={selectedLocation.image_url} 
                 alt=""
-                className="arrival-img"
+                className="w-full h-32 object-cover rounded-xl mb-4"
                 onError={(e) => e.target.style.display = 'none'}
               />
             )}
-            <button className="arrival-btn" onClick={onClose}>End Navigation</button>
+            <button className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl 
+                              hover:bg-blue-700 transition-colors" onClick={onClose}>End Navigation</button>
           </div>
         </div>
       )}
 
       {/* Bottom Control Bar */}
-      <div className="control-bar">
-        <button className="ctrl-btn exit" onClick={onClose}>
-          <span>✕</span>
-          <small>Exit</small>
+      <div className="absolute bottom-4 safe-bottom left-1/2 -translate-x-1/2 flex gap-4 z-40">
+        <button className="flex flex-col items-center gap-1 bg-red-500/90 text-white py-2.5 px-5 
+                          rounded-2xl backdrop-blur-lg min-h-[56px] border-none cursor-pointer
+                          hover:bg-red-600 active:scale-95 transition-all" onClick={onClose}>
+          <span className="text-lg">✕</span>
+          <small className="text-[10px] uppercase tracking-wider">Exit</small>
         </button>
-        <button className="ctrl-btn" onClick={() => compassHeadingRef.current = 0}>
-          <span>🧭</span>
-          <small>Calibrate</small>
+        <button className="flex flex-col items-center gap-1 bg-white/20 text-white py-2.5 px-5 
+                          rounded-2xl backdrop-blur-lg min-h-[56px] border border-white/30 cursor-pointer
+                          hover:bg-white/30 active:scale-95 transition-all" 
+                onClick={() => compassHeadingRef.current = 0}>
+          <span className="text-lg">🧭</span>
+          <small className="text-[10px] uppercase tracking-wider">Calibrate</small>
         </button>
       </div>
     </div>

@@ -7,7 +7,6 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import ARScene from "./ARScene";
 import { API_ENDPOINTS } from "../config/apiConfig";
-import "./MapPage.css";
 
 // ============ FAKE LOCATION FOR DEMO ============
 // Set to true for presentation/demo mode
@@ -588,7 +587,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
   };
 
   return (
-    <div className="map-page">
+    <div className="relative h-screen w-full overflow-hidden font-sans">
       {isARMode && locationData ? (
         <ARScene 
           selectedLocation={locationData} 
@@ -597,7 +596,10 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
       ) : (
         <>
           <button
-            className="small-top-arrow"
+            className="fixed top-16 left-4 z-[1100] w-9 h-9 flex items-center justify-center 
+                       bg-white border border-gray-200 text-gray-900 rounded-full shadow-md 
+                       cursor-pointer text-lg leading-none min-h-[44px] min-w-[44px]
+                       hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 transition-all"
             onClick={handleBackAndChangeDestination}
             title="Back"
             aria-label="Go back"
@@ -606,31 +608,42 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           </button>
 
           {showPermissionBanner && (
-            <div className="permission-banner" role="status" aria-live="polite">
+            <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-amber-50 text-gray-800 
+                           border border-amber-200 py-2 px-3 rounded-lg flex items-center gap-2.5 
+                           shadow-md z-[1100] text-sm" role="status" aria-live="polite">
               <span>Location required for accurate navigation</span>
-              <button className="permission-button" onClick={requestLocationPermission}>Enable</button>
+              <button className="bg-amber-500 text-white border-none py-1.5 px-2.5 rounded-md 
+                                cursor-pointer font-semibold min-h-[32px]" 
+                      onClick={requestLocationPermission}>Enable</button>
             </div>
           )}
 
-          <div id="map" className="map-container"></div>
+          <div id="map" className="h-full w-full z-[1]"></div>
 
-          <div className="compact-search-bar">
+          <div className="fixed top-5 right-5 w-64 z-[1001] bg-white rounded-lg shadow-lg overflow-hidden
+                         sm:w-48 sm:top-3 sm:right-3">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSidebarSearch(e.target.value)}
               placeholder="Search..."
-              className="compact-search-input"
+              className="w-full py-2.5 px-3.5 border-none text-sm bg-white min-h-[40px]
+                        focus:outline-none focus:bg-gray-50 transition-all"
               autoComplete="off"
             />
-            {isSearchLoading && <div className="compact-loading-spinner" />}
+            {isSearchLoading && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 
+                             border-2 border-gray-200 border-t-purple-500 rounded-full animate-spin" />
+            )}
             {searchSuggestions.length > 0 && (
-              <ul className="compact-suggestions">
+              <ul className="list-none p-0 m-0 bg-white border-t border-gray-200 max-h-48 overflow-y-auto">
                 {searchSuggestions.map((place, index) => (
                   <li
                     key={`${place.name}-${index}`}
                     onClick={() => handleSelectFromSidebar(place)}
-                    className="compact-suggestion-item"
+                    className="py-2.5 px-3.5 border-b border-gray-100 cursor-pointer text-sm text-gray-800 
+                              min-h-[40px] flex items-center transition-all
+                              hover:bg-gray-50 hover:pl-4 hover:text-purple-600 hover:font-medium"
                   >
                     {place.name}
                   </li>
@@ -640,19 +653,21 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           </div>
 
           {locationData && locationData.image_url && (
-            <div className="location-image-container">
+            <div className="absolute top-24 right-5 bg-white p-3 rounded-xl shadow-lg z-[1000] 
+                           max-w-[300px] border border-gray-100 hidden md:block">
               <img 
                 src={locationData.image_url} 
                 alt={locationData.name || 'Location'}
-                className="location-image"
+                className="w-64 h-44 object-cover rounded-lg block mb-2"
               />
-              <h3>{locationData.name}</h3>
+              <h3 className="m-0 text-base text-gray-900 font-semibold px-1">{locationData.name}</h3>
             </div>
           )}
 
 
           {error && (
-            <div className="error-message">
+            <div className="absolute top-5 left-1/2 -translate-x-1/2 bg-red-500 text-white 
+                           py-3 px-6 rounded-lg text-sm z-[2000] shadow-md">
               {error}
             </div>
           )}
@@ -676,26 +691,29 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           )}
 
           {isNavigating && directions.length > 0 && (
-            <div className="directions-panel">
-              <div className="directions-header">
-                <h3>Directions</h3>
+            <div className="absolute top-5 left-5 w-72 max-w-[90%] max-h-[calc(100vh-100px)] 
+                           bg-white rounded-xl shadow-lg p-4 z-[1000] overflow-hidden flex flex-col
+                           md:bottom-24 md:top-auto md:left-1/2 md:-translate-x-1/2 md:w-[90%] md:max-h-[40vh]
+                           sm:hidden">
+              <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
+                <h3 className="m-0 text-lg text-gray-800 font-semibold">Directions</h3>
                 {totalDistance !== null && (
-                  <div className="route-summary">
-                    <span className="total-distance">{formatDistance(totalDistance)}</span>
-                    <span className="separator">•</span>
-                    <span className="total-time">{formatTime(estimatedTime)}</span>
+                  <div className="flex items-center gap-2 text-gray-600 text-sm">
+                    <span>{formatDistance(totalDistance)}</span>
+                    <span className="text-gray-400">•</span>
+                    <span>{formatTime(estimatedTime)}</span>
                   </div>
                 )}
               </div>
-              <div className="directions-list">
+              <div className="overflow-y-auto flex-grow pr-2">
                 {directions.map((direction, index) => (
-                  <div key={index} className="direction-item">
-                    <div className="direction-icon">
+                  <div key={index} className="flex items-start py-3 border-b border-gray-100 last:border-b-0">
+                    <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mr-3 text-lg text-blue-500">
                       {getDirectionIcon(direction.type)}
                     </div>
-                    <div className="direction-content">
-                      <span className="direction-text">{direction.text}</span>
-                      <span className="direction-distance">
+                    <div className="flex-grow flex flex-col gap-1">
+                      <span className="text-sm text-gray-800 leading-relaxed">{direction.text}</span>
+                      <span className="text-xs text-gray-600">
                         {formatDistance(direction.distance)}
                       </span>
                     </div>
@@ -705,9 +723,16 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
             </div>
           )}
           
-          <div className="button-container">
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-3 z-[1000] 
+                         flex-wrap justify-center w-[90%] max-w-lg px-2.5
+                         sm:bottom-2.5 sm:gap-1.5 sm:w-full">
             <button 
-              className="get-directions-button"
+              className="py-3 px-6 bg-blue-500 text-white border-none rounded-3xl text-base font-medium 
+                        cursor-pointer shadow-md flex-1 min-w-[140px] min-h-[44px] 
+                        flex items-center justify-center transition-all
+                        hover:bg-blue-600 hover:shadow-lg hover:-translate-y-0.5
+                        active:translate-y-0 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-60
+                        sm:py-2.5 sm:px-3 sm:text-xs sm:min-w-[100px]"
               onClick={handleGetDirections}
               disabled={!coordinates}
             >
@@ -715,7 +740,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
             </button>
             
             <button 
-              className="ar-navigation-button"
+              className="btn-ar flex-1 min-w-[140px] sm:py-2.5 sm:px-3 sm:text-xs sm:min-w-[100px]"
               onClick={handleStartAR}
               disabled={!coordinates}
               title="Launch AR Navigation"
