@@ -15,7 +15,8 @@ function Chatbot() {
             setChat(prevChat => [...prevChat, userMessage]);
             
             // Updated port to 5001
-            const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/chat`, { 
+            const API_BASE = (process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE || 'http://localhost:5001').replace(/\/$/, '');
+            const response = await axios.post(`${API_BASE}/chat`, { 
                 message: message 
             });
             

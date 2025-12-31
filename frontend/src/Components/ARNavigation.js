@@ -1,6 +1,40 @@
 import React, { useEffect, useState } from "react";
 import "./ARNavigation.css";
 
+// ============ FAKE LOCATION FOR DEMO ============
+const USE_FAKE_LOCATION = true;
+const FAKE_LOCATION = {
+  coords: {
+    latitude: 12.923383,   // ISE Dept RVCE
+    longitude: 77.501071,
+    accuracy: 10
+  }
+};
+
+let fakeWatchId = 0;
+const fakeWatchIntervals = {};
+
+const watchFakeOrRealPosition = (successCallback, errorCallback, options) => {
+  if (USE_FAKE_LOCATION) {
+    fakeWatchId++;
+    const id = fakeWatchId;
+    fakeWatchIntervals[id] = setInterval(() => successCallback(FAKE_LOCATION), 2000);
+    setTimeout(() => successCallback(FAKE_LOCATION), 100);
+    return id;
+  }
+  return navigator.geolocation.watchPosition(successCallback, errorCallback, options);
+};
+
+const clearFakeOrRealWatch = (watchId) => {
+  if (USE_FAKE_LOCATION && fakeWatchIntervals[watchId]) {
+    clearInterval(fakeWatchIntervals[watchId]);
+    delete fakeWatchIntervals[watchId];
+    return;
+  }
+  if (watchId) navigator.geolocation.clearWatch(watchId);
+};
+// ============ END FAKE LOCATION ============
+
 const ARNavigation = ({ selectedLocation, onClose }) => {
   const [arStatus, setArStatus] = useState("initializing");
   const [distance, setDistance] = useState(null);
@@ -93,7 +127,7 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
       return;
     }
 
-    if (!navigator.geolocation) {
+    if (!navigator.geolocation && !USE_FAKE_LOCATION) {
       setArStatus("error");
       alert("Geolocation not supported in this browser");
       return;
@@ -117,11 +151,11 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
     });
 
     // Watch user position
-    const watchId = navigator.geolocation.watchPosition(
+    const watchId = watchFakeOrRealPosition(
       (position) => {
         const { latitude, longitude, accuracy } = position.coords;
         setUserLocation({ latitude, longitude });
-        setGpsAccuracy(accuracy);
+        setGpsAccuracy(accuracy || 10);
 
         if (selectedLocation) {
           const dist = calculateDistance(
@@ -151,7 +185,7 @@ const ARNavigation = ({ selectedLocation, onClose }) => {
 
     // Cleanup function
     return () => {
-      navigator.geolocation.clearWatch(watchId);
+      clearFakeOrRealWatch(watchId);
       stopHeading();
     };
   };

@@ -1,227 +1,299 @@
-# Campus Navigator
+#  Campus Navigator
 
-A full-stack web application for campus navigation with AI chatbot assistance.
+An intelligent campus navigation system that helps students, visitors, and staff find buildings, departments, and popular spots on campus quickly and easily.
 
-## Project Structure
+![Status](https://img.shields.io/badge/Status-Active-success) ![React](https://img.shields.io/badge/Frontend-React-blue) ![Flask](https://img.shields.io/badge/Backend-Flask-green) ![Python](https://img.shields.io/badge/Python-3.11-yellow)
+
+---
+
+##  Table of Contents
+
+- [Problem Statement](#-problem-statement)
+- [Solution](#-solution)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Installation](#-installation)
+- [API Endpoints](#-api-endpoints)
+- [Project Structure](#-project-structure)
+
+---
+
+##  Problem Statement
+
+### Challenges Faced by Campus Visitors & Students
+
+| Challenge | Description |
+|-----------|-------------|
+| **Navigation Difficulty** | New students, visitors, and parents struggle to find specific buildings, departments, or facilities on large college campuses |
+| **Lack of Real-time Assistance** | Traditional campus maps are static and don't provide interactive guidance |
+| **Information Accessibility** | Finding information about department locations, seminar halls, hostels is fragmented |
+| **No Personalized Help** | Users cannot ask natural language questions and get immediate responses |
+| **Mobile Accessibility** | Existing solutions often don't work well on mobile devices |
+
+---
+
+##  Solution
+
+**Campus Navigator** is a full-stack web application that provides:
+
+| Solution | Benefit |
+|----------|---------|
+|  **Interactive Map** | Visual navigation with Leaflet/Google Maps |
+|  **Smart Search** | Autocomplete-enabled search for locations |
+|  **AI Chatbot** | Natural language queries using semantic similarity |
+|  **Popular Places** | Dynamic tracking of frequently searched locations |
+|  **AR Navigation** | Augmented reality overlays for real-world navigation |
+|  **Mobile-Responsive** | Works on phones, tablets, and desktops |
+
+---
+
+##  Features
+
+###  Interactive Campus Map
+- Leaflet maps with campus overlay
+- Real-time GPS location tracking
+- Visual markers for all campus buildings
+- Turn-by-turn navigation
+
+###  Smart Search
+- **Autocomplete suggestions** as you type
+- **Fuzzy matching** for location names
+- Debounced API calls for performance
+
+###  AI Chatbot Assistant
+- **Semantic similarity matching** using Sentence Transformers
+- **all-MiniLM-L6-v2** model (384-dim embeddings)
+- AIML pattern matching fallback
+- Context-aware responses
+
+###  AR Navigation
+- Camera-based augmented reality view
+- Compass heading for direction
+- Distance overlay to destination
+- Real-time position updates
+
+###  Popular Places
+- Tracks most searched locations
+- Dynamic ranking based on user interest
+- Quick access buttons
+
+---
+
+##  Tech Stack
+
+### Frontend
+| Technology | Purpose |
+|------------|---------|
+| **React.js 18** | UI Framework |
+| **React Router v6** | Navigation |
+| **Axios** | HTTP Client |
+| **Leaflet** | Map Rendering |
+| **CSS3** | Styling |
+
+### Backend
+| Technology | Purpose |
+|------------|---------|
+| **Flask 3.x** | Web Framework |
+| **Flask-CORS** | Cross-Origin Requests |
+| **Gunicorn** | Production Server |
+| **Transformers** | NLP Models |
+| **PyTorch** | ML Framework |
+| **AIML** | Pattern Chatbot |
+
+### AI/ML Components
+| Component | Technology |
+|-----------|------------|
+| **Semantic Search** | sentence-transformers/all-MiniLM-L6-v2 |
+| **Embeddings** | 384-dimensional vectors |
+| **Similarity** | Cosine Similarity (threshold: 0.7) |
+| **Lazy Loading** | Memory optimization |
+
+---
+
+##  Architecture
+
+```
+
+                    FRONTEND (React.js)                       
+         
+   Navbar     Search     MapPage    Chatbot/AR Nav   
+         
+                  
+                     Axios HTTP Client                        
+
+                              HTTP/HTTPS
+
+                    BACKEND (Flask)                           
+   
+                REST API Endpoints                          
+    /api/search    /api/top-places    /chat              
+   
+                                                           
+      
+   JSON Database   Location       Chatbot Module       
+   (locations,     Service          
+    searches)                   Semantic Model       
+      (Transformers)       
+                                        
+                                    AIML Patterns        
+                                        
+                                    
+
+```
+
+---
+
+##  Installation
+
+### Prerequisites
+- Node.js 16+ and npm
+- Python 3.9+
+- Git
+
+### Backend Setup
+
+```bash
+cd backend
+python -m venv venv
+
+# Windows
+.\venv\Scripts\activate
+
+# Linux/Mac
+source venv/bin/activate
+
+pip install -r requirements.txt
+python main.py
+```
+
+Backend runs at: **http://localhost:5001**
+
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Frontend runs at: **http://localhost:3000**
+
+---
+
+##  API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/search?q={query} | Search locations |
+| POST | /api/search | Record search (update popularity) |
+| GET | /api/top-places | Get top 5 popular places |
+| POST | /chat | Send message to AI chatbot |
+
+### Example Requests
+
+```bash
+# Search locations
+curl "http://localhost:5001/api/search?q=computer"
+
+# Get popular places
+curl "http://localhost:5001/api/top-places"
+
+# Chat with bot
+curl -X POST "http://localhost:5001/chat" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Where is the library?"}'
+```
+
+---
+
+##  Project Structure
 
 ```
 campus-navigator/
-├── backend/              # Flask API server
-│   ├── chatbot/         # AI chatbot module
-│   ├── main.py          # Main Flask application
-│   ├── config.py        # Configuration management
-│   ├── requirements.txt # Python dependencies
-│   └── .env.example     # Environment variables template
-│
-├── frontend/            # React web application
-│   ├── src/            # React source files
-│   ├── public/         # Static assets
-│   ├── package.json    # Node dependencies
-│   └── .env.example    # Frontend env template
-│
-└── README.md
+ backend/
+    main.py                 # Flask entry point
+    config.py               # Configuration
+    requirements.txt        # Python dependencies
+    Dockerfile              # Container config
+    Procfile                # Deployment config
+    chatbot/
+       chat.py             # AIML handler
+       bot.aiml            # Chat patterns
+       semantic_model.py   # ML semantic search
+       questions.json      # FAQ knowledge base
+    *.json                  # Location databases
+
+ frontend/
+    src/
+       App.js              # Main component
+       Components/
+          Navbar.js       # Navigation + search
+          Search.js       # Autocomplete search
+          MapPage.js      # Map + navigation
+          chatbot.js      # AI chat interface
+          ARScene.js      # AR navigation
+          ARNavigation.js # AR overlay
+       api/
+           geolocation.js  # GPS utilities
+    package.json
+
+ README.md
 ```
-
-## About
-
-Campus Navigator is a real-time GPS navigation system built specifically for RVCE campus. It integrates location-based services with a rule-based AIML chatbot to help students and visitors find their way around campus. The system features turn-by-turn navigation with visual building recognition, popular location tracking, and a campus information assistant.
-
-The project uses React.js with Leaflet maps for the frontend, Flask with MongoDB for the backend, and AIML for the chatbot component.
 
 ---
 
-## Prerequisites
+##  Implementation Highlights
 
-- Python 3.8+
-- Node.js 14+
-- MongoDB (local or cloud instance)
+### Semantic Search Algorithm
+```python
+# 1. Load pre-trained model (lazy loaded)
+model = "sentence-transformers/all-MiniLM-L6-v2"
 
-## Backend Setup
+# 2. Generate 384-dim embedding for query
+user_embedding = get_embedding(user_query)
 
-1. Navigate to backend directory:
-   ```bash
-   cd backend
-   ```
+# 3. Compare with FAQ using cosine similarity
+for question in FAQ:
+    similarity = cosine_similarity(user_embedding, question_embedding)
+    if similarity > 0.7:
+        return get_answer(question)
 
-2. Create virtual environment:
-   ```bash
-   python -m venv venv
-   ```
-
-3. Activate virtual environment:
-   - Windows: `venv\Scripts\activate`
-   - Mac/Linux: `source venv/bin/activate`
-
-4. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-5. Create `.env` file from example:
-   ```bash
-   cp .env.example .env
-   ```
-
-6. Configure your MongoDB URI in `.env`:
-   ```
-   MONGO_URI=mongodb://localhost:27017/campus_navigator
-   FLASK_PORT=5001
-   FLASK_ENV=development
-   CORS_ORIGINS=http://localhost:3000
-   ```
-
-7. Set up MongoDB database:
-   ```bash
-   python setup_mongodb.py
-   ```
-
-8. Run the backend server:
-   ```bash
-   python main.py
-   ```
-
-Backend will run on `http://localhost:5001`
-
-## Frontend Setup
-
-1. Navigate to frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create `.env` file from example:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Configure environment variables in `.env`:
-   ```
-   REACT_APP_API_URL=http://localhost:5001
-   REACT_APP_GOOGLE_MAPS_API_KEY=your_api_key_here
-   ```
-
-5. Run the development server:
-   ```bash
-   npm start
-   ```
-
-Frontend will run on `http://localhost:3000`
-
-## Production Deployment
-
-### Backend (Flask)
-
-**Option 1: Using Gunicorn (Recommended for Linux/Mac)**
-```bash
-cd backend
-gunicorn -w 4 -b 0.0.0.0:5001 main:app
+# 4. Fallback to AIML patterns
+return aiml_response(user_query)
 ```
 
-**Option 2: Using Waitress (Windows)**
-```bash
-cd backend
-pip install waitress
-waitress-serve --host=0.0.0.0 --port=5001 main:app
-```
-
-**Environment Variables for Production:**
-- Set `FLASK_ENV=production`
-- Update `MONGO_URI` to your production MongoDB instance
-- Update `CORS_ORIGINS` to your production frontend URL
-
-### Frontend (React)
-
-1. Build for production:
-   ```bash
-   cd frontend
-   npm run build
-   ```
-
-2. Deploy the `build/` folder to your hosting platform
-
-3. Update `.env` for production:
-   ```
-   REACT_APP_API_URL=https://your-backend-domain.com
-   ```
-
-## Deployment Platforms
-
-### Recommended Platforms
-
-**Backend:**
-- [Railway](https://railway.app/) - Easy Python deployment
-- [Render](https://render.com/) - Free tier available
-- [Heroku](https://heroku.com/) - Established platform
-- [AWS EC2](https://aws.amazon.com/ec2/) - Full control
-
-**Frontend:**
-- [Vercel](https://vercel.com/) - Optimized for React
-- [Netlify](https://netlify.com/) - Free tier with CI/CD
-- [GitHub Pages](https://pages.github.com/) - Free static hosting
-
-**Database:**
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) - Free tier available
-
-## API Endpoints
-
-- `POST /chat` - Chatbot conversation
-- `GET /api/search?q=query` - Search locations
-- `POST /api/search` - Record search
-- `GET /api/top-places` - Get popular locations
-- `GET /api/locations` - Get all locations
-- `GET /api/locations/<name>` - Get specific location
-
-## Technologies Used
-
-**Backend:**
-- Flask - Web framework
-- PyMongo - MongoDB integration
-- Flask-CORS - CORS handling
-- AIML - Chatbot logic
-- Transformers - Semantic matching
-
-**Frontend:**
-- React - UI framework
-- Axios - HTTP client
-- Leaflet - Maps integration
-- React Router - Navigation
+### Memory Optimization
+- **Lazy loading**: ML models load only when chatbot is used
+- **Single worker**: Gunicorn uses 1 worker for 512MB limit
+- Startup: ~100MB  After chatbot use: ~300MB
 
 ---
 
-## Mobile testing (quick ngrok setup)
+##  Future Enhancements
 
-If you want to test the app on your mobile device (camera + geolocation require HTTPS on many mobile browsers), use ngrok to create a secure tunnel to your local dev server:
-
-1. Ensure your dev machine and phone are on the same network when using the local IP approach, or use ngrok for an HTTPS URL.
-2. Start the dev server on your machine:
-   - npm start
-   - (optional) On Windows you can run `npm run start:public:win` to bind the dev server to all interfaces (HOST=0.0.0.0).
-3. In a separate terminal run:
-   - npm run ngrok
-   - or run the helper script (Windows PowerShell): `.\scripts\start-with-ngrok.ps1` which opens the dev server in a new window and runs ngrok in the current window.
-4. ngrok will print an https:// URL. Open that URL on your phone browser to access your local app over HTTPS (camera & geolocation will work on most mobile browsers).
-
-Troubleshooting ngrok authentication errors:
-- If you see an error mentioning `ERR_NGROK_4018` or `authentication failed`, it means ngrok requires an account authtoken on your machine. Fix it by running one of the following in a terminal (do NOT commit your token into source control):
-
-  ngrok authtoken <YOUR_AUTHTOKEN>
-  OR
-  ngrok config add-authtoken <YOUR_AUTHTOKEN>
-
-  You can get your token after signing up at https://dashboard.ngrok.com/signup and visiting the "Get Started" / "Auth" section: https://dashboard.ngrok.com/get-started/your-authtoken
-
-- Quick fallback if you don't want to sign up: run a localtunnel session instead (no signup required, less stable):
-
-  npx localtunnel --port 3000
-
-Notes:
-- Update `.env` (copy `.env.example`) and set `REACT_APP_API_BASE` to your ngrok URL (https) or your machine IP when testing on mobile so API calls reach the backend.
-- If the backend (Flask) is running on localhost:5001, you may also need to expose it via ngrok or set CORS accordingly.
+| Feature | Description |
+|---------|-------------|
+|  Voice Commands | Voice-based search |
+|  Indoor Mapping | Floor-by-floor navigation |
+|  Event Integration | Campus events & schedules |
+|  Multi-language | Regional language support |
+|  Accessibility | Screen reader support |
 
 ---
 
+##  Team
+
+Built for RVCE Campus Navigation
+
+---
+
+##  License
+
+MIT License
+
+---
+
+<p align="center">
+  <b>Made with  for making campus navigation easier</b>
+</p>

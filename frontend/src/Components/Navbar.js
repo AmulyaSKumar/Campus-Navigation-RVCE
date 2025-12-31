@@ -13,10 +13,10 @@ const Navbar = ({ onPlaceSelected }) => {
   const fetchTopPlaces = async () => {
     setIsLoading(true);
     try {
-      const API_BASE = process.env.REACT_APP_API_BASE ||
+      const API_BASE = (process.env.REACT_APP_API_BASE ||
         (['localhost', '127.0.0.1'].includes(window.location.hostname)
           ? 'http://127.0.0.1:5001'
-          : '');
+          : '')).replace(/\/$/, ''); // Remove trailing slash
       console.log("API base for top places:", API_BASE || "(empty)");
       const response = await axios.get(`${API_BASE}/api/top-places`);
       if (Array.isArray(response.data) && response.data.length > 0) {
@@ -46,10 +46,10 @@ const Navbar = ({ onPlaceSelected }) => {
 
   const handleTopPlaceClick = async (place) => {
     try {
-      const API_BASE = process.env.REACT_APP_API_BASE ||
+      const API_BASE = (process.env.REACT_APP_API_BASE ||
         (['localhost', '127.0.0.1'].includes(window.location.hostname)
           ? 'http://127.0.0.1:5001'
-          : '');
+          : '')).replace(/\/$/, ''); // Remove trailing slash
       await axios.post(`${API_BASE}/api/search`, {
         placeName: place.name,
       });
@@ -94,10 +94,10 @@ const Navbar = ({ onPlaceSelected }) => {
           Open Map
         </button>
         {/* Chatbot Button */}
-        <button className="chatbot-button" onClick={() => navigate("/chat")}>
+  {/*      <button className="chatbot-button" onClick={() => navigate("/chat")}>
           Open Chatbot
         </button>
-
+*/}
         {topPlaces.length > 0 && (
           <div className="top-places-section">
             <h3>Popular Locations</h3>

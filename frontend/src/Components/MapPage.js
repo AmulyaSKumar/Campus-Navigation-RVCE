@@ -8,6 +8,59 @@ import "leaflet-routing-machine";
 import ARScene from "./ARScene";
 import "./MapPage.css";
 
+// ============ FAKE LOCATION FOR DEMO ============
+// Set to true for presentation/demo mode
+const USE_FAKE_LOCATION = true;
+const FAKE_LOCATION = {
+  coords: {
+    latitude: 12.923383,   // ISE Dept RVCE
+    longitude: 77.501071,
+    accuracy: 10,
+    speed: 1.5
+  }
+};
+
+// Helper function to get location (fake or real)
+const getFakeOrRealLocation = (successCallback, errorCallback, options) => {
+  if (USE_FAKE_LOCATION) {
+    console.log("📍 Using fake location: ISE Dept RVCE");
+    setTimeout(() => successCallback(FAKE_LOCATION), 100);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
+};
+
+// Helper to simulate watchPosition for fake location
+let fakeWatchId = 0;
+const fakeWatchIntervals = {};
+const watchFakeOrRealPosition = (successCallback, errorCallback, options) => {
+  if (USE_FAKE_LOCATION) {
+    fakeWatchId++;
+    const id = fakeWatchId;
+    // Simulate periodic location updates
+    fakeWatchIntervals[id] = setInterval(() => {
+      console.log("📍 Fake location update");
+      successCallback(FAKE_LOCATION);
+    }, 2000);
+    // Initial call
+    setTimeout(() => successCallback(FAKE_LOCATION), 100);
+    return id;
+  }
+  return navigator.geolocation.watchPosition(successCallback, errorCallback, options);
+};
+
+const clearFakeOrRealWatch = (watchId) => {
+  if (USE_FAKE_LOCATION && fakeWatchIntervals[watchId]) {
+    clearInterval(fakeWatchIntervals[watchId]);
+    delete fakeWatchIntervals[watchId];
+    return;
+  }
+  if (watchId) {
+    navigator.geolocation.clearWatch(watchId);
+  }
+};
+// ============ END FAKE LOCATION ============
+
 const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
@@ -91,7 +144,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
     // Stop navigation
     setIsNavigating(false);
     if (watchPositionIdRef.current) {
-      navigator.geolocation.clearWatch(watchPositionIdRef.current);
+      clearFakeOrRealWatch(watchPositionIdRef.current);
     }
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
@@ -102,12 +155,12 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
   // Request location permission (will trigger browser prompt)
   const requestLocationPermission = () => {
-    if (!navigator.geolocation) {
+    if (!navigator.geolocation && !USE_FAKE_LOCATION) {
       alert("Geolocation is not supported by your browser.");
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
+    getFakeOrRealLocation(
       () => {
         setLocationPermission("granted");
         setShowPermissionBanner(false);
@@ -224,7 +277,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
     // Stop current navigation
     setIsNavigating(false);
     if (watchPositionIdRef.current) {
-      navigator.geolocation.clearWatch(watchPositionIdRef.current);
+      clearFakeOrRealWatch(watchPositionIdRef.current);
     }
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
@@ -397,7 +450,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
   const handleGetDirections = () => {
     setError(null);
     if (!userLocation) {
-      navigator.geolocation.getCurrentPosition(
+      getFakeOrRealLocation(
         (position) => {
           const { latitude, longitude } = position.coords;
           const newLocation = [latitude, longitude];
@@ -423,11 +476,11 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
       // Clear any existing watchers
       if (watchPositionIdRef.current) {
-        navigator.geolocation.clearWatch(watchPositionIdRef.current);
+        clearFakeOrRealWatch(watchPositionIdRef.current);
       }
 
       // Start continuous location tracking
-      watchPositionIdRef.current = navigator.geolocation.watchPosition(
+      watchPositionIdRef.current = watchFakeOrRealPosition(
         handleLocationUpdate,
         (error) => {
           console.error('Geolocation error:', error);
@@ -442,7 +495,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
         clearInterval(refreshIntervalRef.current);
       }
       refreshIntervalRef.current = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(
+        getFakeOrRealLocation(
           handleLocationUpdate,
           null,
           locationOptions
@@ -467,7 +520,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
     setMap(mapInstance);
 
     // Get initial user location
-    navigator.geolocation.getCurrentPosition(
+    getFakeOrRealLocation(
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation([latitude, longitude]);
@@ -484,7 +537,7 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
         mapInstance.remove();
       }
       if (watchPositionIdRef.current) {
-        navigator.geolocation.clearWatch(watchPositionIdRef.current);
+        clearFakeOrRealWatch(watchPositionIdRef.current);
       }
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);

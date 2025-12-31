@@ -46,8 +46,8 @@ class JsonDB:
             print(f"Error writing {file_path}: {e}")
             return False
 
-# CORS configuration
-CORS(app, origins=app.config.get('CORS_ORIGINS', ['http://localhost:3000']))
+# CORS configuration - Allow all origins in development
+CORS(app, origins=app.config.get('CORS_ORIGINS', ['http://localhost:3000', 'http://127.0.0.1:3000']), supports_credentials=True)
 
 # Test chatbot response in terminal
 response = chatbot.get_response("HELLO")

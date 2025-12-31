@@ -7,11 +7,12 @@ class Config:
     """Base configuration"""
     FLASK_PORT = int(os.getenv('FLASK_PORT', 5001))
     FLASK_ENV = os.getenv('FLASK_ENV', 'development')
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(',')
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
 
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
+    CORS_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
 
 class ProductionConfig(Config):
     """Production configuration"""
