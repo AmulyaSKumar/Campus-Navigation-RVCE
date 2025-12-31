@@ -282,18 +282,5 @@ return aiml_response(user_query)
 
 ---
 
-##  Team
 
-Built for RVCE Campus Navigation
 
----
-
-##  License
-
-MIT License
-
----
-
-<p align="center">
-  <b>Made with  for making campus navigation easier</b>
-</p>
