@@ -597,17 +597,17 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
         <>
           {/* Enhanced Back Button */}
           <button
-            className="fixed top-5 left-5 z-[1100] w-12 h-12 flex items-center justify-center 
-                       bg-white/95 backdrop-blur-sm border-0 text-gray-700 rounded-xl 
-                       shadow-lg shadow-gray-200/50 cursor-pointer text-xl 
-                       min-h-[48px] min-w-[48px] transition-all duration-300
+            className="fixed top-3 left-3 md:top-5 md:left-5 z-[1100] w-10 h-10 md:w-12 md:h-12 flex items-center justify-center 
+                       bg-white/95 backdrop-blur-sm border-0 text-gray-700 rounded-lg md:rounded-xl 
+                       shadow-lg shadow-gray-200/50 cursor-pointer text-lg md:text-xl 
+                       min-h-[40px] min-w-[40px] md:min-h-[48px] md:min-w-[48px] transition-all duration-300
                        hover:-translate-y-1 hover:shadow-xl hover:bg-white
                        active:translate-y-0 active:scale-95"
             onClick={handleBackAndChangeDestination}
             title="Back to Home"
             aria-label="Go back"
           >
-            <span className="transform hover:scale-110 transition-transform">←</span>
+            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           </button>
 
           {/* Enhanced Permission Banner */}
@@ -629,17 +629,16 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           <div id="map" className="h-full w-full z-[1]"></div>
 
           {/* Enhanced Search Sidebar */}
-          <div className="fixed top-5 right-5 w-72 z-[1001] bg-white/95 backdrop-blur-md rounded-2xl 
-                         shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100/50
-                         sm:w-56 sm:top-3 sm:right-3">
+          <div className="fixed top-3 right-3 w-52 md:w-64 lg:w-72 z-[1001] bg-white/95 backdrop-blur-md rounded-xl md:rounded-2xl 
+                         shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100/50">
             <div className="relative">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <svg className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSidebarSearch(e.target.value)}
-                placeholder="Search destination..."
-                className="w-full py-3.5 pl-12 pr-4 border-none text-sm bg-transparent min-h-[48px]
+                placeholder="Search..."
+                className="w-full py-3 md:py-3.5 pl-10 md:pl-12 pr-3 md:pr-4 border-none text-sm bg-transparent min-h-[44px] md:min-h-[48px]
                           focus:outline-none focus:bg-gray-50/50 transition-all placeholder:text-gray-400"
                 autoComplete="off"
               />
@@ -698,9 +697,9 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Speed Panel */}
           {isNavigating && (
-            <div className="fixed top-20 left-5 bg-white/95 backdrop-blur-sm rounded-2xl 
-                           shadow-lg shadow-gray-200/50 p-4 z-[1000] border border-gray-100/50">
-              <div className="space-y-2 text-sm">
+            <div className="fixed top-16 left-3 md:top-20 md:left-5 bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl 
+                           shadow-lg shadow-gray-200/50 p-3 md:p-4 z-[1000] border border-gray-100/50">
+              <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
                 <div className="flex items-center gap-2 text-gray-700">
                   <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                   <span className="font-medium">{currentSpeed} km/h</span>
@@ -721,11 +720,10 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
 
           {/* Enhanced Directions Panel */}
           {isNavigating && directions.length > 0 && (
-            <div className="absolute top-5 left-20 w-80 max-w-[85%] max-h-[calc(100vh-120px)] 
-                           bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl shadow-gray-200/50 
-                           p-5 z-[1000] overflow-hidden flex flex-col border border-gray-100/50
-                           md:bottom-28 md:top-auto md:left-1/2 md:-translate-x-1/2 md:w-[90%] md:max-h-[40vh]
-                           sm:hidden">
+            <div className="fixed bottom-24 left-3 right-3 md:absolute md:top-5 md:left-20 md:bottom-auto md:right-auto 
+                           w-auto md:w-72 lg:w-80 max-h-[35vh] md:max-h-[calc(100vh-120px)] 
+                           bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl shadow-gray-200/50 
+                           p-3 md:p-5 z-[1000] overflow-hidden flex flex-col border border-gray-100/50">
               <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
                 <h3 className="m-0 text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 
                               bg-clip-text text-transparent">Directions</h3>
@@ -761,45 +759,45 @@ const MapPage = ({ coordinates, locationData, onPlaceSelected }) => {
           )}
           
           {/* Enhanced Action Buttons */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-[1000] 
-                         flex-wrap justify-center w-[90%] max-w-lg px-4
-                         sm:bottom-4 sm:gap-2 sm:w-full">
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-2 md:gap-4 z-[1000] 
+                         w-[95%] max-w-md px-2 md:px-4">
             <button 
-              className="py-4 px-8 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 
-                        text-white border-none rounded-2xl text-base font-semibold 
-                        cursor-pointer shadow-lg shadow-blue-200/50 flex-1 min-w-[160px] min-h-[52px] 
-                        flex items-center justify-center gap-2 transition-all duration-300
+              className="py-3 md:py-4 px-4 md:px-8 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 
+                        text-white border-none rounded-xl md:rounded-2xl text-xs md:text-base font-semibold 
+                        cursor-pointer shadow-lg shadow-blue-200/50 flex-1 min-h-[48px] md:min-h-[52px] 
+                        flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-300
                         hover:shadow-xl hover:shadow-blue-300/50 hover:-translate-y-1 hover:scale-[1.02]
                         active:translate-y-0 active:scale-100
                         disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
-                        disabled:opacity-60 disabled:shadow-none
-                        sm:py-3 sm:px-4 sm:text-sm sm:min-w-[120px]"
+                        disabled:opacity-60 disabled:shadow-none"
               onClick={handleGetDirections}
               disabled={!coordinates}
             >
               {isNavigating ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
               ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
               )}
-              {isNavigating ? "Recalculate" : "Start Navigation"}
+              <span className="hidden xs:inline">{isNavigating ? "Recalculate" : "Navigate"}</span>
+              <span className="xs:hidden">{isNavigating ? "Redo" : "Go"}</span>
             </button>
             
             <button 
-              className="py-4 px-8 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 
-                        text-white border-none rounded-2xl text-base font-semibold 
-                        cursor-pointer shadow-lg shadow-purple-200/50 flex-1 min-w-[160px] min-h-[52px] 
-                        flex items-center justify-center gap-2 transition-all duration-300
+              className="py-3 md:py-4 px-4 md:px-8 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 
+                        text-white border-none rounded-xl md:rounded-2xl text-xs md:text-base font-semibold 
+                        cursor-pointer shadow-lg shadow-purple-200/50 flex-1 min-h-[48px] md:min-h-[52px] 
+                        flex items-center justify-center gap-1.5 md:gap-2 transition-all duration-300
                         hover:shadow-xl hover:shadow-purple-300/50 hover:-translate-y-1 hover:scale-[1.02]
                         active:translate-y-0 active:scale-100
                         disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed 
-                        disabled:opacity-60 disabled:shadow-none
-                        sm:py-3 sm:px-4 sm:text-sm sm:min-w-[120px]"
+                        disabled:opacity-60 disabled:shadow-none"
               onClick={handleStartAR}
               disabled={!coordinates}
               title="Launch AR Navigation"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg> AR Navigation
+              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              <span className="hidden xs:inline">AR Nav</span>
+              <span className="xs:hidden">AR</span>
             </button>
           </div>
         </>
