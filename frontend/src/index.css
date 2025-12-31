@@ -1,14 +1,23 @@
-* {
+/* ====== GLOBAL RESPONSIVE RESET ====== */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -18,8 +27,24 @@ body {
   height: 100%;
   overflow-x: hidden;
   -webkit-touch-callout: none;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 code {
@@ -27,9 +52,13 @@ code {
     monospace;
 }
 
-/* Responsive Font Sizes */
+/* ====== RESPONSIVE FONT SIZING ====== */
 @media screen and (max-width: 1024px) {
   html {
+    font-size: 15px;
+  }
+  
+  body {
     font-size: 15px;
   }
 }
@@ -42,15 +71,86 @@ code {
   body {
     font-size: 14px;
   }
+  
+  input, button, select, textarea {
+    font-size: 14px !important;
+  }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 600px) {
   html {
     font-size: 13px;
   }
   
   body {
     font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+  
+  body {
+    font-size: 12px;
+  }
+  
+  input, button, select, textarea {
+    font-size: 12px !important;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  html {
+    font-size: 11px;
+  }
+  
+  body {
+    font-size: 11px;
+  }
+}
+
+/* ====== MOBILE TOUCH OPTIMIZATION ====== */
+input, button, select, textarea, a {
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  appearance: none;
+}
+
+button, input[type="button"], input[type="submit"] {
+  min-height: 44px !important;
+  min-width: 44px !important;
+  padding: 10px 12px !important;
+  font-size: 16px !important;
+  cursor: pointer;
+}
+
+input[type="text"], input[type="email"], input[type="password"], textarea, select {
+  min-height: 44px !important;
+  padding: 8px 12px !important;
+  font-size: 16px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ====== RESPONSIVE CONTAINER ====== */
+@media screen and (max-width: 768px) {
+  body {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  main, section, article {
+    padding: 8px !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  main, section, article {
+    padding: 4px !important;
   }
 }
 
