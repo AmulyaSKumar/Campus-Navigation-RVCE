@@ -197,383 +197,138 @@ const ARScene = ({ selectedLocation, onClose }) => {
     };
   };
 
-  // ============ UNITY-STYLE PARTICLE SYSTEM ============
-  const particlesRef = useRef([]);
-  const energyRingsRef = useRef([]);
-  
-  // Initialize particles
-  const initParticles = (count = 50) => {
-    const particles = [];
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random(),
-        y: Math.random(),
-        size: Math.random() * 4 + 1,
-        speedY: Math.random() * 0.3 + 0.1,
-        speedX: (Math.random() - 0.5) * 0.1,
-        opacity: Math.random() * 0.8 + 0.2,
-        hue: Math.random() * 60 + 160, // Cyan to blue range
-      });
-    }
-    particlesRef.current = particles;
-  };
-
-  // Initialize energy rings
-  const initEnergyRings = () => {
-    energyRingsRef.current = [
-      { progress: 0, delay: 0 },
-      { progress: 0, delay: 0.33 },
-      { progress: 0, delay: 0.66 },
-    ];
-  };
+  // ============ SIMPLE CLEAN AR NAVIGATION ============
+  // Single color: Cyan Blue (#00D4FF)
+  const AR_COLOR = "#00D4FF";
+  const AR_COLOR_RGB = "0, 212, 255";
 
   /**
-   * DRAW HOLOGRAPHIC 3D ARROW - UNITY STYLE
-   * Large futuristic arrow with 3D perspective and glow effects
+   * DRAW LARGE NAVIGATION ARROW
+   * Clean, simple, big arrow pointing forward
    */
-  const drawHolographicArrow = (ctx, x, y, scale, alpha, time, index) => {
+  const drawNavigationArrow = (ctx, x, y, scale, alpha) => {
     ctx.save();
     ctx.translate(x, y);
+    ctx.scale(scale, scale * 0.5); // Perspective flatten
     
-    // 3D perspective scaling
-    const perspectiveScale = scale * (1 + index * 0.1);
-    ctx.scale(perspectiveScale, perspectiveScale * 0.6); // Flatten for ground perspective
+    // Arrow size - BIG
+    const w = 100;
+    const h = 120;
     
-    // Pulsing effect
-    const pulse = Math.sin(time * 4 + index) * 0.1 + 1;
-    ctx.scale(pulse, pulse);
+    // Glow
+    ctx.shadowColor = AR_COLOR;
+    ctx.shadowBlur = 30 * alpha;
     
-    // Large arrow dimensions
-    const arrowWidth = 120;
-    const arrowHeight = 140;
-    
-    // Outer glow layers (multiple for intensity)
-    for (let glow = 3; glow >= 0; glow--) {
-      ctx.shadowColor = `hsla(${185 + glow * 5}, 100%, 60%, ${alpha * 0.3})`;
-      ctx.shadowBlur = 40 + glow * 15;
-      
-      // Main holographic gradient
-      const gradient = ctx.createLinearGradient(0, -arrowHeight/2, 0, arrowHeight/2);
-      gradient.addColorStop(0, `hsla(190, 100%, 70%, ${alpha * 0.9})`);
-      gradient.addColorStop(0.3, `hsla(200, 100%, 60%, ${alpha * 0.8})`);
-      gradient.addColorStop(0.6, `hsla(210, 100%, 50%, ${alpha * 0.6})`);
-      gradient.addColorStop(1, `hsla(220, 100%, 40%, ${alpha * 0.2})`);
-      
-      // Draw 3D chevron arrow
-      ctx.beginPath();
-      ctx.moveTo(0, -arrowHeight/2);
-      ctx.lineTo(arrowWidth/2, arrowHeight * 0.1);
-      ctx.lineTo(arrowWidth * 0.3, arrowHeight * 0.1);
-      ctx.lineTo(arrowWidth * 0.3, arrowHeight/2);
-      ctx.lineTo(-arrowWidth * 0.3, arrowHeight/2);
-      ctx.lineTo(-arrowWidth * 0.3, arrowHeight * 0.1);
-      ctx.lineTo(-arrowWidth/2, arrowHeight * 0.1);
-      ctx.closePath();
-      
-      if (glow === 0) {
-        ctx.fillStyle = gradient;
-        ctx.fill();
-      }
-    }
-    
-    // Neon edge effect
-    ctx.shadowColor = "#00FFFF";
-    ctx.shadowBlur = 20;
-    ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.9})`;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    
-    // Inner energy lines
+    // Simple arrow shape
     ctx.beginPath();
-    ctx.moveTo(0, -arrowHeight/2 + 20);
-    ctx.lineTo(arrowWidth * 0.25, arrowHeight * 0.05);
-    ctx.lineTo(0, arrowHeight * 0.05 - 10);
-    ctx.lineTo(-arrowWidth * 0.25, arrowHeight * 0.05);
+    ctx.moveTo(0, -h/2);           // Top point
+    ctx.lineTo(w/2, h * 0.1);      // Right wing
+    ctx.lineTo(w * 0.25, h * 0.1); // Right inner
+    ctx.lineTo(w * 0.25, h/2);     // Right bottom
+    ctx.lineTo(-w * 0.25, h/2);    // Left bottom
+    ctx.lineTo(-w * 0.25, h * 0.1);// Left inner
+    ctx.lineTo(-w/2, h * 0.1);     // Left wing
     ctx.closePath();
     
-    const innerGradient = ctx.createLinearGradient(0, -arrowHeight/2, 0, arrowHeight * 0.1);
-    innerGradient.addColorStop(0, `rgba(255, 255, 255, ${alpha * 0.6})`);
-    innerGradient.addColorStop(1, `rgba(0, 255, 255, ${alpha * 0.2})`);
-    ctx.fillStyle = innerGradient;
+    // Fill with gradient
+    const gradient = ctx.createLinearGradient(0, -h/2, 0, h/2);
+    gradient.addColorStop(0, `rgba(${AR_COLOR_RGB}, ${alpha})`);
+    gradient.addColorStop(1, `rgba(${AR_COLOR_RGB}, ${alpha * 0.3})`);
+    ctx.fillStyle = gradient;
     ctx.fill();
     
-    // Scanning line effect
-    const scanY = ((time * 2 + index * 0.5) % 1) * arrowHeight - arrowHeight/2;
-    ctx.beginPath();
-    ctx.moveTo(-arrowWidth/2, scanY);
-    ctx.lineTo(arrowWidth/2, scanY);
-    const scanGradient = ctx.createLinearGradient(-arrowWidth/2, 0, arrowWidth/2, 0);
-    scanGradient.addColorStop(0, `rgba(0, 255, 255, 0)`);
-    scanGradient.addColorStop(0.5, `rgba(255, 255, 255, ${alpha * 0.8})`);
-    scanGradient.addColorStop(1, `rgba(0, 255, 255, 0)`);
-    ctx.strokeStyle = scanGradient;
-    ctx.lineWidth = 2;
+    // White border
+    ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.8})`;
+    ctx.lineWidth = 3;
     ctx.stroke();
     
     ctx.restore();
   };
 
   /**
-   * DRAW ENERGY PARTICLES
-   * Floating particles around the navigation path
+   * DRAW PATH LINE
+   * Simple glowing line on the ground
    */
-  const drawParticles = (ctx, width, height, time) => {
-    if (particlesRef.current.length === 0) {
-      initParticles();
-    }
+  const drawPathLine = (ctx, width, height, offsetX, time) => {
+    const startY = height * 0.3;
+    const endY = height * 0.95;
     
     ctx.save();
     
-    particlesRef.current.forEach((p, i) => {
-      // Update position
-      p.y -= p.speedY * 0.01;
-      p.x += p.speedX * 0.01;
-      
-      // Reset if out of bounds
-      if (p.y < 0) {
-        p.y = 1;
-        p.x = Math.random();
-      }
-      
-      const px = p.x * width;
-      const py = p.y * height;
-      
-      // Only draw in path area
-      if (px > width * 0.2 && px < width * 0.8) {
-        // Glowing particle
-        const glowSize = p.size * (1 + Math.sin(time * 5 + i) * 0.3);
-        
-        ctx.beginPath();
-        ctx.arc(px, py, glowSize, 0, Math.PI * 2);
-        
-        const particleGradient = ctx.createRadialGradient(px, py, 0, px, py, glowSize * 3);
-        particleGradient.addColorStop(0, `hsla(${p.hue}, 100%, 80%, ${p.opacity})`);
-        particleGradient.addColorStop(0.5, `hsla(${p.hue}, 100%, 60%, ${p.opacity * 0.5})`);
-        particleGradient.addColorStop(1, `hsla(${p.hue}, 100%, 50%, 0)`);
-        
-        ctx.fillStyle = particleGradient;
-        ctx.fill();
-      }
-    });
+    // Glow
+    ctx.shadowColor = AR_COLOR;
+    ctx.shadowBlur = 20;
+    
+    // Path gradient
+    const gradient = ctx.createLinearGradient(0, startY, 0, endY);
+    gradient.addColorStop(0, `rgba(${AR_COLOR_RGB}, 0.9)`);
+    gradient.addColorStop(1, `rgba(${AR_COLOR_RGB}, 0.2)`);
+    
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 12;
+    ctx.lineCap = "round";
+    
+    // Animated dash
+    const dashOffset = (time * 150) % 50;
+    ctx.setLineDash([30, 20]);
+    ctx.lineDashOffset = -dashOffset;
+    
+    // Draw curved path
+    ctx.beginPath();
+    ctx.moveTo(width/2, endY);
+    ctx.quadraticCurveTo(width/2 + offsetX * 0.5, height * 0.55, width/2 + offsetX, startY);
+    ctx.stroke();
     
     ctx.restore();
   };
 
   /**
-   * DRAW ENERGY RINGS
-   * Pulsating rings that travel along the path
+   * DRAW DESTINATION MARKER
+   * Simple pin marker
    */
-  const drawEnergyRings = (ctx, centerX, bottomY, time) => {
-    if (energyRingsRef.current.length === 0) {
-      initEnergyRings();
-    }
-    
-    ctx.save();
-    
-    energyRingsRef.current.forEach((ring, i) => {
-      const cycleTime = (time * 0.5 + ring.delay) % 1;
-      const y = bottomY - cycleTime * bottomY * 0.6;
-      const scale = 0.3 + cycleTime * 0.7;
-      const alpha = 1 - cycleTime;
-      
-      // Draw elliptical ring (perspective)
-      ctx.beginPath();
-      ctx.ellipse(centerX, y, 80 * scale, 20 * scale, 0, 0, Math.PI * 2);
-      
-      ctx.shadowColor = "#00FFFF";
-      ctx.shadowBlur = 30;
-      
-      const ringGradient = ctx.createRadialGradient(centerX, y, 0, centerX, y, 80 * scale);
-      ringGradient.addColorStop(0, `rgba(0, 255, 255, 0)`);
-      ringGradient.addColorStop(0.7, `rgba(0, 255, 255, ${alpha * 0.3})`);
-      ringGradient.addColorStop(0.9, `rgba(0, 255, 255, ${alpha * 0.8})`);
-      ringGradient.addColorStop(1, `rgba(0, 255, 255, 0)`);
-      
-      ctx.strokeStyle = ringGradient;
-      ctx.lineWidth = 4;
-      ctx.stroke();
-    });
-    
-    ctx.restore();
-  };
-
-  /**
-   * DRAW HOLOGRAPHIC PATH BEAM
-   * Futuristic energy beam path with Unity-style effects
-   */
-  const drawHolographicPath = (ctx, width, height, offsetX, time) => {
-    const startY = height * 0.30;
-    const endY = height * 0.98;
-    
-    ctx.save();
-    
-    // Draw multiple path layers for depth
-    for (let layer = 2; layer >= 0; layer--) {
-      const layerWidth = 60 - layer * 15;
-      const layerAlpha = 0.3 + layer * 0.2;
-      
-      // Outer glow
-      ctx.shadowColor = layer === 0 ? "#00FFFF" : "#0088FF";
-      ctx.shadowBlur = 40 - layer * 10;
-      
-      // Path gradient
-      const gradient = ctx.createLinearGradient(0, startY, 0, endY);
-      gradient.addColorStop(0, `rgba(0, 255, 255, ${layerAlpha})`);
-      gradient.addColorStop(0.3, `rgba(0, 200, 255, ${layerAlpha * 0.8})`);
-      gradient.addColorStop(0.7, `rgba(0, 150, 255, ${layerAlpha * 0.5})`);
-      gradient.addColorStop(1, `rgba(0, 100, 255, ${layerAlpha * 0.2})`);
-      
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = layerWidth;
-      ctx.lineCap = "round";
-      
-      // Animated energy flow
-      if (layer === 0) {
-        const dashLength = 30;
-        const gapLength = 20;
-        const dashOffset = (time * 200) % (dashLength + gapLength);
-        ctx.setLineDash([dashLength, gapLength]);
-        ctx.lineDashOffset = -dashOffset;
-      } else {
-        ctx.setLineDash([]);
-      }
-      
-      // Draw curved path
-      ctx.beginPath();
-      ctx.moveTo(width/2, endY);
-      
-      const controlX = width/2 + offsetX * 0.6;
-      const controlY = height * 0.55;
-      ctx.quadraticCurveTo(controlX, controlY, width/2 + offsetX, startY);
-      ctx.stroke();
-    }
-    
-    // Energy wave effect traveling up the path
-    const waveCount = 3;
-    for (let w = 0; w < waveCount; w++) {
-      const waveProgress = ((time * 0.8 + w / waveCount) % 1);
-      const waveY = endY - waveProgress * (endY - startY);
-      const waveX = width/2 + offsetX * (1 - waveProgress) * waveProgress * 2;
-      const waveAlpha = Math.sin(waveProgress * Math.PI);
-      
-      ctx.beginPath();
-      ctx.arc(waveX, waveY, 15 + waveAlpha * 10, 0, Math.PI * 2);
-      
-      const waveGradient = ctx.createRadialGradient(waveX, waveY, 0, waveX, waveY, 25);
-      waveGradient.addColorStop(0, `rgba(255, 255, 255, ${waveAlpha * 0.9})`);
-      waveGradient.addColorStop(0.4, `rgba(0, 255, 255, ${waveAlpha * 0.6})`);
-      waveGradient.addColorStop(1, `rgba(0, 200, 255, 0)`);
-      
-      ctx.fillStyle = waveGradient;
-      ctx.fill();
-    }
-    
-    ctx.restore();
-  };
-
-  /**
-   * DRAW HOLOGRAPHIC DESTINATION MARKER
-   * Futuristic floating destination with energy effects
-   */
-  const drawHolographicDestination = (ctx, x, y, name, time) => {
-    const pulse = Math.sin(time * 3) * 0.15 + 1;
-    const rotate = time * 0.5;
+  const drawDestinationMarker = (ctx, x, y, name, time) => {
+    const pulse = Math.sin(time * 3) * 0.1 + 1;
     
     ctx.save();
     ctx.translate(x, y);
+    ctx.scale(pulse, pulse);
     
-    // Rotating outer ring
-    ctx.save();
-    ctx.rotate(rotate);
-    ctx.beginPath();
-    ctx.arc(0, 0, 60 * pulse, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(0, 255, 150, 0.3)`;
-    ctx.lineWidth = 2;
-    ctx.setLineDash([10, 10]);
-    ctx.stroke();
-    ctx.restore();
-    
-    // Counter-rotating inner ring
-    ctx.save();
-    ctx.rotate(-rotate * 1.5);
-    ctx.beginPath();
-    ctx.arc(0, 0, 45 * pulse, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(0, 255, 200, 0.5)`;
-    ctx.lineWidth = 3;
-    ctx.setLineDash([15, 8]);
-    ctx.stroke();
-    ctx.restore();
-    
-    // Energy field glow
+    // Glow
     ctx.shadowColor = "#00FF88";
-    ctx.shadowBlur = 50;
+    ctx.shadowBlur = 25;
     
-    // Main beacon
-    const beaconGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 35 * pulse);
-    beaconGradient.addColorStop(0, `rgba(100, 255, 180, 0.9)`);
-    beaconGradient.addColorStop(0.5, `rgba(50, 200, 150, 0.6)`);
-    beaconGradient.addColorStop(1, `rgba(0, 150, 100, 0.2)`);
-    
+    // Pin circle
     ctx.beginPath();
-    ctx.arc(0, 0, 35 * pulse, 0, Math.PI * 2);
-    ctx.fillStyle = beaconGradient;
+    ctx.arc(0, 0, 30, 0, Math.PI * 2);
+    ctx.fillStyle = "#00FF88";
+    ctx.fill();
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    
+    // Inner dot
+    ctx.beginPath();
+    ctx.arc(0, 0, 12, 0, Math.PI * 2);
+    ctx.fillStyle = "white";
     ctx.fill();
     
-    // Inner core
-    ctx.beginPath();
-    ctx.arc(0, 0, 15, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-    ctx.fill();
-    
-    // Destination icon (checkmark/pin)
-    ctx.fillStyle = "#00AA66";
-    ctx.font = "bold 18px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("★", 0, 0);
-    
-    // Holographic label with background
-    ctx.shadowBlur = 8;
+    // Name label
+    ctx.shadowBlur = 4;
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    
-    // Label background
-    const labelWidth = ctx.measureText(name).width + 30;
-    ctx.fillStyle = "rgba(0, 50, 40, 0.85)";
-    ctx.beginPath();
-    ctx.roundRect(-labelWidth/2, -90, labelWidth, 32, 8);
-    ctx.fill();
-    
-    // Label border
-    ctx.strokeStyle = "rgba(0, 255, 150, 0.8)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    
-    // Label text
-    ctx.shadowBlur = 0;
-    ctx.font = "bold 16px 'Segoe UI', Arial, sans-serif";
+    ctx.font = "bold 18px Arial, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillStyle = "#00FF99";
-    ctx.fillText(name, 0, -74);
-    
-    // Connecting line to marker
-    ctx.beginPath();
-    ctx.moveTo(0, -58);
-    ctx.lineTo(0, -35 * pulse);
-    ctx.strokeStyle = "rgba(0, 255, 150, 0.5)";
-    ctx.lineWidth = 2;
-    ctx.setLineDash([]);
-    ctx.stroke();
+    ctx.fillStyle = "white";
+    ctx.fillText(name, 0, -55);
     
     ctx.restore();
   };
 
   /**
-   * DRAW HOLOGRAPHIC TURN INDICATOR
-   * Large animated turn arrows with Unity-style effects
+   * DRAW TURN ARROW
+   * Big turn indicator
    */
-  const drawHolographicTurnIndicator = (ctx, x, y, isRight, time, screenWidth) => {
-    const pulse = Math.sin(time * 6) * 0.15 + 1;
-    const flash = (Math.sin(time * 8) + 1) / 2; // 0 to 1 flash
+  const drawTurnArrow = (ctx, x, y, isRight, time) => {
+    const flash = (Math.sin(time * 6) + 1) / 2;
     
     ctx.save();
     ctx.translate(x, y);
@@ -582,127 +337,40 @@ const ARScene = ({ selectedLocation, onClose }) => {
       ctx.scale(-1, 1);
     }
     
-    // Multiple layered chevrons for depth
-    for (let i = 2; i >= 0; i--) {
-      const offset = i * 35;
-      const alpha = 1 - i * 0.3 + flash * 0.2;
-      const scale = pulse - i * 0.1;
+    // Glow
+    ctx.shadowColor = "#FFB800";
+    ctx.shadowBlur = 25;
+    
+    // Draw 3 chevrons
+    for (let i = 0; i < 3; i++) {
+      const offset = i * 25;
+      const alpha = 1 - i * 0.25 + flash * 0.25;
       
-      ctx.save();
-      ctx.translate(offset, 0);
-      ctx.scale(scale, scale);
-      
-      // Glow
-      ctx.shadowColor = i === 0 ? "#FFDD00" : "#FF8800";
-      ctx.shadowBlur = 30 - i * 8;
-      
-      // Chevron gradient
-      const chevronGradient = ctx.createLinearGradient(-40, 0, 40, 0);
-      chevronGradient.addColorStop(0, `rgba(255, 200, 0, ${alpha})`);
-      chevronGradient.addColorStop(0.5, `rgba(255, 150, 0, ${alpha})`);
-      chevronGradient.addColorStop(1, `rgba(255, 100, 0, ${alpha * 0.7})`);
-      
-      ctx.strokeStyle = chevronGradient;
-      ctx.lineWidth = 12 - i * 2;
+      ctx.strokeStyle = `rgba(255, 184, 0, ${alpha})`;
+      ctx.lineWidth = 10 - i * 2;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       
-      // Draw large chevron
       ctx.beginPath();
-      ctx.moveTo(-30, -50);
-      ctx.lineTo(20, 0);
-      ctx.lineTo(-30, 50);
+      ctx.moveTo(-20 + offset, -40);
+      ctx.lineTo(20 + offset, 0);
+      ctx.lineTo(-20 + offset, 40);
       ctx.stroke();
-      
-      // White edge highlight
-      if (i === 0) {
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
-        ctx.lineWidth = 3;
-        ctx.stroke();
-      }
-      
-      ctx.restore();
     }
     
-    // Turn text label
+    // Turn text
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = 6;
-    
-    const turnText = isRight ? "TURN RIGHT" : "TURN LEFT";
-    const textX = isRight ? -60 : 60;
-    
-    ctx.font = "bold 18px 'Segoe UI', Arial, sans-serif";
+    ctx.font = "bold 16px Arial";
     ctx.textAlign = "center";
-    ctx.fillStyle = `rgba(255, 200, 0, ${0.8 + flash * 0.2})`;
-    ctx.fillText(turnText, textX * (isRight ? -1 : 1), 80);
-    
-    ctx.restore();
-  };
-
-  /**
-   * DRAW HUD OVERLAY
-   * Futuristic heads-up display frame
-   */
-  const drawHUDOverlay = (ctx, width, height, time) => {
-    ctx.save();
-    
-    // Corner brackets
-    const bracketSize = 60;
-    const bracketThickness = 3;
-    const margin = 30;
-    const alpha = 0.4 + Math.sin(time * 2) * 0.1;
-    
-    ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
-    ctx.lineWidth = bracketThickness;
-    ctx.lineCap = "square";
-    
-    // Top-left bracket
-    ctx.beginPath();
-    ctx.moveTo(margin, margin + bracketSize);
-    ctx.lineTo(margin, margin);
-    ctx.lineTo(margin + bracketSize, margin);
-    ctx.stroke();
-    
-    // Top-right bracket
-    ctx.beginPath();
-    ctx.moveTo(width - margin - bracketSize, margin);
-    ctx.lineTo(width - margin, margin);
-    ctx.lineTo(width - margin, margin + bracketSize);
-    ctx.stroke();
-    
-    // Bottom-left bracket
-    ctx.beginPath();
-    ctx.moveTo(margin, height - margin - bracketSize);
-    ctx.lineTo(margin, height - margin);
-    ctx.lineTo(margin + bracketSize, height - margin);
-    ctx.stroke();
-    
-    // Bottom-right bracket
-    ctx.beginPath();
-    ctx.moveTo(width - margin - bracketSize, height - margin);
-    ctx.lineTo(width - margin, height - margin);
-    ctx.lineTo(width - margin, height - margin - bracketSize);
-    ctx.stroke();
-    
-    // Scanning line effect
-    const scanY = ((time * 0.3) % 1) * height;
-    ctx.beginPath();
-    ctx.moveTo(0, scanY);
-    ctx.lineTo(width, scanY);
-    const scanGradient = ctx.createLinearGradient(0, 0, width, 0);
-    scanGradient.addColorStop(0, `rgba(0, 255, 255, 0)`);
-    scanGradient.addColorStop(0.5, `rgba(0, 255, 255, 0.15)`);
-    scanGradient.addColorStop(1, `rgba(0, 255, 255, 0)`);
-    ctx.strokeStyle = scanGradient;
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    ctx.fillStyle = "#FFB800";
+    ctx.fillText(isRight ? "TURN" : "TURN", isRight ? -30 : 30, 70);
     
     ctx.restore();
   };
 
   /**
    * START AR RENDERING
-   * Main AR rendering loop with Google Maps Live View style
+   * Clean simple AR rendering loop
    */
   const startARRendering = () => {
     const canvas = canvasRef.current;
@@ -719,23 +387,16 @@ const ARScene = ({ selectedLocation, onClose }) => {
     window.addEventListener('resize', resizeCanvas);
     
     setArStatus("tracking");
-    
-    // Initialize particle systems
-    initParticles(60);
-    initEnergyRings();
 
     /**
      * ANIMATION LOOP
-     * Renders Unity-style futuristic AR navigation
+     * Clean simple AR navigation
      */
     const animate = () => {
       const time = (Date.now() - startTimeRef.current) / 1000;
       
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw HUD overlay (always visible)
-      drawHUDOverlay(ctx, canvas.width, canvas.height, time);
 
       if (userLocation && selectedLocation && distance !== null && !arrived) {
         // Calculate bearing to destination
@@ -755,10 +416,10 @@ const ARScene = ({ selectedLocation, onClose }) => {
         
         if (relativeBearing > 30 && relativeBearing < 180) {
           turnDir = "right";
-          pathOffsetX = Math.min((relativeBearing / 90) * 200, 250);
+          pathOffsetX = Math.min((relativeBearing / 90) * 150, 200);
         } else if (relativeBearing > 180 && relativeBearing < 330) {
           turnDir = "left";
-          pathOffsetX = -Math.min(((360 - relativeBearing) / 90) * 200, 250);
+          pathOffsetX = -Math.min(((360 - relativeBearing) / 90) * 150, 200);
         }
         
         setTurnDirection(turnDir);
@@ -766,41 +427,34 @@ const ARScene = ({ selectedLocation, onClose }) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
-        // Draw floating particles in the path area
-        drawParticles(ctx, canvas.width, canvas.height, time);
+        // Draw path line
+        drawPathLine(ctx, canvas.width, canvas.height, pathOffsetX, time);
         
-        // Draw holographic energy path
-        drawHolographicPath(ctx, canvas.width, canvas.height, pathOffsetX, time);
-        
-        // Draw pulsating energy rings
-        drawEnergyRings(ctx, centerX, canvas.height * 0.95, time);
-        
-        // Draw large holographic arrows (Unity style)
-        const numArrows = 5;
+        // Draw large arrows
+        const numArrows = 4;
         for (let i = 0; i < numArrows; i++) {
-          const progress = ((time * 0.6 + i / numArrows) % 1);
+          const progress = ((time * 0.7 + i / numArrows) % 1);
           const arrowY = canvas.height * 0.30 + (canvas.height * 0.60 * progress);
-          const scale = 0.5 + (1 - progress) * 0.8;
-          const alpha = 1 - progress * 0.6;
+          const scale = 0.6 + (1 - progress) * 0.6;
+          const alpha = 1 - progress * 0.5;
           
-          // Calculate x position based on path curve
           const curveProgress = progress;
-          const arrowX = centerX + pathOffsetX * (1 - curveProgress) * curveProgress * 2.5;
+          const arrowX = centerX + pathOffsetX * (1 - curveProgress) * curveProgress * 2;
           
-          drawHolographicArrow(ctx, arrowX, arrowY, scale, alpha, time, i);
+          drawNavigationArrow(ctx, arrowX, arrowY, scale, alpha);
         }
         
-        // Draw holographic destination marker when facing correct direction
+        // Draw destination when facing it
         if (relativeBearing > 315 || relativeBearing < 45) {
           const markerX = centerX + (relativeBearing > 180 ? -(360 - relativeBearing) : relativeBearing) * 2;
-          drawHolographicDestination(ctx, markerX, canvas.height * 0.22, selectedLocation.name, time);
+          drawDestinationMarker(ctx, markerX, canvas.height * 0.22, selectedLocation.name, time);
         }
         
-        // Draw large turn indicators when not facing destination
+        // Draw turn arrows when needed
         if (turnDir === "right") {
-          drawHolographicTurnIndicator(ctx, canvas.width - 100, centerY - 30, true, time, canvas.width);
+          drawTurnArrow(ctx, canvas.width - 80, centerY - 30, true, time);
         } else if (turnDir === "left") {
-          drawHolographicTurnIndicator(ctx, 100, centerY - 30, false, time, canvas.width);
+          drawTurnArrow(ctx, 80, centerY - 30, false, time);
         }
       }
 
