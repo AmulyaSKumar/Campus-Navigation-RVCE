@@ -486,3 +486,438 @@
     animation: none;
   }
 }
+/* ====== RESPONSIVE DESIGN ====== */
+
+/* Tablet Landscape (1024px - 1366px) */
+@media screen and (max-width: 1366px) {
+  .ar-top-bar {
+    height: 50px;
+    padding: 0 12px;
+  }
+  
+  .status-pill {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  
+  .nav-instruction-card {
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 450px;
+  }
+  
+  .bottom-info-panel {
+    height: 120px;
+    bottom: 60px;
+  }
+  
+  .control-bar {
+    height: 50px;
+    gap: 10px;
+  }
+  
+  .ctrl-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 12px;
+  }
+}
+
+/* Tablet Portrait (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  .ar-top-bar {
+    height: 48px;
+    padding: 0 10px;
+  }
+  
+  .status-pill {
+    font-size: 12px;
+    padding: 5px 10px;
+    gap: 6px;
+  }
+  
+  .close-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .nav-instruction-card {
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    max-width: 400px;
+    padding: 12px;
+  }
+  
+  .nav-icon-box {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+  }
+  
+  .nav-text-box h3 {
+    font-size: 16px;
+  }
+  
+  .nav-text-box p {
+    font-size: 12px;
+  }
+  
+  .bottom-info-panel {
+    height: 110px;
+    bottom: 55px;
+    padding: 12px;
+    gap: 8px;
+  }
+  
+  .stat-item {
+    font-size: 12px;
+  }
+  
+  .dest-preview {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .dest-details h4 {
+    font-size: 13px;
+  }
+  
+  .dest-details p {
+    font-size: 11px;
+  }
+  
+  .control-bar {
+    height: 48px;
+    gap: 8px;
+    padding: 0 10px;
+  }
+  
+  .ctrl-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 11px;
+  }
+  
+  .arrival-modal {
+    width: 90%;
+    max-width: 350px;
+    padding: 20px;
+  }
+  
+  .arrival-emoji {
+    font-size: 60px;
+  }
+  
+  .arrival-modal h2 {
+    font-size: 20px;
+  }
+}
+
+/* Mobile Landscape & Tablet Small (768px) */
+@media screen and (max-width: 768px) {
+  .ar-top-bar {
+    height: 45px;
+    padding: 0 8px;
+  }
+  
+  .status-pill {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .close-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .nav-instruction-card {
+    top: 55px;
+    width: 90%;
+    max-width: 350px;
+    padding: 10px;
+  }
+  
+  .nav-icon-box {
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+  }
+  
+  .nav-text-box h3 {
+    font-size: 15px;
+  }
+  
+  .nav-text-box p {
+    font-size: 11px;
+  }
+  
+  .nav-arrow {
+    font-size: 18px;
+  }
+  
+  .bottom-info-panel {
+    height: 100px;
+    bottom: 50px;
+    padding: 10px;
+  }
+  
+  .stats-row {
+    gap: 8px;
+  }
+  
+  .stat-item {
+    font-size: 11px;
+  }
+  
+  .dest-preview {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .dest-details h4 {
+    font-size: 12px;
+  }
+  
+  .dest-details p {
+    font-size: 10px;
+  }
+  
+  .control-bar {
+    height: 45px;
+    gap: 6px;
+    padding: 0 8px;
+  }
+  
+  .ctrl-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 10px;
+  }
+  
+  .arrival-modal {
+    width: 85%;
+    max-width: 300px;
+    padding: 15px;
+  }
+  
+  .arrival-emoji {
+    font-size: 50px;
+  }
+  
+  .arrival-modal h2 {
+    font-size: 18px;
+  }
+}
+
+/* Mobile Portrait (480px and below) */
+@media screen and (max-width: 480px) {
+  .ar-scene-container {
+    height: 100vh;
+  }
+  
+  .ar-top-bar {
+    height: 40px;
+    padding: 0 6px;
+    padding-top: max(env(safe-area-inset-top, 0), 6px);
+  }
+  
+  .status-pill {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+  
+  .status-dot {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .nav-instruction-card {
+    top: 50px;
+    width: 95%;
+    max-width: 280px;
+    padding: 8px;
+  }
+  
+  .nav-icon-box {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .nav-text-box h3 {
+    font-size: 13px;
+    margin: 0;
+  }
+  
+  .nav-text-box p {
+    font-size: 10px;
+    margin: 0;
+  }
+  
+  .nav-arrow {
+    font-size: 16px;
+  }
+  
+  .bottom-info-panel {
+    height: 90px;
+    bottom: 45px;
+    padding: 8px;
+    gap: 6px;
+  }
+  
+  .stats-row {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  
+  .stat-item {
+    font-size: 10px;
+  }
+  
+  .stat-item label {
+    font-size: 8px;
+  }
+  
+  .dest-preview {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .dest-thumb {
+    border-radius: 4px;
+  }
+  
+  .dest-details h4 {
+    font-size: 11px;
+  }
+  
+  .dest-details p {
+    font-size: 9px;
+  }
+  
+  .control-bar {
+    height: 40px;
+    gap: 4px;
+    padding: 0 6px;
+    padding-bottom: max(env(safe-area-inset-bottom, 0), 4px);
+  }
+  
+  .ctrl-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 9px;
+  }
+  
+  .arrival-modal {
+    width: 90%;
+    max-width: 250px;
+    padding: 12px;
+  }
+  
+  .arrival-emoji {
+    font-size: 40px;
+  }
+  
+  .arrival-modal h2 {
+    font-size: 16px;
+    margin: 8px 0;
+  }
+  
+  .arrival-modal p {
+    font-size: 12px;
+  }
+  
+  .arrival-modal button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+/* Very Small Devices (under 360px) */
+@media screen and (max-width: 360px) {
+  .ar-top-bar {
+    height: 38px;
+  }
+  
+  .status-pill {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+  
+  .close-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+  
+  .nav-instruction-card {
+    top: 48px;
+    width: 97%;
+    max-width: 240px;
+    padding: 6px;
+  }
+  
+  .nav-icon-box {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .nav-text-box h3 {
+    font-size: 12px;
+  }
+  
+  .nav-text-box p {
+    font-size: 9px;
+  }
+  
+  .bottom-info-panel {
+    height: 80px;
+    bottom: 40px;
+    padding: 6px;
+  }
+  
+  .control-bar {
+    height: 38px;
+    gap: 2px;
+  }
+  
+  .ctrl-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 8px;
+  }
+}
+
+/* Landscape Mode */
+@media screen and (max-height: 500px) {
+  .ar-top-bar {
+    height: 40px;
+  }
+  
+  .nav-instruction-card {
+    top: 45px;
+    max-height: 60px;
+  }
+  
+  .bottom-info-panel {
+    height: 70px;
+    bottom: 45px;
+  }
+  
+  .control-bar {
+    height: 40px;
+  }
+}
