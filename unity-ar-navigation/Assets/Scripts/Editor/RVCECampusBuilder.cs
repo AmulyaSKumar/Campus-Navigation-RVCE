@@ -411,75 +411,64 @@ public class RVCECampusBuilder : EditorWindow
     {
         GameObject labelObj = new GameObject("Label_" + text);
         labelObj.transform.parent = parent;
-        labelObj.transform.localPosition = new Vector3(0, height + 3f, 0);  // Higher above building
+        labelObj.transform.localPosition = new Vector3(0, height + 4f, 0);  // Higher above building
         
-        // ===== 3D TEXT USING WORLD SPACE CANVAS (MUCH MORE VISIBLE) =====
+        // ===== USE SIMPLE 3D TEXT (TextMesh) - MOST RELIABLE =====
         
-        // Create a Canvas for the label (World Space)
-        GameObject canvasObj = new GameObject("LabelCanvas");
-        canvasObj.transform.parent = labelObj.transform;
-        canvasObj.transform.localPosition = Vector3.zero;
-        canvasObj.transform.localScale = Vector3.one * 0.05f;  // Scale down canvas to world units
+        // Create background cube (stretched flat)
+        GameObject bgCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        bgCube.name = "LabelBackground";
+        bgCube.transform.parent = labelObj.transform;
+        bgCube.transform.localPosition = Vector3.zero;
         
-        Canvas canvas = canvasObj.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
+        // Size based on text length
+        float bgWidth = text.Length * 0.5f + 2f;
+        float bgHeight = 1.2f;
+        float bgDepth = 0.1f;
+        bgCube.transform.localScale = new Vector3(bgWidth, bgHeight, bgDepth);
         
-        // Add CanvasScaler for consistent sizing
-        UnityEngine.UI.CanvasScaler scaler = canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
-        scaler.dynamicPixelsPerUnit = 100;
+        // Dark material for background
+        Material bgMat = new Material(Shader.Find("Standard"));
+        bgMat.color = new Color(0.1f, 0.1f, 0.15f, 1f);  // Dark blue-gray, fully opaque
+        bgMat.SetFloat("_Glossiness", 0f);
+        bgCube.GetComponent<Renderer>().material = bgMat;
         
-        // Size the canvas RectTransform
-        RectTransform canvasRect = canvasObj.GetComponent<RectTransform>();
-        float canvasWidth = text.Length * 25f + 60f;
-        canvasRect.sizeDelta = new Vector2(canvasWidth, 80);
+        // Remove collider
+        Object.DestroyImmediate(bgCube.GetComponent<Collider>());
         
-        // ===== BACKGROUND PANEL =====
-        GameObject bgPanel = new GameObject("Background");
-        bgPanel.transform.parent = canvasObj.transform;
-        bgPanel.transform.localPosition = Vector3.zero;
-        bgPanel.transform.localScale = Vector3.one;
+        // ===== 3D TEXT using TextMesh =====
+        GameObject textObj = new GameObject("Text3D");
+        textObj.transform.parent = labelObj.transform;
+        textObj.transform.localPosition = new Vector3(0, 0, -0.1f);  // In front of background
+        textObj.transform.localScale = Vector3.one * 0.3f;  // Scale up the text
         
-        RectTransform bgRect = bgPanel.AddComponent<RectTransform>();
-        bgRect.sizeDelta = new Vector2(canvasWidth, 80);
-        bgRect.anchoredPosition = Vector2.zero;
+        TextMesh textMesh = textObj.AddComponent<TextMesh>();
+        textMesh.text = text;
+        textMesh.fontSize = 100;  // Large font size
+        textMesh.characterSize = 0.5f;
+        textMesh.anchor = TextAnchor.MiddleCenter;
+        textMesh.alignment = TextAlignment.Center;
+        textMesh.color = Color.white;
+        textMesh.fontStyle = FontStyle.Bold;
         
-        UnityEngine.UI.Image bgImage = bgPanel.AddComponent<UnityEngine.UI.Image>();
-        bgImage.color = new Color(0.15f, 0.15f, 0.2f, 0.95f);  // Dark, almost opaque
+        // Get the default Arial font
+        textMesh.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        if (textMesh.font == null)
+        {
+            textMesh.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        }
         
-        // ===== TEXT LABEL =====
-        GameObject textObj = new GameObject("Text");
-        textObj.transform.parent = canvasObj.transform;
-        textObj.transform.localPosition = new Vector3(0, 0, -0.5f);
-        textObj.transform.localScale = Vector3.one;
-        
-        RectTransform textRect = textObj.AddComponent<RectTransform>();
-        textRect.sizeDelta = new Vector2(canvasWidth - 20f, 70);
-        textRect.anchoredPosition = Vector2.zero;
-        
-        // Use Unity UI Text (more reliable than TextMesh)
-        UnityEngine.UI.Text uiText = textObj.AddComponent<UnityEngine.UI.Text>();
-        uiText.text = text;
-        uiText.fontSize = 42;
-        uiText.fontStyle = FontStyle.Bold;
-        uiText.alignment = TextAnchor.MiddleCenter;
-        uiText.color = Color.white;
-        uiText.horizontalOverflow = HorizontalWrapMode.Overflow;
-        uiText.verticalOverflow = VerticalWrapMode.Overflow;
-        
-        // Use Arial font (always available)
-        uiText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (uiText.font == null)
-            uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        
-        // ===== OUTLINE FOR BETTER VISIBILITY =====
-        UnityEngine.UI.Outline outline = textObj.AddComponent<UnityEngine.UI.Outline>();
-        outline.effectColor = Color.black;
-        outline.effectDistance = new Vector2(2, -2);
-        
-        // Add second outline for thicker effect
-        UnityEngine.UI.Outline outline2 = textObj.AddComponent<UnityEngine.UI.Outline>();
-        outline2.effectColor = Color.black;
-        outline2.effectDistance = new Vector2(-2, 2);
+        // Create a material for the text mesh renderer
+        MeshRenderer textRenderer = textObj.GetComponent<MeshRenderer>();
+        if (textRenderer != null && textMesh.font != null)
+        {
+            Material textMat = new Material(Shader.Find("GUI/Text Shader"));
+            if (textMat.shader == null)
+                textMat = new Material(Shader.Find("Unlit/Transparent"));
+            textMat.mainTexture = textMesh.font.material.mainTexture;
+            textMat.color = Color.white;
+            textRenderer.material = textMat;
+        }
         
         // Add billboard script to always face camera
         labelObj.AddComponent<Billboard>();
