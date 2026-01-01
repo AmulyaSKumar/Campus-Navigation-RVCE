@@ -24,6 +24,36 @@ public class RVCECampusBuilder : EditorWindow
     private static Material sportsMaterial;
     private static Material waterMaterial;
     private static Material accentMaterial;
+    private static Shader cachedShader;
+    
+    private static Shader GetValidShader()
+    {
+        if (cachedShader != null) return cachedShader;
+        
+        // Try Standard shader first (works in Built-in pipeline)
+        cachedShader = Shader.Find("Standard");
+        if (cachedShader != null) return cachedShader;
+        
+        // Try URP Lit shader
+        cachedShader = Shader.Find("Universal Render Pipeline/Lit");
+        if (cachedShader != null) return cachedShader;
+        
+        // Fallback to Diffuse
+        cachedShader = Shader.Find("Diffuse");
+        if (cachedShader != null) return cachedShader;
+        
+        // Last resort - use Unlit
+        cachedShader = Shader.Find("Unlit/Color");
+        return cachedShader;
+    }
+    
+    private static Material CreateColorMaterial(Color color, string name)
+    {
+        Material mat = new Material(GetValidShader());
+        mat.color = color;
+        mat.name = name;
+        return mat;
+    }
     
     [MenuItem("Campus Navigator/Build RVCE Campus 3D Model")]
     public static void ShowWindow()
@@ -112,33 +142,45 @@ public class RVCECampusBuilder : EditorWindow
     
     private static void CreateMaterials()
     {
+        // Use Standard shader which works in any Unity project
+        Shader standardShader = Shader.Find("Standard");
+        if (standardShader == null)
+        {
+            // Fallback to any available lit shader
+            standardShader = Shader.Find("Universal Render Pipeline/Lit");
+        }
+        if (standardShader == null)
+        {
+            standardShader = Shader.Find("Diffuse");
+        }
+        
         // Building material - light gray with slight blue tint
-        buildingMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        buildingMaterial = new Material(standardShader);
         buildingMaterial.color = new Color(0.85f, 0.87f, 0.9f, 1f);
         buildingMaterial.name = "BuildingMaterial";
         
         // Road material - dark gray
-        roadMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        roadMaterial = new Material(standardShader);
         roadMaterial.color = new Color(0.3f, 0.3f, 0.32f, 1f);
         roadMaterial.name = "RoadMaterial";
         
         // Grass material - green
-        grassMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        grassMaterial = new Material(standardShader);
         grassMaterial.color = new Color(0.2f, 0.6f, 0.2f, 1f);
         grassMaterial.name = "GrassMaterial";
         
         // Sports field material - bright green
-        sportsMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        sportsMaterial = new Material(standardShader);
         sportsMaterial.color = new Color(0.3f, 0.7f, 0.3f, 1f);
         sportsMaterial.name = "SportsMaterial";
         
         // Water/accent material - blue
-        waterMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        waterMaterial = new Material(standardShader);
         waterMaterial.color = new Color(0.3f, 0.5f, 0.8f, 1f);
         waterMaterial.name = "WaterMaterial";
         
         // Accent material - teal/cyan for special buildings
-        accentMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        accentMaterial = new Material(standardShader);
         accentMaterial.color = new Color(0.2f, 0.6f, 0.6f, 1f);
         accentMaterial.name = "AccentMaterial";
     }
@@ -152,8 +194,7 @@ public class RVCECampusBuilder : EditorWindow
         ground.transform.position = new Vector3(0, -0.5f, 0);
         ground.transform.localScale = new Vector3(CAMPUS_WIDTH + 20, 1, CAMPUS_HEIGHT + 20);
         
-        Material groundMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        groundMat.color = new Color(0.4f, 0.45f, 0.4f, 1f); // Concrete gray-green
+        Material groundMat = CreateColorMaterial(new Color(0.4f, 0.45f, 0.4f, 1f), "GroundMaterial");
         ground.GetComponent<Renderer>().material = groundMat;
     }
     
@@ -356,8 +397,7 @@ public class RVCECampusBuilder : EditorWindow
         roof.transform.localPosition = new Vector3(0, size.y + 0.3f, 0);
         roof.transform.localScale = new Vector3(size.x + 0.5f, 0.6f, size.z + 0.5f);
         
-        Material roofMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        roofMat.color = new Color(0.4f, 0.42f, 0.45f, 1f);
+        Material roofMat = CreateColorMaterial(new Color(0.4f, 0.42f, 0.45f, 1f), "RoofMaterial");
         roof.GetComponent<Renderer>().material = roofMat;
         
         // Create 3D label
@@ -451,8 +491,7 @@ public class RVCECampusBuilder : EditorWindow
         trunk.transform.localPosition = new Vector3(0, 1.5f, 0);
         trunk.transform.localScale = new Vector3(0.5f, 1.5f, 0.5f);
         
-        Material trunkMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        trunkMat.color = new Color(0.4f, 0.25f, 0.1f, 1f);
+        Material trunkMat = CreateColorMaterial(new Color(0.4f, 0.25f, 0.1f, 1f), "TrunkMaterial");
         trunk.GetComponent<Renderer>().material = trunkMat;
         
         // Foliage
@@ -462,8 +501,7 @@ public class RVCECampusBuilder : EditorWindow
         foliage.transform.localPosition = new Vector3(0, 4f, 0);
         foliage.transform.localScale = new Vector3(3f, 3f, 3f);
         
-        Material foliageMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        foliageMat.color = new Color(0.15f, 0.5f, 0.15f, 1f);
+        Material foliageMat = CreateColorMaterial(new Color(0.15f, 0.5f, 0.15f, 1f), "FoliageMaterial");
         foliage.GetComponent<Renderer>().material = foliageMat;
     }
     
@@ -489,8 +527,7 @@ public class RVCECampusBuilder : EditorWindow
     
     private static void CreateFieldMarkings(Transform parent, Vector3 center)
     {
-        Material lineMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        lineMat.color = Color.white;
+        Material lineMat = CreateColorMaterial(Color.white, "LineMaterial");
         
         // Outer boundary
         CreateLine(parent, "BoundaryTop", new Vector3(center.x, 0.06f, center.z + 15), new Vector3(40, 0.05f, 0.3f), lineMat);
@@ -505,8 +542,7 @@ public class RVCECampusBuilder : EditorWindow
         centerCircle.transform.position = new Vector3(center.x, 0.06f, center.z);
         centerCircle.transform.localScale = new Vector3(8, 0.02f, 8);
         
-        Material circleMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        circleMat.color = new Color(0.35f, 0.75f, 0.35f, 1f);
+        Material circleMat = CreateColorMaterial(new Color(0.35f, 0.75f, 0.35f, 1f), "CircleMaterial");
         centerCircle.GetComponent<Renderer>().material = circleMat;
         
         // Center line
@@ -535,8 +571,7 @@ public class RVCECampusBuilder : EditorWindow
         entrance.transform.position = new Vector3(0, 0, 95);
         entrance.transform.localScale = new Vector3(20, 3, 2);
         
-        Material entranceMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        entranceMat.color = new Color(0.6f, 0.3f, 0.1f, 1f);
+        Material entranceMat = CreateColorMaterial(new Color(0.6f, 0.3f, 0.1f, 1f), "EntranceMaterial");
         entrance.GetComponent<Renderer>().material = entranceMat;
         
         // Entrance pillars
@@ -555,8 +590,7 @@ public class RVCECampusBuilder : EditorWindow
         pillar.transform.position = position + new Vector3(0, 3, 0);
         pillar.transform.localScale = new Vector3(1.5f, 3, 1.5f);
         
-        Material pillarMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        pillarMat.color = new Color(0.7f, 0.65f, 0.6f, 1f);
+        Material pillarMat = CreateColorMaterial(new Color(0.7f, 0.65f, 0.6f, 1f), "PillarMaterial");
         pillar.GetComponent<Renderer>().material = pillarMat;
     }
     
