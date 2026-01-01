@@ -14,30 +14,59 @@ A Unity 6 (6000.0.62f1) project that replicates the AR navigation functionality 
 1. Unity will prompt you to import TMP Essentials - click **Import**
 2. Or manually: **Window → TextMeshPro → Import TMP Essential Resources**
 
-### Step 3: Build the Scene (Automatic!)
-1. Go to **Tools → Campus Navigator → Build Complete AR Scene**
-2. Click **"Build Scene"** in the dialog
-3. Save the scene: **Ctrl+S** → name it `ARNavigationScene`
+### Step 3: Build RVCE Campus 3D Model (One Click!)
+1. Go to **Campus Navigator → Build RVCE Campus 3D Model (Quick)**
+2. The entire 3D campus will be automatically generated! 🎉
+3. Save the scene: **Ctrl+S** → name it `RVCECampusScene`
 4. Done! ✅
+
+---
+
+## 🏛️ RVCE Campus 3D Model
+
+The campus builder automatically creates a complete 3D model matching the RVCE campus layout:
+
+### Buildings Included:
+| Area | Buildings |
+|------|-----------|
+| **North** | Design Thinking Huddle, Mechanical Dept, Admin Block, Civil Dept, Security, Kotak Bank |
+| **Central** | IEM Auditorium, KRIYAKALPA, EEE Dept, ECE Dept, Biotech Quadrangle |
+| **East** | PE & Sports Dept, CSE Dept, Health Centre, Temple, Krishna Hostel |
+| **South** | Library, ISE & Aerospace Dept, Chem Engg & Physics, Telecom Dept |
+| **Hostels** | Krishna Hostel, Cauvery Boys Hostel |
+| **Sports** | Football & Cricket Ground with field markings |
+
+### Features:
+- ✅ **30+ Buildings** with accurate positions
+- ✅ **Roads and pathways** between buildings
+- ✅ **Gardens and greenery** with trees
+- ✅ **Sports grounds** with field markings
+- ✅ **Floating labels** on all buildings (billboard style)
+- ✅ **Clickable buildings** - click any building to select it
+- ✅ **Orbit camera** - rotate, zoom, and pan the view
+- ✅ **Main entrance** with pillars
+
+### Camera Controls:
+| Action | Mouse | Touch |
+|--------|-------|-------|
+| Rotate | Left-click + drag | One finger drag |
+| Zoom | Scroll wheel | Pinch |
+| Pan | Right-click + drag | Two finger drag |
+| Reset | Press **R** key | - |
+
+---
+
+## 🎯 AR Navigation Scene (Optional)
 
 The script automatically creates:
 - ✅ Main Camera
 - ✅ All manager GameObjects (ARNavigationManager, WebGLPlatformBridge, etc.)
 - ✅ Complete UI Canvas with all elements:
-  - Status bar (top)
-  - Direction overlay
-  - On Track indicator
-  - Center reticle
-  - Compass button
-  - Bottom info bar
-  - Calibration toast
-  - Arrival overlay
-- ✅ AR Path Renderer
-- ✅ All component references wired up
-
 ---
 
-## 🏫 3D Campus Map (FBX Integration)
+## 🏫 Custom FBX Model (Alternative)
+
+If you have your own FBX model of the campus, you can import it instead:
 
 ### Import Your FBX Model
 
@@ -50,18 +79,6 @@ The script automatically creates:
    - Generate Colliders: ✅ Enabled
 4. Click **Apply**
 
-### Build 3D Map Scene (Automatic!)
-
-1. **File → New Scene** (create a fresh scene)
-2. **Tools → Campus Navigator → Build 3D Map Scene**
-3. **Drag your imported FBX model** into the `CampusModelContainer` object
-4. **Delete** the `GroundPlaceholder` object
-5. **Configure GPS mapping** in `CampusMapViewer`:
-   - `Origin Latitude/Longitude`: GPS coords of model's center point
-   - `Meters Per Unit`: Scale factor (usually 1 if model is in meters)
-   - `North Offset`: Rotation if model's north ≠ Unity Z+
-6. **Save scene**: `CampusMapScene`
-
 ### Make Buildings Clickable
 
 For each building you want to be selectable:
@@ -71,19 +88,24 @@ For each building you want to be selectable:
 3. Fill in:
    - `Building Name`: Display name
    - `Latitude/Longitude`: GPS coordinates
-   - Or click **"Calculate GPS From Position"** in context menu
 4. Buildings will highlight on hover and select on click!
 
-### Features Included:
+---
 
-| Feature | Description |
-|---------|-------------|
-| **Orbit Camera** | Drag to rotate, scroll/pinch to zoom |
-| **User Marker** | Shows your GPS location on the 3D map |
-| **Destination Marker** | Shows selected destination |
-| **Path Line** | Visual path between user and destination |
-| **Clickable Buildings** | Tap to select as destination |
-| **AR Switch** | Button to start AR navigation to selected building |
+## 🎮 AR Navigation Scene
+
+To build the AR navigation scene with camera and directions overlay:
+
+1. **File → New Scene**
+2. Go to **Tools → Campus Navigator → Build Complete AR Scene**
+3. Click **"Build Scene"**
+4. Save as `ARNavigationScene`
+
+This creates:
+- ✅ Main Camera
+- ✅ All manager GameObjects
+- ✅ Complete UI Canvas with glassmorphism design
+- ✅ AR Path Renderer
 
 ---
 
