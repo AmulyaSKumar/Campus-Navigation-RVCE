@@ -411,13 +411,43 @@ public class RVCECampusBuilder : EditorWindow
     {
         GameObject labelObj = new GameObject("Label");
         labelObj.transform.parent = parent;
-        labelObj.transform.localPosition = new Vector3(0, height, 0);
+        labelObj.transform.localPosition = new Vector3(0, height + 1f, 0);
         
-        // Create TextMeshPro if available, otherwise use standard 3D text
-        TextMesh textMesh = labelObj.AddComponent<TextMesh>();
+        // Create a background panel for better visibility
+        GameObject bgPanel = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        bgPanel.name = "LabelBackground";
+        bgPanel.transform.parent = labelObj.transform;
+        bgPanel.transform.localPosition = Vector3.zero;
+        
+        // Size background based on text length
+        float textWidth = text.Length * 0.35f + 1f;
+        float textHeight = 1.5f;
+        bgPanel.transform.localScale = new Vector3(textWidth, textHeight, 1f);
+        
+        // Semi-transparent dark background
+        Material bgMat = CreateColorMaterial(new Color(0.1f, 0.1f, 0.15f, 0.85f), "LabelBgMaterial");
+        bgMat.SetFloat("_Mode", 3); // Transparent mode
+        bgMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        bgMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        bgMat.SetInt("_ZWrite", 0);
+        bgMat.DisableKeyword("_ALPHATEST_ON");
+        bgMat.EnableKeyword("_ALPHABLEND_ON");
+        bgMat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        bgMat.renderQueue = 3000;
+        bgPanel.GetComponent<Renderer>().material = bgMat;
+        
+        // Remove collider from background
+        Object.DestroyImmediate(bgPanel.GetComponent<Collider>());
+        
+        // Create text using TextMesh with larger, bolder settings
+        GameObject textObj = new GameObject("Text");
+        textObj.transform.parent = labelObj.transform;
+        textObj.transform.localPosition = new Vector3(0, 0, -0.01f);
+        
+        TextMesh textMesh = textObj.AddComponent<TextMesh>();
         textMesh.text = text;
-        textMesh.fontSize = 24;
-        textMesh.characterSize = 0.5f;
+        textMesh.fontSize = 48;  // Larger font
+        textMesh.characterSize = 0.15f;  // Adjusted for readability
         textMesh.anchor = TextAnchor.MiddleCenter;
         textMesh.alignment = TextAlignment.Center;
         textMesh.color = Color.white;
@@ -611,6 +641,16 @@ public class RVCECampusBuilder : EditorWindow
         mainCamera.transform.rotation = Quaternion.Euler(45, 0, 0);
         mainCamera.fieldOfView = 60;
         mainCamera.farClipPlane = 500;
+        mainCamera.nearClipPlane = 0.1f;
+        
+        // Improve rendering quality
+        mainCamera.allowHDR = true;
+        mainCamera.allowMSAA = true;
+        
+        // Set quality settings for better visuals
+        QualitySettings.antiAliasing = 4;  // 4x MSAA
+        QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
+        QualitySettings.lodBias = 2f;  // Higher LOD quality
         
         // Add CampusMapViewer for orbit controls
         if (mainCamera.GetComponent<CampusMapViewer>() == null)
