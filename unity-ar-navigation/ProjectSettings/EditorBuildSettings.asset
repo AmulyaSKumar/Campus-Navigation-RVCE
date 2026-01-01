@@ -4,6 +4,12 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 0
+    path: Assets/campus_main.unity
+    guid: aa572be4efa339c45b02cb65e218abaf
+  - enabled: 1
+    path: Assets/rvcemap.unity
+    guid: 2c9cee85fa025324395f1429798c0182
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
