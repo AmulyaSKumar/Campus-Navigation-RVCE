@@ -140,7 +140,7 @@ namespace CampusNavigator.AR
             ARNavigationUI navUI = FindObjectOfType<ARNavigationUI>();
             if (navUI != null)
             {
-                navUI.SetDestinationInfo(
+                navUI.SetDestination(
                     pendingDestination.name,
                     pendingDestination.imageUrl
                 );

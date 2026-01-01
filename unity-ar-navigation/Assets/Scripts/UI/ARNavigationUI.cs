@@ -353,14 +353,22 @@ namespace CampusNavigator.AR
             calibrationToast.SetActive(false);
         }
 
-        public void ShowArrivalOverlay(string destinationName, string imageUrl)
+        /// <summary>
+        /// Show arrival overlay without parameters (uses current destination)
+        /// </summary>
+        public void ShowArrivalOverlay()
+        {
+            ShowArrivalOverlay(destinationName?.text ?? "Destination", null);
+        }
+        
+        public void ShowArrivalOverlay(string destName, string imageUrl)
         {
             if (arrivalOverlay != null)
             {
                 arrivalOverlay.SetActive(true);
 
                 if (arrivalDestinationName != null)
-                    arrivalDestinationName.text = destinationName;
+                    arrivalDestinationName.text = destName;
 
                 if (!string.IsNullOrEmpty(imageUrl) && arrivalImage != null)
                 {
@@ -372,6 +380,28 @@ namespace CampusNavigator.AR
                 if (onTrackIndicator != null) onTrackIndicator.SetActive(false);
                 if (bottomInfoBar != null) bottomInfoBar.SetActive(false);
             }
+        }
+        
+        /// <summary>
+        /// Hide the arrival overlay
+        /// </summary>
+        public void HideArrivalOverlay()
+        {
+            if (arrivalOverlay != null)
+            {
+                arrivalOverlay.SetActive(false);
+            }
+            
+            // Show navigation elements again
+            if (bottomInfoBar != null) bottomInfoBar.SetActive(true);
+        }
+        
+        /// <summary>
+        /// Set destination info (alias for SetDestination)
+        /// </summary>
+        public void SetDestinationInfo(string name, string imageUrl)
+        {
+            SetDestination(name, imageUrl);
         }
 
         private IEnumerator LoadArrivalImage(string url)

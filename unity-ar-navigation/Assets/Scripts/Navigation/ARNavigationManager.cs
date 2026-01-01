@@ -320,6 +320,31 @@ namespace CampusNavigator.AR
             lastTurnDirection = TurnDirection.Straight;
             navigationUI?.SetDestination(location.name, location.imageUrl);
         }
+        
+        /// <summary>
+        /// Set destination using latitude, longitude, and name
+        /// </summary>
+        public void SetDestination(double latitude, double longitude, string name)
+        {
+            destination = new Location
+            {
+                name = name,
+                latitude = latitude,
+                longitude = longitude,
+                imageUrl = null
+            };
+            hasArrived = false;
+            lastTurnDirection = TurnDirection.Straight;
+            navigationUI?.SetDestination(name, null);
+        }
+        
+        /// <summary>
+        /// Recalibrate compass
+        /// </summary>
+        public void RecalibrateCompass()
+        {
+            Recalibrate();
+        }
 
         public void Recalibrate()
         {

@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using CampusNavigator.AR;
 
 /// <summary>
 /// Builds a complete 3D model of RVCE Campus matching the campus map
@@ -615,27 +616,5 @@ public class RVCECampusBuilder : EditorWindow
         // Set ambient lighting
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Skybox;
         RenderSettings.ambientIntensity = 1f;
-    }
-}
-
-/// <summary>
-/// Makes text always face the camera
-/// </summary>
-public class Billboard : MonoBehaviour
-{
-    private Camera mainCamera;
-    
-    void Start()
-    {
-        mainCamera = Camera.main;
-    }
-    
-    void LateUpdate()
-    {
-        if (mainCamera != null)
-        {
-            transform.LookAt(transform.position + mainCamera.transform.rotation * Vector3.forward,
-                mainCamera.transform.rotation * Vector3.up);
-        }
     }
 }

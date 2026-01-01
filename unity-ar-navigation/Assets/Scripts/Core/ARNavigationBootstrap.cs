@@ -150,14 +150,8 @@ namespace CampusNavigator.AR
                 };
             }
             
-            if (navigationManager != null && pathRenderer != null)
-            {
-                // Connect navigation to path renderer
-                navigationManager.OnNavigationStateChanged += state =>
-                {
-                    pathRenderer.SetNavigationState(state);
-                };
-            }
+            // Note: ARPathRenderer already subscribes to OnNavigationStateChanged in its own Start()
+            // No additional wiring needed here
         }
         
         /// <summary>
