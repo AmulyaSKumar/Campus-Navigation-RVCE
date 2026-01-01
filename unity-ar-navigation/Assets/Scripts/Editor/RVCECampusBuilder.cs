@@ -411,64 +411,50 @@ public class RVCECampusBuilder : EditorWindow
     {
         GameObject labelObj = new GameObject("Label_" + text);
         labelObj.transform.parent = parent;
-        labelObj.transform.localPosition = new Vector3(0, height + 4f, 0);  // Higher above building
+        labelObj.transform.localPosition = new Vector3(0, height + 5f, 0);  // High above building
         
-        // ===== USE SIMPLE 3D TEXT (TextMesh) - MOST RELIABLE =====
+        // ===== USE TEXTMESHPRO 3D (Best quality in Unity 6) =====
         
         // Create background cube (stretched flat)
         GameObject bgCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        bgCube.name = "LabelBackground";
+        bgCube.name = "Background";
         bgCube.transform.parent = labelObj.transform;
         bgCube.transform.localPosition = Vector3.zero;
         
-        // Size based on text length
-        float bgWidth = text.Length * 0.5f + 2f;
-        float bgHeight = 1.2f;
-        float bgDepth = 0.1f;
+        // Size based on text length - make it wider
+        float bgWidth = text.Length * 0.6f + 3f;
+        float bgHeight = 1.8f;
+        float bgDepth = 0.15f;
         bgCube.transform.localScale = new Vector3(bgWidth, bgHeight, bgDepth);
         
-        // Dark material for background
+        // Bright colored material for background (easier to see)
         Material bgMat = new Material(Shader.Find("Standard"));
-        bgMat.color = new Color(0.1f, 0.1f, 0.15f, 1f);  // Dark blue-gray, fully opaque
-        bgMat.SetFloat("_Glossiness", 0f);
+        bgMat.color = new Color(0.2f, 0.3f, 0.5f, 1f);  // Blue-ish color
+        bgMat.SetFloat("_Glossiness", 0.3f);
         bgCube.GetComponent<Renderer>().material = bgMat;
         
-        // Remove collider
+        // Remove collider from background
         Object.DestroyImmediate(bgCube.GetComponent<Collider>());
         
-        // ===== 3D TEXT using TextMesh =====
-        GameObject textObj = new GameObject("Text3D");
+        // ===== TextMeshPro 3D Text =====
+        GameObject textObj = new GameObject("TMPText");
         textObj.transform.parent = labelObj.transform;
         textObj.transform.localPosition = new Vector3(0, 0, -0.1f);  // In front of background
-        textObj.transform.localScale = Vector3.one * 0.3f;  // Scale up the text
         
-        TextMesh textMesh = textObj.AddComponent<TextMesh>();
-        textMesh.text = text;
-        textMesh.fontSize = 100;  // Large font size
-        textMesh.characterSize = 0.5f;
-        textMesh.anchor = TextAnchor.MiddleCenter;
-        textMesh.alignment = TextAlignment.Center;
-        textMesh.color = Color.white;
-        textMesh.fontStyle = FontStyle.Bold;
+        // Add TextMeshPro component
+        TextMeshPro tmpText = textObj.AddComponent<TextMeshPro>();
+        tmpText.text = text;
+        tmpText.fontSize = 8;  // TMP uses different scale
+        tmpText.fontStyle = FontStyles.Bold;
+        tmpText.alignment = TextAlignmentOptions.Center;
+        tmpText.color = Color.white;
         
-        // Get the default Arial font
-        textMesh.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (textMesh.font == null)
-        {
-            textMesh.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        }
+        // Set rect transform size
+        RectTransform rectTransform = textObj.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = new Vector2(bgWidth + 2f, bgHeight + 1f);
         
-        // Create a material for the text mesh renderer
-        MeshRenderer textRenderer = textObj.GetComponent<MeshRenderer>();
-        if (textRenderer != null && textMesh.font != null)
-        {
-            Material textMat = new Material(Shader.Find("GUI/Text Shader"));
-            if (textMat.shader == null)
-                textMat = new Material(Shader.Find("Unlit/Transparent"));
-            textMat.mainTexture = textMesh.font.material.mainTexture;
-            textMat.color = Color.white;
-            textRenderer.material = textMat;
-        }
+        // Make sure it renders on top
+        tmpText.sortingOrder = 100;
         
         // Add billboard script to always face camera
         labelObj.AddComponent<Billboard>();
