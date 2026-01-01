@@ -37,6 +37,56 @@ The script automatically creates:
 
 ---
 
+## 🏫 3D Campus Map (FBX Integration)
+
+### Import Your FBX Model
+
+1. **Create folder**: `Assets/Models/`
+2. **Drag your FBX file** into the Models folder
+3. **Select the FBX** in Project window, set Import Settings:
+   - Scale Factor: `1` (adjust if model isn't in meters)
+   - Mesh Compression: `Medium`
+   - Read/Write: ✅ Enabled
+   - Generate Colliders: ✅ Enabled
+4. Click **Apply**
+
+### Build 3D Map Scene (Automatic!)
+
+1. **File → New Scene** (create a fresh scene)
+2. **Tools → Campus Navigator → Build 3D Map Scene**
+3. **Drag your imported FBX model** into the `CampusModelContainer` object
+4. **Delete** the `GroundPlaceholder` object
+5. **Configure GPS mapping** in `CampusMapViewer`:
+   - `Origin Latitude/Longitude`: GPS coords of model's center point
+   - `Meters Per Unit`: Scale factor (usually 1 if model is in meters)
+   - `North Offset`: Rotation if model's north ≠ Unity Z+
+6. **Save scene**: `CampusMapScene`
+
+### Make Buildings Clickable
+
+For each building you want to be selectable:
+
+1. **Select the building** in hierarchy (from your FBX)
+2. **Add Component → ClickableBuilding**
+3. Fill in:
+   - `Building Name`: Display name
+   - `Latitude/Longitude`: GPS coordinates
+   - Or click **"Calculate GPS From Position"** in context menu
+4. Buildings will highlight on hover and select on click!
+
+### Features Included:
+
+| Feature | Description |
+|---------|-------------|
+| **Orbit Camera** | Drag to rotate, scroll/pinch to zoom |
+| **User Marker** | Shows your GPS location on the 3D map |
+| **Destination Marker** | Shows selected destination |
+| **Path Line** | Visual path between user and destination |
+| **Clickable Buildings** | Tap to select as destination |
+| **AR Switch** | Button to start AR navigation to selected building |
+
+---
+
 ## 🔨 Build for WebGL
 
 1. **File → Build Settings**

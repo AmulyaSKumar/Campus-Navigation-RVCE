@@ -1,0 +1,72 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Unity auto-generated VS/JetBrains Rider project files
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+*.opendb.meta
+*.VC.db.meta
+
+# Unity generated files
+sysinfo.txt
+*.apk
+*.aab
+*.unitypackage
+
+# Crashlytics generated file
+crashlytics-build.properties
+
+# Packed Addressables
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*
+
+# Asset meta data should only be ignored when the corresponding asset is also ignored
+*.meta:!/[Aa]ssets/**/*.meta
+
+# Uncomment this line if you wish to ignore the asset store tools plugin
+# [Aa]ssets/AssetStoreTools*
+
+# VRCSDK generated folders (if using VRChat SDK)
+[Vv]rcSdk/
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# OS generated files
+.DS_Store
+*.swp
+*.tmp
+Thumbs.db
+
+# Unity Packages
+Packages/manifest.json
+Packages/packages-lock.json
+
+# Exclude Unity package cache
+Packages/PackageCache/
