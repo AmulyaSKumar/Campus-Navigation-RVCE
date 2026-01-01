@@ -409,51 +409,79 @@ public class RVCECampusBuilder : EditorWindow
     
     private static void CreateBuildingLabel(Transform parent, string text, float height)
     {
-        GameObject labelObj = new GameObject("Label");
+        GameObject labelObj = new GameObject("Label_" + text);
         labelObj.transform.parent = parent;
-        labelObj.transform.localPosition = new Vector3(0, height + 1f, 0);
+        labelObj.transform.localPosition = new Vector3(0, height + 3f, 0);  // Higher above building
         
-        // Create a background panel for better visibility
-        GameObject bgPanel = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        bgPanel.name = "LabelBackground";
-        bgPanel.transform.parent = labelObj.transform;
+        // ===== 3D TEXT USING WORLD SPACE CANVAS (MUCH MORE VISIBLE) =====
+        
+        // Create a Canvas for the label (World Space)
+        GameObject canvasObj = new GameObject("LabelCanvas");
+        canvasObj.transform.parent = labelObj.transform;
+        canvasObj.transform.localPosition = Vector3.zero;
+        canvasObj.transform.localScale = Vector3.one * 0.05f;  // Scale down canvas to world units
+        
+        Canvas canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        
+        // Add CanvasScaler for consistent sizing
+        UnityEngine.UI.CanvasScaler scaler = canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 100;
+        
+        // Size the canvas RectTransform
+        RectTransform canvasRect = canvasObj.GetComponent<RectTransform>();
+        float canvasWidth = text.Length * 25f + 60f;
+        canvasRect.sizeDelta = new Vector2(canvasWidth, 80);
+        
+        // ===== BACKGROUND PANEL =====
+        GameObject bgPanel = new GameObject("Background");
+        bgPanel.transform.parent = canvasObj.transform;
         bgPanel.transform.localPosition = Vector3.zero;
+        bgPanel.transform.localScale = Vector3.one;
         
-        // Size background based on text length
-        float textWidth = text.Length * 0.35f + 1f;
-        float textHeight = 1.5f;
-        bgPanel.transform.localScale = new Vector3(textWidth, textHeight, 1f);
+        RectTransform bgRect = bgPanel.AddComponent<RectTransform>();
+        bgRect.sizeDelta = new Vector2(canvasWidth, 80);
+        bgRect.anchoredPosition = Vector2.zero;
         
-        // Semi-transparent dark background
-        Material bgMat = CreateColorMaterial(new Color(0.1f, 0.1f, 0.15f, 0.85f), "LabelBgMaterial");
-        bgMat.SetFloat("_Mode", 3); // Transparent mode
-        bgMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        bgMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        bgMat.SetInt("_ZWrite", 0);
-        bgMat.DisableKeyword("_ALPHATEST_ON");
-        bgMat.EnableKeyword("_ALPHABLEND_ON");
-        bgMat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        bgMat.renderQueue = 3000;
-        bgPanel.GetComponent<Renderer>().material = bgMat;
+        UnityEngine.UI.Image bgImage = bgPanel.AddComponent<UnityEngine.UI.Image>();
+        bgImage.color = new Color(0.15f, 0.15f, 0.2f, 0.95f);  // Dark, almost opaque
         
-        // Remove collider from background
-        Object.DestroyImmediate(bgPanel.GetComponent<Collider>());
-        
-        // Create text using TextMesh with larger, bolder settings
+        // ===== TEXT LABEL =====
         GameObject textObj = new GameObject("Text");
-        textObj.transform.parent = labelObj.transform;
-        textObj.transform.localPosition = new Vector3(0, 0, -0.01f);
+        textObj.transform.parent = canvasObj.transform;
+        textObj.transform.localPosition = new Vector3(0, 0, -0.5f);
+        textObj.transform.localScale = Vector3.one;
         
-        TextMesh textMesh = textObj.AddComponent<TextMesh>();
-        textMesh.text = text;
-        textMesh.fontSize = 48;  // Larger font
-        textMesh.characterSize = 0.15f;  // Adjusted for readability
-        textMesh.anchor = TextAnchor.MiddleCenter;
-        textMesh.alignment = TextAlignment.Center;
-        textMesh.color = Color.white;
-        textMesh.fontStyle = FontStyle.Bold;
+        RectTransform textRect = textObj.AddComponent<RectTransform>();
+        textRect.sizeDelta = new Vector2(canvasWidth - 20f, 70);
+        textRect.anchoredPosition = Vector2.zero;
         
-        // Add billboard script to face camera
+        // Use Unity UI Text (more reliable than TextMesh)
+        UnityEngine.UI.Text uiText = textObj.AddComponent<UnityEngine.UI.Text>();
+        uiText.text = text;
+        uiText.fontSize = 42;
+        uiText.fontStyle = FontStyle.Bold;
+        uiText.alignment = TextAnchor.MiddleCenter;
+        uiText.color = Color.white;
+        uiText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        uiText.verticalOverflow = VerticalWrapMode.Overflow;
+        
+        // Use Arial font (always available)
+        uiText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        if (uiText.font == null)
+            uiText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        
+        // ===== OUTLINE FOR BETTER VISIBILITY =====
+        UnityEngine.UI.Outline outline = textObj.AddComponent<UnityEngine.UI.Outline>();
+        outline.effectColor = Color.black;
+        outline.effectDistance = new Vector2(2, -2);
+        
+        // Add second outline for thicker effect
+        UnityEngine.UI.Outline outline2 = textObj.AddComponent<UnityEngine.UI.Outline>();
+        outline2.effectColor = Color.black;
+        outline2.effectDistance = new Vector2(-2, 2);
+        
+        // Add billboard script to always face camera
         labelObj.AddComponent<Billboard>();
     }
     
