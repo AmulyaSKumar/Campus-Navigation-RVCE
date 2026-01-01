@@ -149,7 +149,7 @@ namespace CampusNavigator.AR.Editor
             canvasObj.AddComponent<ARNavigationUI>();
 
             // Create EventSystem if not exists
-            if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+            if (FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
             {
                 GameObject eventSystem = new GameObject("EventSystem");
                 eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
@@ -544,10 +544,10 @@ namespace CampusNavigator.AR.Editor
         private static void WireUpReferences()
         {
             // Find all components
-            ARNavigationUI navUI = FindObjectOfType<ARNavigationUI>();
-            ARNavigationManager navManager = FindObjectOfType<ARNavigationManager>();
-            ARPathRenderer pathRenderer = FindObjectOfType<ARPathRenderer>();
-            WebGLCameraManager camManager = FindObjectOfType<WebGLCameraManager>();
+            ARNavigationUI navUI = FindFirstObjectByType<ARNavigationUI>();
+            ARNavigationManager navManager = FindFirstObjectByType<ARNavigationManager>();
+            ARPathRenderer pathRenderer = FindFirstObjectByType<ARPathRenderer>();
+            WebGLCameraManager camManager = FindFirstObjectByType<WebGLCameraManager>();
 
             if (navUI != null)
             {
